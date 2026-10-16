@@ -1,0 +1,83 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791805956076,
+      "tag": "0000_flaky_sauron",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791809054781,
+      "tag": "0001_lumpy_captain_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791813413649,
+      "tag": "0002_sparkling_lilith",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791832552529,
+      "tag": "0003_sudden_silver_samurai",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791838328143,
+      "tag": "0004_wild_beyonder",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791838648243,
+      "tag": "0005_great_overlord",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791865321727,
+      "tag": "0006_spooky_miss_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791867905820,
+      "tag": "0007_abnormal_champions",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791924596923,
+      "tag": "0008_lethal_carnage",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791929471540,
+      "tag": "0009_ambitious_johnny_blaze",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792082079151,
+      "tag": "0010_lean_loners",
+      "breakpoints": true
+    }
+  ]
+}

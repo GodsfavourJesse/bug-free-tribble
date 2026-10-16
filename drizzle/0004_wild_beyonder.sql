@@ -1,0 +1,3 @@
+ALTER TABLE "dealer_applications" ADD COLUMN "reviewed_by_user_id" uuid;--> statement-breakpoint
+ALTER TABLE "dealer_applications" ADD COLUMN "reviewed_at" timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "dealer_applications" ADD CONSTRAINT "dealer_applications_reviewed_by_user_id_users_id_fk" FOREIGN KEY ("reviewed_by_user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;

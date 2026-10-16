@@ -1,0 +1,2 @@
+ALTER TABLE "notifications" ADD COLUMN "idempotency_key" varchar(255);--> statement-breakpoint
+CREATE UNIQUE INDEX "notifications_idempotency_key_unique" ON "notifications" USING btree ("idempotency_key");
