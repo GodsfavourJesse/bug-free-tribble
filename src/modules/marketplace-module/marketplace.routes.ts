@@ -6,6 +6,8 @@ import {
 
 import marketplaceFavoritesRoutes from "./marketplace-favorites/marketplace-favorites.routes.ts";
 import marketplaceSavedSearchesRoutes from "./marketplace-saved-searches/saved-searches.routes.ts";
+import { getListingDetails } from "./marketplace-details/marketplace-details.controller.ts";
+import { ensureVisitorIdentity } from "../../middleware/visitor.middleware.ts";
 
 const router = Router();
 
@@ -17,6 +19,12 @@ const router = Router();
 router.get(
     "/search",
     search,
+);
+
+router.get(
+    "/listings/:listingId",
+    ensureVisitorIdentity,
+    getListingDetails,
 );
 
 /**

@@ -8,6 +8,12 @@ import {
 
 let transporter: Transporter | null = null;
 
+/**
+ * Returns the configured Nodemailer transporter.
+ *
+ * The transporter is created lazily and reused for subsequent
+ * email operations.
+ */
 function getTransporter(): Transporter {
     const {
         EMAIL_FROM,
@@ -29,22 +35,59 @@ function getTransporter(): Transporter {
     }
 
     if (!transporter) {
-        transporter =
-            nodemailer.createTransport({
-                host: SMTP_HOST,
-                port: env.SMTP_PORT,
-                secure:
-                    env.SMTP_PORT === 465,
-                auth: {
-                    user: SMTP_USER,
-                    pass: SMTP_PASSWORD,
-                },
-            });
+        transporter = nodemailer.createTransport({
+            host: SMTP_HOST,
+            port: env.SMTP_PORT,
+            secure: env.SMTP_PORT === 465,
+            auth: {
+                user: SMTP_USER,
+                pass: SMTP_PASSWORD,
+            },
+        });
     }
 
     return transporter;
 }
 
+/**
+ * Returns the configured sender in Nodemailer's structured format.
+ *
+ * EMAIL_FROM contains only the verified sender email address.
+ * EMAIL_FROM_NAME contains the display name.
+ */
+function getSender(): {
+    name: string;
+    address: string;
+} {
+    if (!env.EMAIL_FROM) {
+        throw new Error(
+            "Email sender is not configured. Set EMAIL_FROM.",
+        );
+    }
+
+    return {
+        name: env.EMAIL_FROM_NAME,
+        address: env.EMAIL_FROM,
+    };
+}
+
+/**
+ * Verifies that Nodemailer can connect to and authenticate
+ * with the configured SMTP server.
+ *
+ * This does not guarantee that a particular message will be
+ * accepted or delivered to the recipient.
+ */
+export async function verifyEmailTransport(): Promise<void> {
+    const mailTransporter = getTransporter();
+
+    await mailTransporter.verify();
+}
+
+/**
+ * Sends an account verification email containing a code
+ * and a verification link.
+ */
 export async function sendEmailVerificationEmail(
     input: {
         email: string;
@@ -57,14 +100,16 @@ export async function sendEmailVerificationEmail(
         `${env.CLIENT_URL}/verify-email?token=${encodeURIComponent(input.token)}`;
 
     await getTransporter().sendMail({
-        from: env.EMAIL_FROM,
+        from: getSender(),
         to: input.email,
-        subject:
-            "Verify your KARMASS account",
+        subject: "Verify your KARMASS account",
+
         text: [
             `Hello ${input.firstName},`,
             "",
             "Welcome to KARMASS.",
+            "",
+            "Please verify your email address to activate your account.",
             "",
             `Your verification code is: ${input.code}`,
             "",
@@ -76,13 +121,26 @@ export async function sendEmailVerificationEmail(
             "",
             "KARMASS",
         ].join("\n"),
+
         html: `
             <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;max-width:600px;margin:0 auto">
                 <h2>Verify your KARMASS account</h2>
+
                 <p>Hello ${escapeHtml(input.firstName)},</p>
-                <p>Welcome to KARMASS. Please verify your email address to activate your account.</p>
-                <p style="font-size:28px;font-weight:700;letter-spacing:8px">${escapeHtml(input.code)}</p>
+
+                <p>
+                    Welcome to KARMASS. Please verify your email
+                    address to activate your account.
+                </p>
+
+                <p
+                    style="font-size:28px;font-weight:700;letter-spacing:8px"
+                >
+                    ${escapeHtml(input.code)}
+                </p>
+
                 <p>Or use the button below:</p>
+
                 <p>
                     <a
                         href="${escapeHtml(verificationUrl)}"
@@ -91,14 +149,26 @@ export async function sendEmailVerificationEmail(
                         Verify Email
                     </a>
                 </p>
-                <p>This verification request expires in ${env.EMAIL_VERIFICATION_TTL_MINUTES} minutes.</p>
-                <p>If you did not create a KARMASS account, you can ignore this email.</p>
+
+                <p>
+                    This verification request expires in
+                    ${env.EMAIL_VERIFICATION_TTL_MINUTES} minutes.
+                </p>
+
+                <p>
+                    If you did not create a KARMASS account,
+                    you can ignore this email.
+                </p>
+
                 <p>KARMASS</p>
             </div>
         `,
     });
 }
 
+/**
+ * Sends a general notification email.
+ */
 export async function sendNotificationEmail(
     input: {
         email: string;
@@ -108,9 +178,10 @@ export async function sendNotificationEmail(
     },
 ): Promise<void> {
     await getTransporter().sendMail({
-        from: env.EMAIL_FROM,
+        from: getSender(),
         to: input.email,
         subject: input.title,
+
         text: [
             `Hello ${input.firstName},`,
             "",
@@ -118,43 +189,36 @@ export async function sendNotificationEmail(
             "",
             "KARMASS",
         ].join("\n"),
+
         html: `
             <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;max-width:600px;margin:0 auto">
                 <h2>${escapeHtml(input.title)}</h2>
+
                 <p>Hello ${escapeHtml(input.firstName)},</p>
+
                 <p>${escapeHtml(input.message)}</p>
+
                 <p>KARMASS</p>
             </div>
         `,
     });
 }
 
-function escapeHtml(
-    value: string,
-): string {
+/**
+ * Escapes user-provided content before inserting it into HTML.
+ */
+function escapeHtml(value: string): string {
     return value
-        .replaceAll(
-            "&",
-            "&amp;",
-        )
-        .replaceAll(
-            "<",
-            "&lt;",
-        )
-        .replaceAll(
-            ">",
-            "&gt;",
-        )
-        .replaceAll(
-            '"',
-            "&quot;",
-        )
-        .replaceAll(
-            "'",
-            "&#039;",
-        );
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
+/**
+ * Sends a password-reset email.
+ */
 export async function sendPasswordResetEmail(
     input: {
         email: string;
@@ -166,10 +230,9 @@ export async function sendPasswordResetEmail(
         `${env.CLIENT_URL}/reset-password?token=${encodeURIComponent(input.token)}`;
 
     await getTransporter().sendMail({
-        from: env.EMAIL_FROM,
+        from: getSender(),
         to: input.email,
-        subject:
-            "Reset your KARMASS password",
+        subject: "Reset your KARMASS password",
 
         text: [
             `Hello ${input.firstName},`,
