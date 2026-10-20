@@ -15,6 +15,7 @@ import {
     vehicleMakes,
     vehicleModels,
     vehicleVariants,
+    users,
 } from "../../../../database/schema/index.ts";
 
 import {
@@ -46,8 +47,23 @@ export async function getPendingListings() {
             vehicleGeneration: vehicleGenerations,
             vehicleModel: vehicleModels,
             vehicleMake: vehicleMakes,
+            seller: {
+                id: users.id,
+                email: users.email,
+                firstName: users.firstName,
+                lastName: users.lastName,
+                accountType: users.accountType,
+                status: users.status,
+            },
         })
         .from(listings)
+        .innerJoin(
+            users,
+            eq(
+                listings.sellerId,
+                users.id,
+            ),
+        )
         .innerJoin(
             vehicleVariants,
             eq(
@@ -125,8 +141,23 @@ export async function getModerationListing(
             vehicleGeneration: vehicleGenerations,
             vehicleModel: vehicleModels,
             vehicleMake: vehicleMakes,
+            seller: {
+                id: users.id,
+                email: users.email,
+                firstName: users.firstName,
+                lastName: users.lastName,
+                accountType: users.accountType,
+                status: users.status,
+            },
         })
         .from(listings)
+        .innerJoin(
+            users,
+            eq(
+                listings.sellerId,
+                users.id,
+            ),
+        )
         .innerJoin(
             vehicleVariants,
             eq(
