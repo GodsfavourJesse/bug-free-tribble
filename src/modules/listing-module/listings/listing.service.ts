@@ -1525,28 +1525,112 @@ export async function reactivateListing(
     });
 }
 
+async function getListingCoverImages(
+    listingIds: string[],
+) {
+    if (listingIds.length === 0) {
+        return new Map<
+            string,
+            {
+                id: string;
+                objectKey: string;
+                sortOrder: number;
+                imageCheckStatus: string;
+                thumbnailUrl: string;
+                url: string;
+            }
+        >();
+    }
+
+    const images = await db
+        .select({
+            id: listingImages.id,
+            listingId: listingImages.listingId,
+            objectKey: listingImages.objectKey,
+            sortOrder: listingImages.sortOrder,
+            imageCheckStatus: listingImages.imageCheckStatus,
+        })
+        .from(listingImages)
+        .where(
+            and(
+                sql`${listingImages.listingId} IN (${sql.join(
+                    listingIds.map((id) => sql`${id}`),
+                    sql`, `,
+                )})`,
+                eq(listingImages.imageCheckStatus, "PASSED"),
+            ),
+        )
+        .orderBy(
+            listingImages.sortOrder,
+        );
+
+    const storage = getObjectStorage();
+
+    const coverImages = new Map<
+        string,
+        {
+            id: string;
+            objectKey: string;
+            sortOrder: number;
+            imageCheckStatus: string;
+            thumbnailUrl: string;
+            url: string;
+        }
+    >();
+
+    for (const image of images) {
+        if (coverImages.has(image.listingId)) {
+            continue;
+        }
+
+        coverImages.set(
+            image.listingId,
+            {
+                id: image.id,
+                objectKey: image.objectKey,
+                sortOrder: image.sortOrder,
+                imageCheckStatus: image.imageCheckStatus,
+                thumbnailUrl: storage.transformedImageUrl(
+                    image.objectKey,
+                    {
+                        width: 600,
+                        height: 600,
+                        fit: "fit",
+                        quality: "auto",
+                        format: "webp",
+                    },
+                ),
+                url: storage.publicUrl(
+                    image.objectKey,
+                    {
+                        resourceType: "image",
+                        access: "public",
+                    },
+                ),
+            },
+        );
+    }
+
+    return coverImages;
+}
+
 export async function getSellerListings(
     options: SellerListingsOptions,
 ) {
-    const page =
+    const page = Math.max(
+        options.page ?? 1,
+        1,
+    );
+
+    const limit = Math.min(
         Math.max(
-            options.page ?? 1,
+            options.limit ?? 20,
             1,
-        );
+        ),
+        100,
+    );
 
-    const limit =
-        Math.min(
-            Math.max(
-                options.limit ??
-                    20,
-                1,
-            ),
-            100,
-        );
-
-    const offset =
-        (page - 1) *
-        limit;
+    const offset = (page - 1) * limit;
 
     const conditions = [
         eq(
@@ -1555,9 +1639,7 @@ export async function getSellerListings(
         ),
     ];
 
-    if (
-        options.status
-    ) {
+    if (options.status) {
         conditions.push(
             eq(
                 listings.status,
@@ -1566,109 +1648,88 @@ export async function getSellerListings(
         );
     }
 
-    const rows =
-        await db
-            .select({
-                listing:
-                    listings,
+    const rows = await db
+        .select({
+            listing: listings,
+            vehicleVariant: vehicleVariants,
+            vehicleGeneration: vehicleGenerations,
+            vehicleModel: vehicleModels,
+            vehicleMake: vehicleMakes,
+        })
+        .from(listings)
+        .innerJoin(
+            vehicleVariants,
+            eq(
+                listings.vehicleVariantId,
+                vehicleVariants.id,
+            ),
+        )
+        .innerJoin(
+            vehicleGenerations,
+            eq(
+                vehicleVariants.generationId,
+                vehicleGenerations.id,
+            ),
+        )
+        .innerJoin(
+            vehicleModels,
+            eq(
+                vehicleGenerations.modelId,
+                vehicleModels.id,
+            ),
+        )
+        .innerJoin(
+            vehicleMakes,
+            eq(
+                vehicleModels.makeId,
+                vehicleMakes.id,
+            ),
+        )
+        .where(
+            and(...conditions),
+        )
+        .orderBy(
+            desc(listings.createdAt),
+        )
+        .limit(limit)
+        .offset(offset);
 
-                vehicleVariant:
-                    vehicleVariants,
-
-                vehicleGeneration:
-                    vehicleGenerations,
-
-                vehicleModel:
-                    vehicleModels,
-
-                vehicleMake:
-                    vehicleMakes,
-            })
-            .from(listings)
-            .innerJoin(
-                vehicleVariants,
-                eq(
-                    listings.vehicleVariantId,
-                    vehicleVariants.id,
-                ),
-            )
-            .innerJoin(
-                vehicleGenerations,
-                eq(
-                    vehicleVariants.generationId,
-                    vehicleGenerations.id,
-                ),
-            )
-            .innerJoin(
-                vehicleModels,
-                eq(
-                    vehicleGenerations.modelId,
-                    vehicleModels.id,
-                ),
-            )
-            .innerJoin(
-                vehicleMakes,
-                eq(
-                    vehicleModels.makeId,
-                    vehicleMakes.id,
-                ),
-            )
-            .where(
-                and(
-                    ...conditions,
-                ),
-            )
-            .orderBy(
-                desc(
-                    listings.createdAt,
-                ),
-            )
-            .limit(limit)
-            .offset(offset);
-
-    const totalResult =
-        await db
-            .select({
-                count:
-                    count(),
-            })
-            .from(listings)
-            .where(
-                and(
-                    ...conditions,
-                ),
-            );
-
-    const total =
-        Number(
-            totalResult[0]
-                ?.count ??
-                0,
+    const totalResult = await db
+        .select({
+            count: count(),
+        })
+        .from(listings)
+        .where(
+            and(...conditions),
         );
 
-    return {
-        items: rows,
+    const total = Number(
+        totalResult[0]?.count ?? 0,
+    );
 
+    const listingIds = rows.map(
+        (row) => row.listing.id,
+    );
+
+    const coverImages = await getListingCoverImages(
+        listingIds,
+    );
+
+    const items = rows.map((row) => ({
+        ...row,
+        coverImage:
+            coverImages.get(row.listing.id) ?? null,
+    }));
+
+    return {
+        items,
         pagination: {
             page,
-
             limit,
-
             total,
-
-            totalPages:
-                Math.ceil(
-                    total /
-                        limit,
-                ),
-
-            hasNextPage:
-                page *
-                    limit <
-                total,
-
-            hasPreviousPage:
-                page > 1,
+            totalPages: Math.ceil(total / limit),
+            hasNextPage: page * limit < total,
+            hasPreviousPage: page > 1,
         },
     };
 }
