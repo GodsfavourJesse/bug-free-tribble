@@ -11,15 +11,13 @@ import {
     varchar,
 } from "drizzle-orm/pg-core";
 
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 /**
- * Vehicle makes
+ * VEHICLE MAKES
  *
- * Example:
- * Toyota
- * Mercedes-Benz
- * BMW
+ * Examples:
+ * Toyota, Honda, Mercedes-Benz, Ferrari, Bugatti.
  */
 export const vehicleMakes = pgTable(
     "vehicle_makes",
@@ -45,9 +43,7 @@ export const vehicleMakes = pgTable(
             .notNull()
             .default([]),
 
-        nigeriaMarket: boolean(
-            "nigeria_market",
-        )
+        nigeriaMarket: boolean("nigeria_market")
             .notNull()
             .default(true),
 
@@ -55,42 +51,37 @@ export const vehicleMakes = pgTable(
             .notNull()
             .default(true),
 
-        createdAt: timestamp(
-            "created_at",
-            {
-                withTimezone: true,
-            },
-        )
+        createdAt: timestamp("created_at", {
+            withTimezone: true,
+        })
             .notNull()
             .defaultNow(),
 
-        updatedAt: timestamp(
-            "updated_at",
-            {
-                withTimezone: true,
-            },
-        )
+        updatedAt: timestamp("updated_at", {
+            withTimezone: true,
+        })
             .notNull()
             .defaultNow(),
     },
     (table) => [
-        index(
-            "vehicle_makes_active_idx",
-        ).on(table.active),
+        index("vehicle_makes_active_idx")
+            .on(table.active),
 
-        index(
-            "vehicle_makes_nigeria_market_idx",
-        ).on(table.nigeriaMarket),
+        index("vehicle_makes_nigeria_market_idx")
+            .on(table.nigeriaMarket),
+
+        index("vehicle_makes_name_idx")
+            .on(table.name),
     ],
 );
 
 /**
- * Vehicle models
+ * VEHICLE MODELS
  *
- * Example:
- * Toyota → Camry
- * Toyota → Corolla
- * BMW → 3 Series
+ * Examples:
+ * Toyota -> Camry
+ * Mercedes-Benz -> C-Class
+ * Ferrari -> 296 GTB
  */
 export const vehicleModels = pgTable(
     "vehicle_models",
@@ -105,27 +96,24 @@ export const vehicleModels = pgTable(
                 () => vehicleMakes.id,
                 {
                     onDelete: "restrict",
+                    onUpdate: "cascade",
                 },
             ),
 
         name: varchar("name", {
             length: 100,
-        })
-            .notNull(),
+        }).notNull(),
 
         slug: varchar("slug", {
             length: 120,
-        })
-            .notNull(),
+        }).notNull(),
 
         aliases: jsonb("aliases")
             .$type<string[]>()
             .notNull()
             .default([]),
 
-        nigeriaMarket: boolean(
-            "nigeria_market",
-        )
+        nigeriaMarket: boolean("nigeria_market")
             .notNull()
             .default(true),
 
@@ -133,174 +121,187 @@ export const vehicleModels = pgTable(
             .notNull()
             .default(true),
 
-        createdAt: timestamp(
-            "created_at",
-            {
-                withTimezone: true,
-            },
-        )
+        createdAt: timestamp("created_at", {
+            withTimezone: true,
+        })
             .notNull()
             .defaultNow(),
 
-        updatedAt: timestamp(
-            "updated_at",
-            {
-                withTimezone: true,
-            },
-        )
+        updatedAt: timestamp("updated_at", {
+            withTimezone: true,
+        })
             .notNull()
             .defaultNow(),
     },
     (table) => [
-        unique(
-            "vehicle_models_make_name_unique",
-        ).on(
-            table.makeId,
-            table.name,
-        ),
+        unique("vehicle_models_make_name_unique")
+            .on(
+                table.makeId,
+                table.name,
+            ),
 
-        unique(
-            "vehicle_models_make_slug_unique",
-        ).on(
-            table.makeId,
-            table.slug,
-        ),
+        unique("vehicle_models_make_slug_unique")
+            .on(
+                table.makeId,
+                table.slug,
+            ),
 
-        index(
-            "vehicle_models_make_idx",
-        ).on(table.makeId),
+        index("vehicle_models_make_id_idx")
+            .on(table.makeId),
 
-        index(
-            "vehicle_models_active_idx",
-        ).on(
-            table.makeId,
-            table.active,
-        ),
+        index("vehicle_models_active_idx")
+            .on(table.active),
 
-        index(
-            "vehicle_models_nigeria_market_idx",
-        ).on(
-            table.makeId,
-            table.nigeriaMarket,
+        index("vehicle_models_nigeria_market_idx")
+            .on(table.nigeriaMarket),
+
+        index("vehicle_models_name_idx")
+            .on(table.name),
+    ],
+);
+
+/**
+ * VEHICLE GENERATIONS
+ *
+ * Examples:
+ * Toyota Camry -> XV70
+ * Toyota Camry -> XV80
+ *
+ * Start and end years are nullable because some vehicles
+ * do not have consistently documented generation boundaries.
+ */
+export const vehicleGenerations = pgTable(
+    "vehicle_generations",
+    {
+        id: uuid("id")
+            .defaultRandom()
+            .primaryKey(),
+
+        modelId: uuid("model_id")
+            .notNull()
+            .references(
+                () => vehicleModels.id,
+                {
+                    onDelete: "restrict",
+                    onUpdate: "cascade",
+                },
+            ),
+
+        name: varchar("name", {
+            length: 150,
+        }).notNull(),
+
+        slug: varchar("slug", {
+            length: 180,
+        }).notNull(),
+
+        startYear: integer("start_year"),
+
+        endYear: integer("end_year"),
+
+        aliases: jsonb("aliases")
+            .$type<string[]>()
+            .notNull()
+            .default([]),
+
+        nigeriaMarket: boolean("nigeria_market")
+            .notNull()
+            .default(true),
+
+        active: boolean("active")
+            .notNull()
+            .default(true),
+
+        createdAt: timestamp("created_at", {
+            withTimezone: true,
+        })
+            .notNull()
+            .defaultNow(),
+
+        updatedAt: timestamp("updated_at", {
+            withTimezone: true,
+        })
+            .notNull()
+            .defaultNow(),
+    },
+    (table) => [
+        unique("vehicle_generations_model_name_unique")
+            .on(
+                table.modelId,
+                table.name,
+            ),
+
+        unique("vehicle_generations_model_slug_unique")
+            .on(
+                table.modelId,
+                table.slug,
+            ),
+
+        index("vehicle_generations_model_id_idx")
+            .on(table.modelId),
+
+        index("vehicle_generations_active_idx")
+            .on(table.active),
+
+        index("vehicle_generations_nigeria_market_idx")
+            .on(table.nigeriaMarket),
+
+        index("vehicle_generations_year_range_idx")
+            .on(
+                table.startYear,
+                table.endYear,
+            ),
+
+        check(
+            "vehicle_generations_year_range_check",
+            sql`
+                (
+                    ${table.startYear} IS NULL
+                    OR ${table.endYear} IS NULL
+                    OR ${table.startYear} <= ${table.endYear}
+                )
+            `,
         ),
     ],
 );
 
 /**
- * Vehicle generations
- *
- * Example:
- * Toyota Camry → XV70
- * Toyota Camry → XV80
+ * RELATIONS
  */
-export const vehicleGenerations =
-    pgTable(
-        "vehicle_generations",
-        {
-            id: uuid("id")
-                .defaultRandom()
-                .primaryKey(),
 
-            modelId: uuid("model_id")
-                .notNull()
-                .references(
-                    () => vehicleModels.id,
-                    {
-                        onDelete: "restrict",
-                    },
-                ),
+export const vehicleMakesRelations = relations(
+    vehicleMakes,
+    ({ many }) => ({
+        models: many(vehicleModels),
+    }),
+);
 
-            name: varchar("name", {
-                length: 150,
-            })
-                .notNull(),
+export const vehicleModelsRelations = relations(
+    vehicleModels,
+    ({ one, many }) => ({
+        make: one(vehicleMakes, {
+            fields: [
+                vehicleModels.makeId,
+            ],
+            references: [
+                vehicleMakes.id,
+            ],
+        }),
 
-            slug: varchar("slug", {
-                length: 180,
-            })
-                .notNull(),
+        generations: many(vehicleGenerations),
+    }),
+);
 
-            startYear: integer(
-                "start_year",
-            ),
-
-            endYear: integer(
-                "end_year",
-            ),
-
-            aliases: jsonb("aliases")
-                .$type<string[]>()
-                .notNull()
-                .default([]),
-
-            nigeriaMarket: boolean(
-                "nigeria_market",
-            )
-                .notNull()
-                .default(true),
-
-            active: boolean("active")
-                .notNull()
-                .default(true),
-
-            createdAt: timestamp(
-                "created_at",
-                {
-                    withTimezone: true,
-                },
-            )
-                .notNull()
-                .defaultNow(),
-
-            updatedAt: timestamp(
-                "updated_at",
-                {
-                    withTimezone: true,
-                },
-            )
-                .notNull()
-                .defaultNow(),
-        },
-        (table) => [
-            unique(
-                "vehicle_generations_model_name_unique",
-            ).on(
-                table.modelId,
-                table.name,
-            ),
-
-            unique(
-                "vehicle_generations_model_slug_unique",
-            ).on(
-                table.modelId,
-                table.slug,
-            ),
-
-            index(
-                "vehicle_generations_model_idx",
-            ).on(table.modelId),
-
-            index(
-                "vehicle_generations_active_idx",
-            ).on(
-                table.modelId,
-                table.active,
-            ),
-
-            index(
-                "vehicle_generations_nigeria_market_idx",
-            ).on(
-                table.modelId,
-                table.nigeriaMarket,
-            ),
-
-            check(
-                "vehicle_generations_year_range_check",
-                sql`
-                    start_year IS NULL
-                    OR end_year IS NULL
-                    OR end_year >= start_year
-                `,
-            ),
-        ],
-    );
+export const vehicleGenerationsRelations = relations(
+    vehicleGenerations,
+    ({ one }) => ({
+        model: one(vehicleModels, {
+            fields: [
+                vehicleGenerations.modelId,
+            ],
+            references: [
+                vehicleModels.id,
+            ],
+        }),
+    }),
+);

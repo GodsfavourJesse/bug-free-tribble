@@ -39,21 +39,21 @@ function createVerificationExpiryDate(): Date {
 export async function createEmailVerificationChallenge(
     user: typeof users.$inferSelect,
 ): Promise<void> {
-    const code =
-        createVerificationCode();
+    const code = createVerificationCode();
 
-    const token =
-        createVerificationToken();
+    const token = createVerificationToken();
+
+    const tokenHash = hashVerificationValue(token);
 
     await db.transaction(
         async (tx) => {
+            /*
+             * Invalidate previous unused challenges.
+             */
             await tx
-                .update(
-                    emailVerificationTokens,
-                )
+                .update(emailVerificationTokens)
                 .set({
-                    usedAt:
-                        new Date(),
+                    usedAt: new Date(),
                 })
                 .where(
                     and(
@@ -67,34 +67,70 @@ export async function createEmailVerificationChallenge(
                     ),
                 );
 
+            /*
+             * Store only hashed verification credentials.
+             */
             await tx
-                .insert(
-                    emailVerificationTokens,
-                )
+                .insert(emailVerificationTokens)
                 .values({
-                    userId:
-                        user.id,
-                    codeHash:
-                        hashVerificationValue(
-                            code,
-                        ),
-                    tokenHash:
-                        hashVerificationValue(
-                            token,
-                        ),
-                    expiresAt:
-                        createVerificationExpiryDate(),
+                    userId: user.id,
+                    codeHash: hashVerificationValue(code),
+                    tokenHash,
+                    expiresAt: createVerificationExpiryDate(),
                 });
         },
     );
 
-    await sendEmailVerificationEmail({
-        email: user.email,
-        firstName:
-            user.firstName,
-        code,
-        token,
-    });
+    try {
+        await sendEmailVerificationEmail({
+            email: user.email,
+            firstName: user.firstName,
+            code,
+            token,
+        });
+    } catch (error: unknown) {
+        /*
+         * SMTP failed after the token was stored.
+         *
+         * Invalidate the failed challenge so the next resend
+         * attempt is not blocked by the cooldown.
+         */
+        try {
+            await db
+                .update(emailVerificationTokens)
+                .set({
+                    usedAt: new Date(),
+                })
+                .where(
+                    and(
+                        eq(
+                            emailVerificationTokens.userId,
+                            user.id,
+                        ),
+                        eq(
+                            emailVerificationTokens.tokenHash,
+                            tokenHash,
+                        ),
+                        isNull(
+                            emailVerificationTokens.usedAt,
+                        ),
+                    ),
+                );
+        } catch (cleanupError: unknown) {
+            console.error(
+                "[AUTH] Failed to invalidate an unsent verification challenge",
+                {
+                    userId: user.id,
+                    error:
+                        cleanupError instanceof Error
+                            ? cleanupError.message
+                            : String(cleanupError),
+                },
+            );
+        }
+
+        throw error;
+    }
 }
 
 export async function verifyEmailByCode(

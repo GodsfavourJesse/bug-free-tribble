@@ -21,7 +21,7 @@ import {
     removeFavorite,
 } from "../listing-favorite/listing-favorite.controller.ts";
 
-import { requireAuth } from "../../../middleware/admin-middleware/auth.middleware.ts";
+import { requireAuth } from "../../../middleware/auth.middleware.ts";
 
 import { requireCsrfToken } from "../../../middleware/csrf.middleware.ts";
 

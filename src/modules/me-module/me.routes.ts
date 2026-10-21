@@ -4,7 +4,7 @@ import {
 
 import {
     requireAuth,
-} from "../../middleware/admin-middleware/auth.middleware.ts";
+} from "../../middleware/auth.middleware.ts";
 
 import {
     requireCsrfToken,

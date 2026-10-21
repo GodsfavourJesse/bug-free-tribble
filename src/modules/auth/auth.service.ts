@@ -237,12 +237,49 @@ export async function registerUser(
     });
 
     /*
-     * Email sending occurs after the database transaction.
-     * If SMTP fails, the user can request verification again.
-     */
-    await createEmailVerificationChallenge(
-        createdUser,
-    );
+    * Email sending happens after the user has been created.
+    *
+    * A temporary SMTP failure must not make the user lose access
+    * to the registration flow. The user can request a new
+    * verification email after the email service is available.
+    */
+    let verificationEmailSent = true;
+
+    try {
+        console.info(
+            "[AUTH] Starting registration verification email",
+            {
+                userId: createdUser.id,
+                email: createdUser.email,
+            },
+        );
+
+        await createEmailVerificationChallenge(
+            createdUser,
+        );
+
+        console.info(
+            "[AUTH] Registration verification email submitted",
+            {
+                userId: createdUser.id,
+                email: createdUser.email,
+            },
+        );
+    } catch (error: unknown) {
+        verificationEmailSent = false;
+
+        console.error(
+            "[AUTH] Registration succeeded, but verification email delivery failed",
+            {
+                userId: createdUser.id,
+                email: createdUser.email,
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : String(error),
+            },
+        );
+    }
 
     /*
      * Notify administrators after the user has been
@@ -267,12 +304,9 @@ export async function registerUser(
     }
 
     return {
-        user:
-            sanitizeUser(
-                createdUser,
-            ),
-        requiresEmailVerification:
-            true,
+        user: sanitizeUser(createdUser),
+        requiresEmailVerification: true,
+        verificationEmailSent,
     };
 }
 

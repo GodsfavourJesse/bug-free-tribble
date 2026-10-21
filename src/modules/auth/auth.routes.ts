@@ -1,12 +1,8 @@
 import { Router } from "express";
 
 import {
-    authRateLimiter,
-} from "../../middleware/rate-limit.middleware.ts";
-
-import {
     requireAuth,
-} from "../../middleware/admin-middleware/auth.middleware.ts";
+} from "../../middleware/auth.middleware.ts";
 
 import {
     validate,
@@ -48,11 +44,7 @@ const router = Router();
  */
 router.post(
     "/register",
-    authRateLimiter,
-    validate(
-        registerSchema,
-        "body",
-    ),
+    validate(registerSchema, "body"),
     register,
 );
 
@@ -61,11 +53,7 @@ router.post(
  */
 router.post(
     "/login",
-    authRateLimiter,
-    validate(
-        loginSchema,
-        "body",
-    ),
+    validate(loginSchema, "body"),
     login,
 );
 
@@ -74,31 +62,19 @@ router.post(
  */
 router.post(
     "/verify-email",
-    authRateLimiter,
-    validate(
-        verifyEmailCodeSchema,
-        "body",
-    ),
+    validate(verifyEmailCodeSchema, "body"),
     verifyEmailCode,
 );
 
 router.get(
     "/verify-email",
-    authRateLimiter,
-    validate(
-        verifyEmailTokenSchema,
-        "query",
-    ),
+    validate(verifyEmailTokenSchema, "query"),
     verifyEmailToken,
 );
 
 router.post(
     "/verify-email/resend",
-    authRateLimiter,
-    validate(
-        resendVerificationSchema,
-        "body",
-    ),
+    validate(resendVerificationSchema, "body"),
     resendVerification,
 );
 
@@ -107,21 +83,13 @@ router.post(
  */
 router.post(
     "/forgot-password",
-    authRateLimiter,
-    validate(
-        forgotPasswordSchema,
-        "body",
-    ),
+    validate(forgotPasswordSchema, "body"),
     forgotPasswordController,
 );
 
 router.post(
     "/reset-password",
-    authRateLimiter,
-    validate(
-        resetPasswordSchema,
-        "body",
-    ),
+    validate(resetPasswordSchema, "body"),
     resetPasswordController,
 );
 
@@ -146,10 +114,7 @@ router.post(
 router.post(
     "/change-password",
     requireAuth,
-    validate(
-        changePasswordSchema,
-        "body",
-    ),
+    validate(changePasswordSchema, "body"),
     changePassword,
 );
 
@@ -165,10 +130,7 @@ router.get(
 router.delete(
     "/sessions/:sessionId",
     requireAuth,
-    validate(
-        sessionIdSchema,
-        "params",
-    ),
+    validate(sessionIdSchema, "params"),
     revokeSessionController,
 );
 

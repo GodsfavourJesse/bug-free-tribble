@@ -15,11 +15,13 @@
         "db:push": "drizzle-kit push",
         "db:seed": "tsx scripts/seed.ts",
         "db:seed-vehicles": "tsx scripts/seed-vehicles.ts",
+        "db:seed-vehicle-details": "tsx scripts/seed-vehicle-details.ts",
         "worker": "tsx src/workers/worker.ts",
         "db:cleanup-storage": "tsx scripts/cleanup-storage.ts",
         "image-analysis:worker": "tsx scripts/image-analysis-worker.ts",
         "test": "vitest run",
-        "db:seed:super-admin": "tsx scripts/seed-super-admin.ts"
+        "db:seed:super-admin": "tsx scripts/seed-super-admin.ts",
+        "email:verify": "tsx scripts/verify-smtp.ts"
     },
     "keywords": [],
     "author": "",

@@ -9,6 +9,8 @@ export * from "./sessions/admin-sessions.ts";
 export * from "./vehicles/vehicles.ts";
 export * from "./vehicles/vehicle-variants.ts";
 export * from "./vehicles/vehicle-engine.ts";
+export * from "./vehicles/vehicle-model-years.ts";
+export * from "./vehicles/vehicle-model-year-variants.ts";
 
 export * from "./listings/listings.ts";
 export * from "./listings/listing-images.ts";

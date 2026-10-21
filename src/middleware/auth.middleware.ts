@@ -4,11 +4,11 @@ import type {
     Response,
 } from "express";
 
-import { env } from "../../config/env.ts";
+import { env } from "../config/env.ts";
 
 import {
     getUserFromSession,
-} from "../../modules/auth/auth.service.ts";
+} from "../modules/auth/auth.service.ts";
 
 export async function requireAuth(
     request: Request,

@@ -15,6 +15,7 @@ import {
     getAdminUserStatsController,
     listAdminUsersController,
 } from "./admin-users.controller.ts";
+import { sendAdminUserEmailController } from "./admin-users.email.controller.ts";
 
 const router = Router();
 
@@ -36,6 +37,12 @@ router.get(
 router.get(
     "/:userId",
     getAdminUserController,
+);
+
+router.post(
+    "/:userId/email",
+    requirePermission("user:suspend"),
+    sendAdminUserEmailController,
 );
 
 router.post(

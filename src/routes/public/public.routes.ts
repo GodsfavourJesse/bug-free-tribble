@@ -3,7 +3,7 @@ import { Router } from "express";
 import { authRateLimiter } from "../../middleware/rate-limit.middleware.ts";
 
 import authRoutes from "../../modules/auth/auth.routes.ts";
-import vehicleRoutes from "../../modules/vehicles/vehicle.routes.ts";
+import vehicleRoutes from "../../modules/vehicles-module/vehicle.routes.ts";
 import listingRoutes from "../../modules/listing-module/listings/listing.routes.ts";
 import imageIntelligenceRoutes from "../../modules/image-module/image-intelligence/image-intelligence.routes.ts";
 import marketplaceRoutes from "../../modules/marketplace-module/marketplace.routes.ts";

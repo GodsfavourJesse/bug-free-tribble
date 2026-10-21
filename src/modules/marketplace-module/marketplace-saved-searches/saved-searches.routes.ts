@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAuth } from "../../../middleware/admin-middleware/auth.middleware.ts";
+import { requireAuth } from "../../../middleware/auth.middleware.ts";
 
 import {
     createSavedSearchController,

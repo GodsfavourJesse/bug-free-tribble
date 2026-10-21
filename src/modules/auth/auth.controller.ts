@@ -108,9 +108,12 @@ export async function register(
             user: result.user,
             requiresEmailVerification:
                 result.requiresEmailVerification,
+            verificationEmailSent:
+                result.verificationEmailSent,
         },
-        message:
-            "Registration successful. Please verify your email address.",
+        message: result.verificationEmailSent
+            ? "Registration successful. Please check your email to verify your account."
+            : "Your account was created, but we could not send the verification email. Please request a new verification email.",
     });
 }
 

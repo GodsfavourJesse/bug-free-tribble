@@ -78,6 +78,13 @@
       "when": 1792082079151,
       "tag": "0010_lean_loners",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792544966617,
+      "tag": "0011_smiling_skreet",
+      "breakpoints": true
     }
   ]
 }
