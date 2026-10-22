@@ -115,152 +115,152 @@ type DatabaseExecutor =
     | typeof db
     | DatabaseTransaction;
 
-async function assertCanCreateListing(
-    executor: DatabaseExecutor,
-    userId: string,
-): Promise<void> {
-    const now = new Date();
+// async function assertCanCreateListing(
+//     executor: DatabaseExecutor,
+//     userId: string,
+// ): Promise<void> {
+//     const now = new Date();
 
 
-    /*
-    * 1. Check paid subscription entitlement.
-    *
-    * ACTIVE subscriptions qualify when:
-    * - expiresAt is NULL, meaning no expiration is recorded; or
-    * - expiresAt is later than the current time.
-    *
-    * CANCELLED subscriptions qualify only while their
-    * recorded expiration date remains in the future.
-    *
-    * EXPIRED, PENDING, and other subscription statuses
-    * do not grant listing-creation entitlement.
-    */
-    const paidSubscription = await executor
-        .select({
-            id: subscriptions.id,
-        })
-        .from(subscriptions)
-        .where(
-            and(
-                eq(
-                    subscriptions.userId,
-                    userId,
-                ),
-                or(
-                    and(
-                        eq(
-                            subscriptions.status,
-                            "ACTIVE",
-                        ),
-                        or(
-                            isNull(
-                                subscriptions.expiresAt,
-                            ),
-                            gt(
-                                subscriptions.expiresAt,
-                                now,
-                            ),
-                        ),
-                    ),
-                    and(
-                        eq(
-                            subscriptions.status,
-                            "CANCELLED",
-                        ),
-                        gt(
-                            subscriptions.expiresAt,
-                            now,
-                        ),
-                    ),
-                ),
-            ),
-        )
-        .limit(1);
+//     /*
+//     * 1. Check paid subscription entitlement.
+//     *
+//     * ACTIVE subscriptions qualify when:
+//     * - expiresAt is NULL, meaning no expiration is recorded; or
+//     * - expiresAt is later than the current time.
+//     *
+//     * CANCELLED subscriptions qualify only while their
+//     * recorded expiration date remains in the future.
+//     *
+//     * EXPIRED, PENDING, and other subscription statuses
+//     * do not grant listing-creation entitlement.
+//     */
+//     const paidSubscription = await executor
+//         .select({
+//             id: subscriptions.id,
+//         })
+//         .from(subscriptions)
+//         .where(
+//             and(
+//                 eq(
+//                     subscriptions.userId,
+//                     userId,
+//                 ),
+//                 or(
+//                     and(
+//                         eq(
+//                             subscriptions.status,
+//                             "ACTIVE",
+//                         ),
+//                         or(
+//                             isNull(
+//                                 subscriptions.expiresAt,
+//                             ),
+//                             gt(
+//                                 subscriptions.expiresAt,
+//                                 now,
+//                             ),
+//                         ),
+//                     ),
+//                     and(
+//                         eq(
+//                             subscriptions.status,
+//                             "CANCELLED",
+//                         ),
+//                         gt(
+//                             subscriptions.expiresAt,
+//                             now,
+//                         ),
+//                     ),
+//                 ),
+//             ),
+//         )
+//         .limit(1);
 
-    if (paidSubscription.length > 0) {
-        return;
-    }
+//     if (paidSubscription.length > 0) {
+//         return;
+//     }
 
-    /*
-    * 2. No valid paid entitlement exists.
-    *
-    * Check whether the user still has unused free-trial
-    * listing allowance.
-    *
-    * FREE_TRIAL grants are positive ledger movements.
-    * LISTING_CREATED entries are negative ledger movements.
-    *
-    * We count only listing-creation debits that have an
-    * associated free-trial credit available to cover them.
-    *
-    * This preserves the rule that unused free-trial credits
-    * remain available, while subscription credits alone
-    * do not grant entitlement after a paid subscription ends.
-    */
-    const ledgerResult = await executor
-        .select({
-            freeTrialGranted: sql<number>`
-                COALESCE(
-                    SUM(
-                        CASE
-                            WHEN ${listingCreditLedger.reason} =
-                                ${CREDIT_REASONS.FREE_TRIAL}
-                                AND ${listingCreditLedger.amount} > 0
-                            THEN ${listingCreditLedger.amount}
-                            ELSE 0
-                        END
-                    ),
-                    0
-                )::int
-            `,
+//     /*
+//     * 2. No valid paid entitlement exists.
+//     *
+//     * Check whether the user still has unused free-trial
+//     * listing allowance.
+//     *
+//     * FREE_TRIAL grants are positive ledger movements.
+//     * LISTING_CREATED entries are negative ledger movements.
+//     *
+//     * We count only listing-creation debits that have an
+//     * associated free-trial credit available to cover them.
+//     *
+//     * This preserves the rule that unused free-trial credits
+//     * remain available, while subscription credits alone
+//     * do not grant entitlement after a paid subscription ends.
+//     */
+//     const ledgerResult = await executor
+//         .select({
+//             freeTrialGranted: sql<number>`
+//                 COALESCE(
+//                     SUM(
+//                         CASE
+//                             WHEN ${listingCreditLedger.reason} =
+//                                 ${CREDIT_REASONS.FREE_TRIAL}
+//                                 AND ${listingCreditLedger.amount} > 0
+//                             THEN ${listingCreditLedger.amount}
+//                             ELSE 0
+//                         END
+//                     ),
+//                     0
+//                 )::int
+//             `,
 
-            listingsCreated: sql<number>`
-                COUNT(*) FILTER (
-                    WHERE ${listingCreditLedger.reason} =
-                        ${CREDIT_REASONS.LISTING_CREATED}
-                    AND ${listingCreditLedger.amount} < 0
-                )::int
-            `,
-        })
-        .from(listingCreditLedger)
-        .where(
-            eq(
-                listingCreditLedger.userId,
-                userId,
-            ),
-        );
+//             listingsCreated: sql<number>`
+//                 COUNT(*) FILTER (
+//                     WHERE ${listingCreditLedger.reason} =
+//                         ${CREDIT_REASONS.LISTING_CREATED}
+//                     AND ${listingCreditLedger.amount} < 0
+//                 )::int
+//             `,
+//         })
+//         .from(listingCreditLedger)
+//         .where(
+//             eq(
+//                 listingCreditLedger.userId,
+//                 userId,
+//             ),
+//         );
 
-    const ledger = ledgerResult[0];
+//     const ledger = ledgerResult[0];
 
-    const freeTrialGranted = Number(
-        ledger?.freeTrialGranted ?? 0,
-    );
+//     const freeTrialGranted = Number(
+//         ledger?.freeTrialGranted ?? 0,
+//     );
 
-    const listingsCreated = Number(
-        ledger?.listingsCreated ?? 0,
-    );
+//     const listingsCreated = Number(
+//         ledger?.listingsCreated ?? 0,
+//     );
 
-    /*
-    * 3. Allow creation if some free-trial allowance remains.
-    *
-    * The centralized credit service will separately verify
-    * the user's actual ledger balance and consume one credit
-    * within the listing-creation transaction.
-    */
-    if (freeTrialGranted > listingsCreated) {
-        return;
-    }
+//     /*
+//     * 3. Allow creation if some free-trial allowance remains.
+//     *
+//     * The centralized credit service will separately verify
+//     * the user's actual ledger balance and consume one credit
+//     * within the listing-creation transaction.
+//     */
+//     if (freeTrialGranted > listingsCreated) {
+//         return;
+//     }
 
-    /*
-    * 4. The free-trial allowance has been exhausted, and
-    * no valid paid entitlement exists.
-    */
-    throw new AppError(
-        "Your free listing allowance has been exhausted. Purchase a subscription to create new listings.",
-        403,
-        "SUBSCRIPTION_REQUIRED",
-    );
-}
+//     /*
+//     * 4. The free-trial allowance has been exhausted, and
+//     * no valid paid entitlement exists.
+//     */
+//     throw new AppError(
+//         "Your free listing allowance has been exhausted. Purchase a subscription to create new listings.",
+//         403,
+//         "SUBSCRIPTION_REQUIRED",
+//     );
+// }
 
 export async function createListing(
     input: CreateListingInput,
@@ -438,10 +438,10 @@ export async function createListing(
             )
         `);
 
-        await assertCanCreateListing(
-            tx,
-            input.sellerId,
-        );
+        // await assertCanCreateListing(
+        //     tx,
+        //     input.sellerId,
+        // );
 
         const variant = await tx
             .select({
