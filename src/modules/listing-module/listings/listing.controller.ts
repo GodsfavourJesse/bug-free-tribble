@@ -16,6 +16,7 @@ import {
     markListingAsSold,
     reactivateListing,
     restoreListing,
+    retrySellerImageAnalysis,
     searchListings,
     submitListingForReview,
     updateListing,
@@ -703,5 +704,60 @@ export async function dashboard(
         });
     } catch (error) {
         next(error);
+    }
+}
+
+export async function retryImageAnalysis(
+    request: Request,
+    response: Response,
+): Promise<void> {
+    if (!request.user) {
+        response.status(401).json({
+            success: false,
+            message: "Authentication required.",
+        });
+
+        return;
+    }
+
+    const listingId = getRequiredParam(
+        request.params.id,
+    );
+
+    const imageId = getRequiredParam(
+        request.params.imageId,
+    );
+
+    if (!listingId || !imageId) {
+        response.status(400).json({
+            success: false,
+            message: "Listing ID and image ID are required.",
+        });
+
+        return;
+    }
+
+    try {
+        const job = await retrySellerImageAnalysis(
+            listingId,
+            imageId,
+            request.user.id,
+        );
+
+        response.status(202).json({
+            success: true,
+            message: "Image analysis has been queued.",
+            data: {
+                jobId: job.id,
+                listingImageId: job.listingImageId,
+                status: job.status,
+            },
+        });
+    } catch (error) {
+        sendError(
+            response,
+            error,
+            "Unable to retry image analysis.",
+        );
     }
 }

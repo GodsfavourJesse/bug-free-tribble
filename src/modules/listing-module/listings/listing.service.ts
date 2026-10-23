@@ -19,11 +19,10 @@ import { db } from "../../../database/index.ts";
 
 import {
     idempotencyRecords,
-    listingCreditLedger,
+    imageAnalysisJobs,
     listingHistory,
     listingImages,
     listings,
-    subscriptions,
     vehicleGenerations,
     vehicleMakes,
     vehicleModels,
@@ -34,8 +33,6 @@ import {
     createObjectKey,
     getObjectStorage,
 } from "../../../infrastructure/storage/object-storage.ts";
-
-import { analyzeImage } from "../../image-module/image-intelligence/image-intelligence.service.ts";
 
 import { 
     type ListingDetailsUpdate, 
@@ -58,6 +55,7 @@ import { validateImage } from "../../../infrastructure/storage/image-validator.t
 import { consumeCreditUsingExecutor, CREDIT_REASONS } from "../../credits/credit.service.ts";
 import { AppError } from "../../../errors/app-error.ts";
 import { createHash } from "node:crypto";
+import { enqueueImageAnalysisJob } from "../../image-module/image-analysis/image-analysis-job.service.ts";
 
 const CREATE_LISTING_OPERATION = "CREATE_LISTING";
 
@@ -115,152 +113,129 @@ type DatabaseExecutor =
     | typeof db
     | DatabaseTransaction;
 
-// async function assertCanCreateListing(
-//     executor: DatabaseExecutor,
-//     userId: string,
-// ): Promise<void> {
-//     const now = new Date();
+async function getSellerListingImageSummaries(
+    listingIds: string[],
+) {
+    type SellerImageSummary = {
+        total: number;
+        pending: number;
+        passed: number;
+        review: number;
+        failed: number;
+        images: {
+            id: string;
+            sortOrder: number;
+            imageCheckStatus: string;
+            imageCheckSource: string | null;
+            checkReason: string | null;
+            checkedAt: Date | null;
+            url: string;
+            thumbnailUrl: string;
+            canRetry: boolean;
+        }[];
+    };
 
+    if (listingIds.length === 0) {
+        return new Map<string, SellerImageSummary>();
+    }
 
-//     /*
-//     * 1. Check paid subscription entitlement.
-//     *
-//     * ACTIVE subscriptions qualify when:
-//     * - expiresAt is NULL, meaning no expiration is recorded; or
-//     * - expiresAt is later than the current time.
-//     *
-//     * CANCELLED subscriptions qualify only while their
-//     * recorded expiration date remains in the future.
-//     *
-//     * EXPIRED, PENDING, and other subscription statuses
-//     * do not grant listing-creation entitlement.
-//     */
-//     const paidSubscription = await executor
-//         .select({
-//             id: subscriptions.id,
-//         })
-//         .from(subscriptions)
-//         .where(
-//             and(
-//                 eq(
-//                     subscriptions.userId,
-//                     userId,
-//                 ),
-//                 or(
-//                     and(
-//                         eq(
-//                             subscriptions.status,
-//                             "ACTIVE",
-//                         ),
-//                         or(
-//                             isNull(
-//                                 subscriptions.expiresAt,
-//                             ),
-//                             gt(
-//                                 subscriptions.expiresAt,
-//                                 now,
-//                             ),
-//                         ),
-//                     ),
-//                     and(
-//                         eq(
-//                             subscriptions.status,
-//                             "CANCELLED",
-//                         ),
-//                         gt(
-//                             subscriptions.expiresAt,
-//                             now,
-//                         ),
-//                     ),
-//                 ),
-//             ),
-//         )
-//         .limit(1);
+    const images = await db
+        .select({
+            id: listingImages.id,
+            listingId: listingImages.listingId,
+            objectKey: listingImages.objectKey,
+            sortOrder: listingImages.sortOrder,
+            imageCheckStatus: listingImages.imageCheckStatus,
+            imageCheckSource: listingImages.imageCheckSource,
+            checkReason: listingImages.checkReason,
+            checkedAt: listingImages.checkedAt,
+        })
+        .from(listingImages)
+        .where(
+            sql`${listingImages.listingId} IN (${sql.join(
+                listingIds.map((id) => sql`${id}`),
+                sql`, `,
+            )})`,
+        )
+        .orderBy(
+            listingImages.sortOrder,
+        );
 
-//     if (paidSubscription.length > 0) {
-//         return;
-//     }
+    const storage = getObjectStorage();
 
-//     /*
-//     * 2. No valid paid entitlement exists.
-//     *
-//     * Check whether the user still has unused free-trial
-//     * listing allowance.
-//     *
-//     * FREE_TRIAL grants are positive ledger movements.
-//     * LISTING_CREATED entries are negative ledger movements.
-//     *
-//     * We count only listing-creation debits that have an
-//     * associated free-trial credit available to cover them.
-//     *
-//     * This preserves the rule that unused free-trial credits
-//     * remain available, while subscription credits alone
-//     * do not grant entitlement after a paid subscription ends.
-//     */
-//     const ledgerResult = await executor
-//         .select({
-//             freeTrialGranted: sql<number>`
-//                 COALESCE(
-//                     SUM(
-//                         CASE
-//                             WHEN ${listingCreditLedger.reason} =
-//                                 ${CREDIT_REASONS.FREE_TRIAL}
-//                                 AND ${listingCreditLedger.amount} > 0
-//                             THEN ${listingCreditLedger.amount}
-//                             ELSE 0
-//                         END
-//                     ),
-//                     0
-//                 )::int
-//             `,
+    const summaries = new Map<string, SellerImageSummary>();
 
-//             listingsCreated: sql<number>`
-//                 COUNT(*) FILTER (
-//                     WHERE ${listingCreditLedger.reason} =
-//                         ${CREDIT_REASONS.LISTING_CREATED}
-//                     AND ${listingCreditLedger.amount} < 0
-//                 )::int
-//             `,
-//         })
-//         .from(listingCreditLedger)
-//         .where(
-//             eq(
-//                 listingCreditLedger.userId,
-//                 userId,
-//             ),
-//         );
+    for (const image of images) {
+        let summary = summaries.get(image.listingId);
 
-//     const ledger = ledgerResult[0];
+        if (!summary) {
+            summary = {
+                total: 0,
+                pending: 0,
+                passed: 0,
+                review: 0,
+                failed: 0,
+                images: [],
+            };
 
-//     const freeTrialGranted = Number(
-//         ledger?.freeTrialGranted ?? 0,
-//     );
+            summaries.set(image.listingId, summary);
+        }
 
-//     const listingsCreated = Number(
-//         ledger?.listingsCreated ?? 0,
-//     );
+        summary.total += 1;
 
-//     /*
-//     * 3. Allow creation if some free-trial allowance remains.
-//     *
-//     * The centralized credit service will separately verify
-//     * the user's actual ledger balance and consume one credit
-//     * within the listing-creation transaction.
-//     */
-//     if (freeTrialGranted > listingsCreated) {
-//         return;
-//     }
+        switch (image.imageCheckStatus) {
+            case "PENDING":
+                summary.pending += 1;
+                break;
 
-//     /*
-//     * 4. The free-trial allowance has been exhausted, and
-//     * no valid paid entitlement exists.
-//     */
-//     throw new AppError(
-//         "Your free listing allowance has been exhausted. Purchase a subscription to create new listings.",
-//         403,
-//         "SUBSCRIPTION_REQUIRED",
-//     );
-// }
+            case "PASSED":
+                summary.passed += 1;
+                break;
+
+            case "REVIEW":
+                summary.review += 1;
+                break;
+
+            case "FAILED":
+                summary.failed += 1;
+                break;
+        }
+
+        summary.images.push({
+            id: image.id,
+            sortOrder: image.sortOrder,
+            imageCheckStatus: image.imageCheckStatus,
+            imageCheckSource: image.imageCheckSource,
+            checkReason: image.checkReason,
+            checkedAt: image.checkedAt,
+
+            url: storage.publicUrl(
+                image.objectKey,
+                {
+                    resourceType: "image",
+                    access: "public",
+                },
+            ),
+
+            thumbnailUrl: storage.transformedImageUrl(
+                image.objectKey,
+                {
+                    width: 600,
+                    height: 600,
+                    fit: "fit",
+                    quality: "auto",
+                    format: "webp",
+                },
+            ),
+
+            canRetry:
+                image.imageCheckStatus === "FAILED" &&
+                image.imageCheckSource === "AUTOMATED",
+        });
+    }
+
+    return summaries;
+}
 
 export async function createListing(
     input: CreateListingInput,
@@ -897,294 +872,197 @@ export async function addListingImage(
     listingId: string,
     sellerId: string,
     input: {
-        file: Express.Multer.File;
-        sortOrder: number;
+    file: Express.Multer.File;
+    sortOrder: number;
     },
 ) {
-    const storage =
-        getObjectStorage();
+    const storage = getObjectStorage();
 
     /*
-     * Keep track of the uploaded object so that if the
-     * database transaction fails after the Cloudinary
-     * upload succeeds, the object can be removed.
-     */
-    let uploadedObjectKey:
-        string | undefined;
+    * Track the uploaded object so that if the database
+    * transaction fails, we can clean up the orphaned object.
+    */
+    let uploadedObjectKey: string | undefined;
 
     try {
-        const image =
-            await db.transaction(
-                async (tx) => {
-                    await tx.execute(
-                        sql`SELECT pg_advisory_xact_lock(hashtext(${listingId}))`,
-                    );
-
-                    const listing =
-                        await tx
-                            .select({
-                                id:
-                                    listings.id,
-                            })
-                            .from(
-                                listings,
-                            )
-                            .where(
-                                and(
-                                    eq(
-                                        listings.id,
-                                        listingId,
-                                    ),
-                                    eq(
-                                        listings.sellerId,
-                                        sellerId,
-                                    ),
-                                ),
-                            )
-                            .limit(1);
-
-                    if (!listing[0]) {
-                        throw new Error(
-                            "Listing not found.",
-                        );
-                    }
-
-                    const imageCountResult =
-                        await tx
-                            .select({
-                                count:
-                                    count(),
-                            })
-                            .from(
-                                listingImages,
-                            )
-                            .where(
-                                eq(
-                                    listingImages.listingId,
-                                    listingId,
-                                ),
-                            );
-
-                    const imageCount =
-                        Number(
-                            imageCountResult[0]
-                                ?.count ??
-                                0,
-                        );
-
-                    if (
-                        imageCount >=
-                        env.MAX_IMAGES_PER_LISTING
-                    ) {
-                        throw new Error(
-                            `Maximum of ${env.MAX_IMAGES_PER_LISTING} images allowed per listing.`,
-                        );
-                    }
-
-                    /*
-                     * Validate the actual image contents.
-                     *
-                     * We do not trust the browser-provided MIME type.
-                     * Sharp reads the actual image format and dimensions.
-                     */
-                    const validated =
-                        await validateImage(
-                            input.file.buffer,
-                        );
-
-                    /*
-                     * Normalize every listing image into WebP.
-                     *
-                     * This gives KARMASS one consistent storage format
-                     * regardless of whether the seller uploaded JPEG,
-                     * PNG, AVIF or another supported source format.
-                     */
-                    const normalized =
-                        await normalizeImage(
-                            input.file.buffer,
-                        );
-
-                    /*
-                     * Store the normalized image rather than the
-                     * original upload.
-                     */
-                    const objectKey =
-                        createObjectKey(
-                            `listings/${listingId}`,
-                            "webp",
-                        );
-
-                    uploadedObjectKey =
-                        objectKey;
-
-                    await storage.put(
-                        objectKey,
-                        normalized.buffer,
-                        "image/webp",
-                        {
-                            resourceType:
-                                "image",
-
-                            access:
-                                "public",
-
-                            format:
-                                "webp",
-                        },
-                    );
-
-                    try {
-                        const values:
-                            typeof listingImages.$inferInsert =
-                            {
-                                listingId,
-
-                                objectKey,
-
-                                sortOrder:
-                                    input.sortOrder,
-
-                                imageCheckStatus:
-                                    "PENDING",
-
-                                mimeType:
-                                    "image/webp",
-
-                                width:
-                                    normalized.width,
-
-                                height:
-                                    normalized.height,
-                            };
-
-                        if (
-                            input.file
-                                .originalname
-                        ) {
-                            values.originalName =
-                                input.file.originalname;
-                        }
-
-                        /*
-                         * `validated` is intentionally used here
-                         * to ensure validation actually happened before
-                         * normalization/storage.
-                         */
-                        void validated;
-
-                        const result =
-                            await tx
-                                .insert(
-                                    listingImages,
-                                )
-                                .values(
-                                    values,
-                                )
-                                .returning();
-
-                        const insertedImage =
-                            result[0];
-
-                        if (
-                            !insertedImage
-                        ) {
-                            throw new Error(
-                                "Unable to create listing image.",
-                            );
-                        }
-
-                        return insertedImage;
-                    } catch (error) {
-                        await storage.delete(
-                            objectKey,
-                            {
-                                resourceType:
-                                    "image",
-                            },
-                        );
-
-                        uploadedObjectKey =
-                            undefined;
-
-                        throw error;
-                    }
-                },
-            );
-
-        /*
-         * Image intelligence happens after the database transaction.
-         *
-         * This prevents an external/CPU-heavy image-analysis failure
-         * from rolling back the listing image record.
-         */
-        try {
-            await analyzeImage(
-                input.file.buffer,
-                listingId,
-                image.id,
-            );
-        } catch (error) {
-            logger.error(
-                {
-                    err: error,
-                    listingId,
-                    imageId:
-                        image.id,
-                },
-                "Listing image analysis failed",
+        const image = await db.transaction(async (tx) => {
+            /*
+            * Serialize image uploads for this listing.
+            *
+            * This protects the maximum-image-count check
+            * against concurrent uploads.
+            */
+            await tx.execute(
+                sql`SELECT pg_advisory_xact_lock(hashtext(${listingId}))`,
             );
 
             /*
-             * Keep the image in PENDING state.
-             * It can be analyzed again later.
-             */
-        }
-
-        const updated =
-            await db
-                .select()
-                .from(listingImages)
+            * Verify listing ownership.
+            */
+            const listing = await tx
+                .select({
+                    id: listings.id,
+                })
+                .from(listings)
                 .where(
-                    eq(
-                        listingImages.id,
-                        image.id,
+                    and(
+                        eq(listings.id, listingId),
+                        eq(listings.sellerId, sellerId),
                     ),
                 )
                 .limit(1);
 
-        return updated[0] ??
-            image;
+            if (!listing[0]) {
+                throw new AppError(
+                    "Listing not found or you do not have permission to upload images.",
+                    404,
+                    "LISTING_NOT_FOUND",
+                );
+            }
+
+            /*
+            * Enforce the maximum number of images.
+            */
+            const imageCountResult = await tx
+                .select({
+                    count: count(),
+                })
+                .from(listingImages)
+                .where(
+                    eq(
+                        listingImages.listingId,
+                        listingId,
+                    ),
+                );
+
+            const imageCount = Number(
+                imageCountResult[0]?.count ?? 0,
+            );
+
+            if (imageCount >= env.MAX_IMAGES_PER_LISTING) {
+                throw new AppError(
+                    `Maximum of ${env.MAX_IMAGES_PER_LISTING} images allowed per listing.`,
+                    400,
+                    "MAX_LISTING_IMAGES_EXCEEDED",
+                );
+            }
+
+            /*
+            * Validate the actual image contents.
+            *
+            * Do not trust the browser-provided MIME type.
+            */
+            await validateImage(input.file.buffer);
+
+            /*
+            * Normalize the image to WebP.
+            */
+            const normalized = await normalizeImage(
+                input.file.buffer,
+            );
+
+            /*
+            * Store the normalized image.
+            */
+            const objectKey = createObjectKey(
+                `listings/${listingId}`,
+                "webp",
+            );
+
+            uploadedObjectKey = objectKey;
+
+            await storage.put(
+                objectKey,
+                normalized.buffer,
+                "image/webp",
+                {
+                    resourceType: "image",
+                    access: "public",
+                    format: "webp",
+                },
+            );
+
+            /*
+            * Insert the image and its durable analysis job
+            * inside the same database transaction.
+            *
+            * If either database insertion fails, the
+            * transaction rolls back both records.
+            */
+            const insertedImages = await tx
+                .insert(listingImages)
+                .values({
+                    listingId,
+                    objectKey,
+                    sortOrder: input.sortOrder,
+                    imageCheckStatus: "PENDING",
+                    mimeType: "image/webp",
+                    width: normalized.width,
+                    height: normalized.height,
+                    ...(input.file.originalname
+                        ? {
+                            originalName:
+                                input.file.originalname,
+                        }
+                        : {}),
+                })
+                .returning();
+
+            const insertedImage = insertedImages[0];
+
+            if (!insertedImage) {
+                throw new AppError(
+                    "Unable to create listing image.",
+                    500,
+                    "LISTING_IMAGE_CREATE_FAILED",
+                );
+            }
+
+            /*
+            * Queue image analysis automatically.
+            *
+            * Database defaults should initialize the job's
+            * status, attempts, priority, and availability.
+            */
+            await tx
+                .insert(imageAnalysisJobs)
+                .values({
+                    listingImageId: insertedImage.id,
+                });
+
+            return insertedImage;
+        });
+
+        /*
+        * The database transaction has committed successfully.
+        *
+        * The background worker now owns image analysis.
+        * Do not call analyzeImage() here.
+        */
+        return image;
     } catch (error) {
         /*
-         * If Cloudinary succeeded but the database transaction failed,
-         * clean up the orphaned Cloudinary object.
-         */
-        if (
-            uploadedObjectKey !==
-            undefined
-        ) {
+        * If storage succeeded but the database transaction
+        * failed, clean up the stored object.
+        */
+        if (uploadedObjectKey !== undefined) {
             try {
                 await storage.delete(
                     uploadedObjectKey,
                     {
-                        resourceType:
-                            "image",
+                        resourceType: "image",
                     },
                 );
-            } catch (
-                cleanupError
-            ) {
+
+                uploadedObjectKey = undefined;
+            } catch (cleanupError) {
                 logger.error(
                     {
-                        err:
-                            cleanupError,
-
+                        err: cleanupError,
                         listingId,
-
-                        objectKey:
-                            uploadedObjectKey,
+                        objectKey: uploadedObjectKey,
                     },
-                    "Failed to clean up orphaned Cloudinary listing image.",
+                    "Failed to clean up orphaned listing image.",
                 );
             }
         }
@@ -1192,6 +1070,7 @@ export async function addListingImage(
         throw error;
     }
 }
+
 
 export async function searchListings(
     search?: string,
@@ -1711,14 +1590,29 @@ export async function getSellerListings(
         (row) => row.listing.id,
     );
 
-    const coverImages = await getListingCoverImages(
-        listingIds,
-    );
+    const [
+        coverImages,
+        imageSummaries,
+    ] = await Promise.all([
+        getListingCoverImages(listingIds),
+        getSellerListingImageSummaries(listingIds),
+    ]);
 
     const items = rows.map((row) => ({
         ...row,
+
         coverImage:
             coverImages.get(row.listing.id) ?? null,
+
+        imageAnalysis:
+            imageSummaries.get(row.listing.id) ?? {
+                total: 0,
+                pending: 0,
+                passed: 0,
+                review: 0,
+                failed: 0,
+                images: [],
+            },
     }));
 
     return {
@@ -1802,4 +1696,104 @@ export async function getSellerListingSummary(
                 0,
             ),
     };
+}
+
+export async function retrySellerImageAnalysis(
+    listingId: string,
+    imageId: string,
+    sellerId: string,
+) {
+    const [image] = await db
+        .select({
+            id: listingImages.id,
+            listingId: listingImages.listingId,
+        })
+        .from(listingImages)
+        .innerJoin(
+            listings,
+            eq(
+                listingImages.listingId,
+                listings.id,
+            ),
+        )
+        .where(
+            and(
+                eq(listingImages.id, imageId),
+                eq(listingImages.listingId, listingId),
+                eq(listings.sellerId, sellerId),
+            ),
+        )
+        .limit(1);
+
+    if (!image) {
+        throw new AppError(
+            "Image not found or you do not have permission to retry its analysis.",
+            404,
+            "LISTING_IMAGE_NOT_FOUND",
+        );
+    }
+
+    try {
+        return await enqueueImageAnalysisJob({
+            listingImageId: image.id,
+            retryTechnicalFailure: true,
+        });
+    } catch (error) {
+        const message =
+            error instanceof Error
+                ? error.message
+                : "";
+
+        if (
+            message.includes("already passed review")
+        ) {
+            throw new AppError(
+                "This image has already passed its checks.",
+                409,
+                "IMAGE_ALREADY_PASSED",
+            );
+        }
+
+        if (
+            message.includes("not identified as an automated-analysis failure")
+        ) {
+            throw new AppError(
+                "This image cannot be retried automatically because its failure was not confirmed as an automated-analysis failure.",
+                409,
+                "IMAGE_RETRY_NOT_ALLOWED",
+            );
+        }
+
+        if (
+            message.includes("Only failed images")
+        ) {
+            throw new AppError(
+                "Only failed images can be retried.",
+                409,
+                "IMAGE_NOT_ELIGIBLE_FOR_RETRY",
+            );
+        }
+
+        if (
+            message.includes("active image-analysis job already exists")
+        ) {
+            throw new AppError(
+                "An analysis job already exists for this image. Please refresh and try again.",
+                409,
+                "IMAGE_ANALYSIS_ALREADY_ACTIVE",
+            );
+        }
+
+        if (
+            message.includes("not awaiting analysis")
+        ) {
+            throw new AppError(
+                "This image is not eligible for retry.",
+                409,
+                "IMAGE_NOT_ELIGIBLE_FOR_RETRY",
+            );
+        }
+
+        throw error;
+    }
 }

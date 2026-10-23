@@ -9,6 +9,7 @@ import {
     reactivate,
     remove,
     restore,
+    retryImageAnalysis,
     search,
     submitForReview,
     update,
@@ -112,6 +113,13 @@ router.post(
     addImage,
 );
 
+router.post(
+    "/:id/images/:imageId/retry-analysis",
+    requireAuth,
+    requireCsrfToken,
+    retryImageAnalysis,
+);
+
 router.patch("/:id", requireAuth, requireCsrfToken, update);
 
 router.delete("/:id", requireAuth, requireCsrfToken, remove);
@@ -125,5 +133,7 @@ router.delete("/:id", requireAuth, requireCsrfToken, remove);
  */
 
 router.get("/:id", ensureVisitorIdentity, getById);
+
+
 
 export default router;

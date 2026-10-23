@@ -23,6 +23,14 @@ export const imageCheckStatusEnum = pgEnum(
     ],
 );
 
+export const imageCheckSourceEnum = pgEnum(
+    "image_check_source",
+    [
+        "AUTOMATED",
+        "ADMIN",
+    ],
+);
+
 export const listingImages = pgTable(
     "listing_images",
     {
@@ -90,6 +98,10 @@ export const listingImages = pgTable(
             )
                 .notNull()
                 .default("PENDING"),
+
+        imageCheckSource: imageCheckSourceEnum(
+            "image_check_source",
+        ),
 
         similarityScore: numeric(
             "similarity_score",

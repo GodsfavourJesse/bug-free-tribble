@@ -9,6 +9,12 @@ export interface EnqueueImageAnalysisJobInput {
     listingImageId: string;
     priority?: number;
     maxAttempts?: number;
+
+    /**
+     * Allows an administrator to retry an eligible technical
+     * failure. Human review decisions must still be respected.
+     */
+    retryTechnicalFailure?: boolean;
 }
 
 export interface ImageAnalysisJob {

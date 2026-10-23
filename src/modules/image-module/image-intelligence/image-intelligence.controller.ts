@@ -92,6 +92,23 @@ export async function analyzeListingImage(
         return;
     }
 
+    /*
+    * This endpoint starts analysis for an image awaiting its
+    * initial check. It must not restart analysis for an image
+    * already reviewed or rejected by an administrator.
+    */
+    if (listingImage.imageCheckStatus !== "PENDING") {
+        response.status(409).json({
+            success: false,
+            error: {
+                code: "IMAGE_NOT_AWAITING_ANALYSIS",
+                message:
+                    "This image is not awaiting analysis. Refresh its status before continuing.",
+            },
+        });
+        return;
+    }
+
     const job = await enqueueImageAnalysisJob({
         listingImageId: listingImage.imageId,
     });

@@ -17,28 +17,29 @@ import {
 
 import {
     claimNextImageAnalysisJob,
-    completeImageAnalysisJob,
     failImageAnalysisJob,
     recoverStaleImageAnalysisJobs,
+    renewImageAnalysisJobLease,
 } from "./image-analysis-job.service.ts";
 
 import {
-    completeImageAnalysisRun,
     createImageAnalysisRun,
-    failImageAnalysisRun,
 } from "./image-analysis-run.service.ts";
 
+import {
+    completeImageAnalysisSuccessfully,
+} from "./image-analysis-completion.service.ts";
+import { ClaimedImageAnalysisJob } from "../../../jobs/jobs.types.ts";
+
 const WORKER_POLL_INTERVAL_MS = 2_000;
-
 const WORKER_RECOVERY_INTERVAL_MS = 60_000;
+const JOB_HEARTBEAT_INTERVAL_MS = 60_000;
 
-const WORKER_ID =
-    `image-analysis-worker-${randomUUID()}`;
+const WORKER_ID = `image-analysis-worker-${randomUUID()}`;
 
 let stopping = false;
+let recoveryTimer: NodeJS.Timeout | undefined;
 
-let recoveryTimer:
-    NodeJS.Timeout | undefined;
 
 function sleep(
     milliseconds: number,
@@ -67,24 +68,51 @@ async function recoverStaleJobs(): Promise<void> {
 }
 
 async function processJob(
-    job: Awaited<
-        ReturnType<
-            typeof claimNextImageAnalysisJob
-        >
-    >,
+    job: ClaimedImageAnalysisJob | null,
 ): Promise<void> {
     if (!job) {
         return;
     }
 
-    console.log(
-        `[${WORKER_ID}] Processing job ${job.id} for image ${job.listingImageId}.`,
-    );
+    let runId: string | undefined;
+    let leaseLost = false;
+    let heartbeatRunning = false;
 
-    let runId: string | null = null;
+    const heartbeatTimer = setInterval(() => {
+        if (heartbeatRunning || leaseLost) {
+            return;
+        }
+
+        heartbeatRunning = true;
+
+        void renewImageAnalysisJobLease(
+            job.id,
+            WORKER_ID,
+        )
+            .then((renewed) => {
+                if (!renewed) {
+                    leaseLost = true;
+
+                    console.error(
+                        `[ImageAnalysisWorker] Lost job lease: ${job.id}`,
+                    );
+                }
+            })
+            .catch((error: unknown) => {
+                console.error(
+                    `[ImageAnalysisWorker] Failed to renew lease for job ${job.id}:`,
+                    error,
+                );
+            })
+            .finally(() => {
+                heartbeatRunning = false;
+            });
+    }, JOB_HEARTBEAT_INTERVAL_MS);
+
+    heartbeatTimer.unref();
 
     try {
-        const images = await db
+        const [listingImage] = await db
             .select()
             .from(listingImages)
             .where(
@@ -95,141 +123,101 @@ async function processJob(
             )
             .limit(1);
 
-        const listingImage = images[0];
-
         if (!listingImage) {
             throw new Error(
-                `Listing image ${job.listingImageId} no longer exists.`,
+                `Listing image not found: ${job.listingImageId}`,
             );
         }
 
-        const run =
-            await createImageAnalysisRun({
-                listingImageId:
-                    listingImage.id,
-                jobId: job.id,
-                provider: "karmass",
-                providerVersion: "1.0.0",
-                pipelineVersion: "1.0.0",
-            });
+        const run = await createImageAnalysisRun({
+            listingImageId: listingImage.id,
+            jobId: job.id,
+            workerId: WORKER_ID,
+            provider: "karmass",
+            providerVersion: "1.0.0",
+            pipelineVersion: "1.0.0",
+        });
 
         runId = run.id;
 
-        const storage =
-            getObjectStorage();
+        const storage = getObjectStorage();
 
-        const imageBuffer =
-            await storage.get(
-                listingImage.objectKey,
-                {
-                    resourceType: "image",
-                    access: "public",
-                },
-            );
-
-        const analysis =
-            await analyzeImage(
-                imageBuffer,
-                listingImage.listingId,
-                listingImage.id,
-                run.id,
-            );
-
-        await db
-            .update(listingImages)
-            .set({
-                sha256:
-                    analysis.sha256,
-                perceptualHash:
-                    analysis.perceptualHash,
-                imageCheckStatus:
-                    analysis.decision === "PASSED"
-                        ? "PASSED"
-                        : analysis.decision === "REVIEW"
-                            ? "REVIEW"
-                            : "FAILED",
-                similarityScore:
-                    analysis.similarityScore,
-                matchedImageId:
-                    analysis.matchedImageId,
-                matchedListingId:
-                    analysis.matchedListingId,
-                checkReason:
-                    analysis.reason,
-                checkedAt: new Date(),
-            })
-            .where(
-                eq(
-                    listingImages.id,
-                    listingImage.id,
-                ),
-            );
-
-        await completeImageAnalysisRun(
-            run.id,
+        const imageBuffer = await storage.get(
+            listingImage.objectKey,
             {
-                decision:
-                    analysis.decision,
-                confidence:
-                    analysis.confidence,
-                decisionReason:
-                    analysis.reason,
+                resourceType: "image",
+                access: "public",
             },
         );
 
-        await completeImageAnalysisJob(
-            job.id,
-            WORKER_ID,
+        const analysis = await analyzeImage(
+            imageBuffer,
+            listingImage.listingId,
+            listingImage.id,
+            run.id,
+            {
+                jobId: job.id,
+                workerId: WORKER_ID,
+            }
         );
 
-        console.log(
-            `[${WORKER_ID}] Completed job ${job.id} with decision ${analysis.decision}.`,
-        );
+        if (leaseLost) {
+            console.warn(
+                `[ImageAnalysisWorker] Skipping completion because the lease was lost: ${job.id}`,
+            );
+
+            return;
+        }
+
+        await completeImageAnalysisSuccessfully({
+            jobId: job.id,
+            workerId: WORKER_ID,
+            runId: run.id,
+            listingImageId: listingImage.id,
+            analysis: {
+                decision: analysis.decision,
+                confidence: analysis.confidence,
+                decisionReason: analysis.reason,
+                sha256: analysis.sha256,
+                perceptualHash: analysis.perceptualHash,
+                similarityScore: analysis.similarityScore,
+                matchedImageId: analysis.matchedImageId,
+                matchedListingId: analysis.matchedListingId,
+            },
+        });
     } catch (error: unknown) {
         const message =
             error instanceof Error
                 ? error.message
-                : "Unknown image analysis error.";
+                : "Image analysis failed.";
 
         console.error(
-            `[${WORKER_ID}] Job ${job.id} failed: ${message}`,
+            `[ImageAnalysisWorker] Job ${job.id} failed:`,
+            message,
         );
 
-        if (runId) {
-            try {
-                await failImageAnalysisRun(
-                    runId,
-                    message,
-                );
-            } catch (
-                runFailureError: unknown
-            ) {
-                console.error(
-                    `[${WORKER_ID}] Failed to persist analysis-run failure.`,
-                    runFailureError,
-                );
-            }
+        if (leaseLost) {
+            console.warn(
+                `[ImageAnalysisWorker] Skipping failure updates because the lease was lost: ${job.id}`,
+            );
+
+            return;
         }
 
         try {
-            const failedJob =
-                await failImageAnalysisJob(
-                    job.id,
-                    WORKER_ID,
-                    message,
-                );
-
-            console.log(
-                `[${WORKER_ID}] Job ${job.id} is now ${failedJob.status}. Attempts: ${failedJob.attempts}/${failedJob.maxAttempts}.`,
+            await failImageAnalysisJob(
+                job.id,
+                WORKER_ID,
+                message,
             );
-        } catch (
-            failureError: unknown
-        ) {
+        } catch (jobError: unknown) {
             console.error(
-                `[${WORKER_ID}] Failed to persist job failure state.`,
-                failureError,
+                `[ImageAnalysisWorker] Failed to update job ${job.id}:`,
+                jobError,
             );
         }
+    } finally {
+        clearInterval(heartbeatTimer);
     }
 }
 
@@ -286,6 +274,7 @@ function stopRecoveryTimer(): void {
     }
 
     clearInterval(recoveryTimer);
+
     recoveryTimer = undefined;
 }
 
