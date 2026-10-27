@@ -25,7 +25,7 @@ import { env } from "../../config/env.ts";
 
 import {
     sendPasswordResetEmail,
-} from "../../modules/email/email.service.ts";
+} from "../../modules/email-module/email.service.ts";
 
 function createExpiryDate(): Date {
     return new Date(

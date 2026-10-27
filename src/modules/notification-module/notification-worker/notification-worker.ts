@@ -18,7 +18,7 @@ import {
 } from "../../../database/schema/index.ts";
 
 import { getSocketIO } from "../../../realtime/socket.ts";
-import { sendNotificationEmail } from "../../email/email.service.ts";
+import { sendNotificationEmail } from "../../email-module/email.service.ts";
 import { sendWebPushToUser } from "../web-push/web-push.service.ts";
 
 const DEFAULT_BATCH_SIZE = 10;

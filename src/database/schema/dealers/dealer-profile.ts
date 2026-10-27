@@ -1,6 +1,7 @@
 import {
     boolean,
     pgTable,
+    text,
     timestamp,
     uuid,
     varchar,
@@ -48,6 +49,24 @@ export const dealerProfiles = pgTable(
                 withTimezone: true,
             },
         ),
+
+        bio: text("bio"),
+
+        profilePictureUrl: varchar("profile_picture_url", {
+            length: 2048,
+        }),
+
+        profilePicturePublicId: varchar("profile_picture_public_id", {
+            length: 255,
+        }),
+
+        coverPhotoUrl: varchar("cover_photo_url", {
+            length: 2048,
+        }),
+
+        coverPhotoPublicId: varchar("cover_photo_public_id", {
+            length: 255,
+        }),
 
         createdAt: timestamp(
             "created_at",

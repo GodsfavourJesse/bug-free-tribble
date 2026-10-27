@@ -4,7 +4,9 @@ import { requireAdminAuth } from "../../../middleware/admin-middleware/admin-aut
 import { requirePermission } from "../../../middleware/admin-middleware/admin.middleware.ts";
 
 import {
+    dealerApplicationHistory,
     dealers,
+    previewDealerDocument,
     reviewDealerApplication,
     reviewDealerVerificationDocument,
 } from "./admin-dealer.controller.ts";
@@ -12,6 +14,13 @@ import {
 const router = Router();
 
 router.use(requireAdminAuth);
+
+// DEALER APPLICATION HISTORY
+router.get(
+    "/applications/history",
+    requirePermission("dealer:review"),
+    dealerApplicationHistory,
+);
 
 // List dealer applications
 router.get(
@@ -32,6 +41,13 @@ router.patch(
     "/documents/:documentId/review",
     requirePermission("dealer:review"),
     reviewDealerVerificationDocument,
+);
+
+// Generate a short-lived URL for reviewing a private document
+router.get(
+    "/documents/:documentId/url",
+    requirePermission("dealer:review"),
+    previewDealerDocument,
 );
 
 export default router;

@@ -121,6 +121,7 @@ export interface SellerListingsOptions {
     status?: SellerListingStatus;
     page?: number;
     limit?: number;
+    includeDeleted?: boolean;
 }
 
 export const sellerListingStatuses = [

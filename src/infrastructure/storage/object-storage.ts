@@ -56,13 +56,11 @@ function buildCloudinaryUrl(
     access: StorageAccess,
 ): string {
     return cloudinary.url(
-        key,
+        key.replace(/^\/+/, "").replace(/\\/g, "/"),
         {
             secure: true,
             resource_type: resourceType,
-            type: resolveCloudinaryType(
-                access,
-            ),
+            type: resolveCloudinaryType(access),
         },
     );
 }
@@ -117,42 +115,34 @@ function splitCloudinaryKey(
     key: string,
 ): {
     publicId: string;
-    format: string;
+    format?: string;
 } {
-    const normalizedKey =
-        key.replace(/^\/+/, "");
+    const normalizedKey = key
+        .replace(/^\/+/, "")
+        .replace(/\\/g, "/");
 
-    const extension =
-        path.extname(
-            normalizedKey,
-        );
-
-    if (!extension) {
-        throw new Error(
-            "A file extension is required for this Cloudinary asset.",
-        );
-    }
-
-    const publicId =
-        normalizedKey.slice(
-            0,
-            -extension.length,
-        );
-
-    if (!publicId) {
+    if (!normalizedKey.trim()) {
         throw new Error(
             "A valid Cloudinary public ID is required.",
         );
     }
 
+    const extension = path.extname(normalizedKey);
+
+    if (!extension) {
+        return {
+            publicId: normalizedKey,
+        };
+    }
+
     return {
-        publicId,
-        format: extension
-            .slice(1)
-            .toLowerCase(),
+        publicId: normalizedKey.slice(
+            0,
+            -extension.length,
+        ),
+        format: extension.slice(1).toLowerCase(),
     };
 }
-
 function normalizeResourceType(
     resourceType: string,
 ): StorageResourceType {
@@ -210,108 +200,80 @@ class CloudinaryObjectStorage
         url: string;
         resourceType: StorageResourceType;
     }> {
-        const resourceType =
-            resolveResourceType(
-                contentType,
-                options.resourceType,
-            );
+        const resourceType = resolveResourceType(
+            contentType,
+            options.resourceType,
+        );
 
-        const access =
-            options.access ?? "public";
+        const access = options.access ?? "public";
+        const uploadType = resolveCloudinaryType(access);
 
-        const uploadType =
-            resolveCloudinaryType(
-                access,
-            );
+        const normalizedKey = key
+            .replace(/^\/+/, "")
+            .replace(/\\/g, "/");
+
+        const extension = path.extname(normalizedKey);
+
+        const publicId =
+            resourceType === "raw"
+                ? normalizedKey
+                : extension
+                ? normalizedKey.slice(0, -extension.length)
+                : normalizedKey;
+
+        if (!publicId) {
+            throw new Error("A valid Cloudinary public ID is required.");
+        }
 
         const uploadOptions = {
-            public_id: key,
-            resource_type:
-                resourceType,
+            public_id: publicId,
+            resource_type: resourceType,
             type: uploadType,
             overwrite: false,
             invalidate: true,
-            ...(options.folder !==
-            undefined
-                ? {
-                      folder:
-                          options.folder,
-                  }
+            ...(options.folder !== undefined
+                ? { folder: options.folder }
                 : {}),
-            ...(options.format !==
-            undefined
-                ? {
-                      format:
-                          options.format,
-                  }
+            ...(options.format !== undefined
+                ? { format: options.format }
                 : {}),
         };
 
-        const result =
-            await new Promise<CloudinaryUploadResult>(
-                (
-                    resolve,
-                    reject,
-                ) => {
-                    const stream =
-                        cloudinary
-                            .uploader
-                            .upload_stream(
-                                uploadOptions,
-                                (
-                                    error,
-                                    uploadResult,
-                                ) => {
-                                    if (
-                                        error
-                                    ) {
-                                        reject(
-                                            error,
-                                        );
-                                        return;
-                                    }
+        const result = await new Promise<{
+            public_id: string;
+            secure_url: string;
+        }>((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                uploadOptions,
+                (error, uploadResult) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
 
-                                    if (
-                                        !uploadResult
-                                    ) {
-                                        reject(
-                                            new Error(
-                                                "Cloudinary upload returned no result.",
-                                            ),
-                                        );
-                                        return;
-                                    }
+                    if (!uploadResult) {
+                        reject(
+                            new Error(
+                                "Cloudinary upload returned no result.",
+                            ),
+                        );
+                        return;
+                    }
 
-                                    resolve(
-                                        {
-                                            public_id:
-                                                uploadResult.public_id,
-
-                                            secure_url:
-                                                uploadResult.secure_url,
-                                        },
-                                    );
-                                },
-                            );
-
-                    stream.on(
-                        "error",
-                        reject,
-                    );
-
-                    stream.end(
-                        body,
-                    );
+                    resolve({
+                        public_id: uploadResult.public_id,
+                        secure_url: uploadResult.secure_url,
+                    });
                 },
             );
 
+            stream.on("error", reject);
+            stream.end(body);
+        });
+
         return {
-            key:
-                result.public_id,
-
-            url:
-                result.secure_url,
-
+            key: result.public_id,
+            url: result.secure_url,
             resourceType,
         };
     }
@@ -364,17 +326,13 @@ class CloudinaryObjectStorage
             );
         }
 
-        const url =
-            buildCloudinaryUrl(
-                key,
-                resourceType,
-                access,
-            );
+        const url = buildCloudinaryUrl(
+            key,
+            resourceType,
+            access,
+        );
 
-        const response =
-            await fetch(
-                url,
-            );
+        const response = await fetch(url);
 
         if (
             !response.ok
@@ -613,17 +571,10 @@ class CloudinaryObjectStorage
             attachment?: boolean;
         } = {},
     ): string {
-        const resourceType =
-            options.resourceType ??
-            "raw";
+        const resourceType = options.resourceType ?? "raw";
+        const access = options.access ?? "private";
 
-        const access =
-            options.access ??
-            "private";
-
-        if (
-            access !== "private"
-        ) {
+        if (access !== "private") {
             throw new Error(
                 "signedUrl() is only supported for private storage objects.",
             );
@@ -633,44 +584,40 @@ class CloudinaryObjectStorage
             options.expiresInSeconds ??
             env.PRIVATE_DOCUMENT_SIGNED_URL_TTL_SECONDS;
 
-        if (
-            expiresInSeconds <= 0
-        ) {
+        if (expiresInSeconds <= 0) {
             throw new Error(
                 "Signed URL expiration must be greater than zero.",
             );
         }
 
-        const {
-            publicId,
-            format,
-        } =
-            splitCloudinaryKey(
-                key,
+        const normalizedKey = key
+            .replace(/^\/+/, "")
+            .replace(/\\/g, "/");
+
+        const { publicId, format } = splitCloudinaryKey(normalizedKey);
+
+        if (!format) {
+            throw new Error(
+                "A file extension is required to generate a signed Cloudinary download URL.",
             );
+        }
 
         const expiresAt =
-            Math.floor(
-                Date.now() / 1000,
-            ) +
-            expiresInSeconds;
+            Math.floor(Date.now() / 1000) + expiresInSeconds;
+
+        const cloudinaryPublicId =
+            resourceType === "raw"
+                ? normalizedKey
+                : publicId;
 
         return cloudinary.utils.private_download_url(
-            publicId,
+            cloudinaryPublicId,
             format,
             {
-                resource_type:
-                    resourceType,
-
-                type:
-                    "private",
-
-                expires_at:
-                    expiresAt,
-
-                attachment:
-                    options.attachment ??
-                    false,
+                resource_type: resourceType,
+                type: "private",
+                expires_at: expiresAt,
+                attachment: options.attachment ?? false,
             },
         );
     }

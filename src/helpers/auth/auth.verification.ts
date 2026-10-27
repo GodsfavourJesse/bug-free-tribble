@@ -22,7 +22,7 @@ import {
 
 import {
     sendEmailVerificationEmail,
-} from "../../modules/email/email.service.ts";
+} from "../../modules/email-module/email.service.ts";
 
 function createVerificationExpiryDate(): Date {
     const expiresAt =

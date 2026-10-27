@@ -6,6 +6,8 @@ import {
     gt,
     ilike,
     isNull,
+    inArray,
+    ne,
     or,
     sql,
     type SQL,
@@ -27,6 +29,9 @@ import {
     vehicleMakes,
     vehicleModels,
     vehicleVariants,
+    roles,
+    userRoles,
+    users,
 } from "../../../database/schema/index.ts";
 
 import {
@@ -56,6 +61,7 @@ import { consumeCreditUsingExecutor, CREDIT_REASONS } from "../../credits/credit
 import { AppError } from "../../../errors/app-error.ts";
 import { createHash } from "node:crypto";
 import { enqueueImageAnalysisJob } from "../../image-module/image-analysis/image-analysis-job.service.ts";
+import { createNotification } from "../../notification-module/notification.service.ts";
 
 const CREATE_LISTING_OPERATION = "CREATE_LISTING";
 
@@ -964,15 +970,13 @@ export async function addListingImage(
             /*
             * Store the normalized image.
             */
-            const objectKey = createObjectKey(
+            const requestedObjectKey = createObjectKey(
                 `listings/${listingId}`,
                 "webp",
             );
 
-            uploadedObjectKey = objectKey;
-
-            await storage.put(
-                objectKey,
+            const storedObject = await storage.put(
+                requestedObjectKey,
                 normalized.buffer,
                 "image/webp",
                 {
@@ -981,6 +985,10 @@ export async function addListingImage(
                     format: "webp",
                 },
             );
+
+            const objectKey = storedObject.key;
+
+            uploadedObjectKey = objectKey;
 
             /*
             * Insert the image and its durable analysis job
@@ -1233,18 +1241,85 @@ export async function submitListingForReview(
         );
     }
 
+    // Enforce image eligibility at the API boundary as well as in the UI.
+    // A seller must never be able to bypass the verification gate with a direct request.
+    const imageRows = await db
+        .select({
+            id: listingImages.id,
+            imageCheckStatus: listingImages.imageCheckStatus,
+            checkReason: listingImages.checkReason,
+        })
+        .from(listingImages)
+        .where(eq(listingImages.listingId, listingId));
+
+    if (imageRows.length === 0) {
+        throw new AppError(
+            "Add at least one vehicle photo before submitting this listing.",
+            409,
+            "LISTING_IMAGES_REQUIRED",
+        );
+    }
+
+    const pendingImages = imageRows.filter(
+        (image) => image.imageCheckStatus === "PENDING",
+    );
+    if (pendingImages.length > 0) {
+        throw new AppError(
+            "Some photos are still being checked. Please wait for verification to finish.",
+            409,
+            "LISTING_IMAGE_CHECK_PENDING",
+        );
+    }
+
+    const failedImages = imageRows.filter(
+        (image) => image.imageCheckStatus === "FAILED",
+    );
+    if (failedImages.length > 0) {
+        throw new AppError(
+            "One or more photos failed verification. Replace the affected photos before submitting.",
+            409,
+            "LISTING_IMAGE_CHECK_FAILED",
+            { images: failedImages.map((image) => ({ id: image.id, reason: image.checkReason })) },
+        );
+    }
+
     /*
      * Listing creation already consumed its credit.
      * Submission must not consume another credit.
      *
-     * The centralized lifecycle service validates
-     * whether the listing can enter review.
+     * The centralized lifecycle service validates whether the listing can enter review.
      */
-    return transitionListing({
+    const result = await transitionListing({
         listingId,
         action: "SUBMIT_FOR_REVIEW",
         actorId: sellerId,
     });
+
+    // Persist notifications for administrators after the lifecycle transition.
+    // Notification/email failures must not undo a valid listing submission.
+    try {
+        const reviewers = await db
+            .selectDistinct({ id: users.id })
+            .from(users)
+            .innerJoin(userRoles, eq(userRoles.userId, users.id))
+            .innerJoin(roles, eq(roles.id, userRoles.roleId))
+            .where(inArray(roles.name, ["SUPER_ADMIN", "ADMIN"]));
+
+        await Promise.allSettled(reviewers.map((reviewer) =>
+            createNotification({
+                userId: reviewer.id,
+                type: "LISTING_SUBMITTED",
+                title: "Listing ready for review",
+                message: `Listing ${listingId} has been submitted for moderation. Open the admin listing review queue to inspect its details and image verification results.`,
+                data: { listingId, event: "LISTING_SUBMITTED", submittedBy: sellerId },
+                idempotencykey: `listing-submitted:${listingId}:admin:${reviewer.id}`,
+            }),
+        ));
+    } catch (error) {
+        logger.error({ err: error, listingId, sellerId }, "Listing submission succeeded, but administrator notifications could not be created.");
+    }
+
+    return result;
 }
 
 export async function restoreListing(
@@ -1518,6 +1593,18 @@ export async function getSellerListings(
         ),
     ];
 
+    // Exclude deleted listings by default.
+    // The Recently Deleted page can explicitly include them.
+    if (!options.includeDeleted) {
+        conditions.push(
+            ne(
+                listings.status,
+                "DELETED",
+            ),
+        );
+    }
+
+    // Apply the requested status filter, if provided.
     if (options.status) {
         conditions.push(
             eq(
@@ -1573,6 +1660,7 @@ export async function getSellerListings(
         .limit(limit)
         .offset(offset);
 
+    // Count records using the same conditions as the listings query.
     const totalResult = await db
         .select({
             count: count(),
@@ -1617,13 +1705,21 @@ export async function getSellerListings(
 
     return {
         items,
+
         pagination: {
             page,
             limit,
             total,
-            totalPages: Math.ceil(total / limit),
-            hasNextPage: page * limit < total,
-            hasPreviousPage: page > 1,
+
+            totalPages: Math.ceil(
+                total / limit,
+            ),
+
+            hasNextPage:
+                page * limit < total,
+
+            hasPreviousPage:
+                page > 1,
         },
     };
 }
@@ -1631,70 +1727,64 @@ export async function getSellerListings(
 export async function getSellerListingSummary(
     sellerId: string,
 ) {
-    const rows =
-        await db
-            .select({
-                status:
-                    listings.status,
-
-                count:
-                    count(),
-            })
-            .from(listings)
-            .where(
-                eq(
-                    listings.sellerId,
-                    sellerId,
-                ),
-            )
-            .groupBy(
-                listings.status,
-            );
+    const rows = await db
+        .select({
+            status: listings.status,
+            count: count(),
+        })
+        .from(listings)
+        .where(
+            eq(
+                listings.sellerId,
+                sellerId,
+            ),
+        )
+        .groupBy(
+            listings.status,
+        );
 
     const summary: Record<
         SellerListingStatus,
         number
     > = {
         DRAFT: 0,
-
         PENDING_REVIEW: 0,
-
         APPROVED: 0,
-
         REJECTED: 0,
-
         EXPIRED: 0,
-
         SOLD: 0,
-
         SUSPENDED: 0,
-
         DELETED: 0,
     };
 
     for (const row of rows) {
-        summary[
-            row.status
-        ] = Number(
+        summary[row.status] = Number(
             row.count,
         );
     }
 
+    // Count inventory without deleted listings.
+    const total = Object.entries(
+        summary,
+    ).reduce(
+        (sum, [status, value]) => {
+            if (status === "DELETED") {
+                return sum;
+            }
+
+            return sum + value;
+        },
+        0,
+    );
+
     return {
         ...summary,
 
-        total:
-            Object.values(
-                summary,
-            ).reduce(
-                (
-                    total,
-                    value,
-                ) =>
-                    total +
-                    value,
-                0,
-            ),
+        // Total normal inventory.
+        total,
+
+        // Separate count for Recently Deleted.
+        deleted: summary.DELETED,
     };
 }
 

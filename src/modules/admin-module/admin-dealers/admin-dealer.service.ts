@@ -1,10 +1,13 @@
 import {
     and,
+    count,
     desc,
     eq,
+    inArray,
 } from "drizzle-orm";
 
 import { db } from "../../../database/index.ts";
+import path from "node:path";
 
 import {
     dealerApplications,
@@ -16,6 +19,34 @@ import {
 import { createNotification } from "../../notification-module/notification.service.ts";
 
 import { writeAudit } from "../admin.service.ts";
+import { getObjectStorage } from "../../../infrastructure/storage/object-storage.ts";
+import { env } from "../../../config/env.ts";
+import { sendDealerDecisionEmail, sendNotificationEmail } from "../../email-module/email.service.ts";
+
+type DealerApplicationStatus =
+    | "PENDING"
+    | "APPROVED"
+    | "REJECTED";
+
+type DealerApplicationFilter =
+    | DealerApplicationStatus
+    | "ALL";
+
+function getDealerDocumentMimeType(
+    objectKey: string,
+): string {
+    const extension = path.extname(objectKey).toLowerCase();
+
+    const mimeTypes: Record<string, string> = {
+        ".pdf": "application/pdf",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".webp": "image/webp",
+    };
+
+    return mimeTypes[extension] ?? "application/octet-stream";
+}
 
 /* =========================================================
    DEALER APPLICATIONS
@@ -37,9 +68,42 @@ import { writeAudit } from "../admin.service.ts";
  * result rows because the query uses a left join.
  */
 export async function listDealerApplications(
-    status?: "PENDING" | "APPROVED" | "REJECTED",
+    status: DealerApplicationFilter = "PENDING",
+    page = 1,
+    limit = 20,
 ) {
-    return db
+    const normalizedPage = Math.max(
+        1,
+        Math.floor(page),
+    );
+
+    const normalizedLimit = Math.min(
+        100,
+        Math.max(1, Math.floor(limit)),
+    );
+
+    const offset =
+        (normalizedPage - 1) * normalizedLimit;
+
+    /*
+     * ALL does not apply a status condition.
+     * Other filters retrieve only their matching status.
+     */
+    const statusCondition =
+        status === "ALL"
+            ? undefined
+            : eq(
+                  dealerApplications.status,
+                  status,
+              );
+
+    /*
+     * Retrieve the applications and applicant information.
+     *
+     * No document join is used here, so an application
+     * appears only once regardless of its document count.
+     */
+    const applicationQuery = db
         .select({
             application: dealerApplications,
 
@@ -49,8 +113,156 @@ export async function listDealerApplications(
                 firstName: users.firstName,
                 lastName: users.lastName,
             },
+        })
+        .from(dealerApplications)
+        .innerJoin(
+            users,
+            eq(
+                users.id,
+                dealerApplications.userId,
+            ),
+        );
 
-            documents: dealerDocuments,
+    const applicationRows = await (
+        statusCondition
+            ? applicationQuery.where(statusCondition)
+            : applicationQuery
+    )
+        .orderBy(
+            desc(dealerApplications.createdAt),
+        )
+        .limit(normalizedLimit)
+        .offset(offset);
+
+    /*
+     * Count matching applications in the database.
+     */
+    const countQuery = db
+        .select({
+            total: count(),
+        })
+        .from(dealerApplications);
+
+    const [countResult] = await (
+        statusCondition
+            ? countQuery.where(statusCondition)
+            : countQuery
+    );
+
+    const total = Number(
+        countResult?.total ?? 0,
+    );
+
+    /*
+     * Fetch documents for every application on this page.
+     */
+    const applicationIds = applicationRows.map(
+        (row) => row.application.id,
+    );
+
+    const documents = applicationIds.length > 0
+        ? await db
+              .select()
+              .from(dealerDocuments)
+              .where(
+                  inArray(
+                      dealerDocuments.applicationId,
+                      applicationIds,
+                  ),
+              )
+        : [];
+
+    /*
+     * Group documents by application ID.
+     */
+    const documentsByApplication = new Map<
+        string,
+        typeof documents
+    >();
+
+    for (const document of documents) {
+        const existing =
+            documentsByApplication.get(
+                document.applicationId,
+            ) ?? [];
+
+        existing.push(document);
+
+        documentsByApplication.set(
+            document.applicationId,
+            existing,
+        );
+    }
+
+    return {
+        applications: applicationRows.map(
+            ({ application, user }) => ({
+                application,
+                user,
+
+                documents:
+                    documentsByApplication.get(
+                        application.id,
+                    ) ?? [],
+            }),
+        ),
+
+        pagination: {
+            page: normalizedPage,
+            limit: normalizedLimit,
+            total,
+
+            totalPages: Math.ceil(
+                total / normalizedLimit,
+            ),
+
+            hasNextPage:
+                normalizedPage * normalizedLimit < total,
+
+            hasPreviousPage:
+                normalizedPage > 1,
+        },
+    };
+}
+
+export async function listDealerApplicationHistory(
+    status?: "APPROVED" | "REJECTED",
+    page = 1,
+    limit = 20,
+) {
+    const normalizedPage = Math.max(
+        1,
+        Math.floor(page),
+    );
+
+    const normalizedLimit = Math.min(
+        100,
+        Math.max(1, Math.floor(limit)),
+    );
+
+    const offset =
+        (normalizedPage - 1) * normalizedLimit;
+
+    const conditions = status
+        ? and(
+              eq(dealerApplications.status, status),
+              // History never includes pending applications.
+          )
+        : undefined;
+
+    /*
+     * Retrieve reviewed applications only.
+     */
+    const applicationRows = await db
+        .select({
+            application: dealerApplications,
+
+            user: {
+                id: users.id,
+                email: users.email,
+                firstName: users.firstName,
+                lastName: users.lastName,
+            },
         })
         .from(dealerApplications)
         .innerJoin(
@@ -60,26 +272,96 @@ export async function listDealerApplications(
                 dealerApplications.userId,
             ),
         )
-        .leftJoin(
-            dealerDocuments,
-            eq(
-                dealerDocuments.applicationId,
-                dealerApplications.id,
-            ),
-        )
         .where(
-            status !== undefined
-                ? eq(
+            status
+                ? conditions
+                : inArray(
                       dealerApplications.status,
-                      status,
-                  )
-                : undefined,
+                      ["APPROVED", "REJECTED"],
+                  ),
         )
         .orderBy(
-            desc(
-                dealerApplications.createdAt,
-            ),
+            desc(dealerApplications.reviewedAt),
+        )
+        .limit(normalizedLimit)
+        .offset(offset);
+
+    const [countResult] = await db
+        .select({
+            total: count(),
+        })
+        .from(dealerApplications)
+        .where(
+            status
+                ? conditions
+                : inArray(
+                      dealerApplications.status,
+                      ["APPROVED", "REJECTED"],
+                  ),
         );
+
+    const total = Number(countResult?.total ?? 0);
+
+    const applicationIds = applicationRows.map(
+        (row) => row.application.id,
+    );
+
+    const documents = applicationIds.length > 0
+        ? await db
+              .select()
+              .from(dealerDocuments)
+              .where(
+                  inArray(
+                      dealerDocuments.applicationId,
+                      applicationIds,
+                  ),
+              )
+        : [];
+
+    const documentsByApplication = new Map<
+        string,
+        typeof documents
+    >();
+
+    for (const document of documents) {
+        const existing =
+            documentsByApplication.get(
+                document.applicationId,
+            ) ?? [];
+
+        existing.push(document);
+
+        documentsByApplication.set(
+            document.applicationId,
+            existing,
+        );
+    }
+
+    return {
+        applications: applicationRows.map(
+            ({ application, user }) => ({
+                application,
+                user,
+                documents:
+                    documentsByApplication.get(
+                        application.id,
+                    ) ?? [],
+            }),
+        ),
+
+        pagination: {
+            page: normalizedPage,
+            limit: normalizedLimit,
+            total,
+            totalPages: Math.ceil(
+                total / normalizedLimit,
+            ),
+            hasNextPage:
+                normalizedPage * normalizedLimit < total,
+            hasPreviousPage:
+                normalizedPage > 1,
+        },
+    };
 }
 
 /* =========================================================
@@ -116,11 +398,16 @@ export async function reviewDealer(
 ) {
     const normalizedApplicationId = applicationId.trim();
     const normalizedReviewerId = reviewerId.trim();
+
     const normalizedRejectionReason =
         rejectionReason?.trim() ?? "";
 
     const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    // ============================================================
+    // 1. VALIDATE INPUT
+    // ============================================================
 
     if (!uuidRegex.test(normalizedApplicationId)) {
         throw new Error("Invalid dealer application ID.");
@@ -141,9 +428,7 @@ export async function reviewDealer(
         decision === "REJECTED" &&
         !normalizedRejectionReason
     ) {
-        throw new Error(
-            "A rejection reason is required.",
-        );
+        throw new Error("A rejection reason is required.");
     }
 
     if (normalizedRejectionReason.length > 5000) {
@@ -152,11 +437,13 @@ export async function reviewDealer(
         );
     }
 
+    // ============================================================
+    // 2. TRANSACTIONAL REVIEW
+    // ============================================================
+
     const result = await db.transaction(async (tx) => {
         /*
-         * Lock the application first.
-         * This serializes concurrent administrative reviews
-         * and coordinates with the document workflows.
+         * Lock the application to prevent concurrent reviews.
          */
         const [application] = await tx
             .select()
@@ -171,9 +458,7 @@ export async function reviewDealer(
             .limit(1);
 
         if (!application) {
-            throw new Error(
-                "Dealer application not found.",
-            );
+            throw new Error("Dealer application not found.");
         }
 
         if (application.status !== "PENDING") {
@@ -182,12 +467,16 @@ export async function reviewDealer(
             );
         }
 
-        /*
-         * Lock and validate the applicant.
-         */
+        // ========================================================
+        // 3. LOCK AND VALIDATE APPLICANT
+        // ========================================================
+
         const [applicant] = await tx
             .select({
                 id: users.id,
+                email: users.email,
+                firstName: users.firstName,
+                lastName: users.lastName,
                 accountType: users.accountType,
             })
             .from(users)
@@ -206,10 +495,13 @@ export async function reviewDealer(
             );
         }
 
+        // ========================================================
+        // 4. APPROVAL VALIDATION
+        // ========================================================
+
         if (decision === "APPROVED") {
             /*
-             * Lock all submitted documents before checking
-             * their review statuses.
+             * Lock submitted documents before validating them.
              */
             const documentRows = await tx
                 .select({
@@ -243,8 +535,8 @@ export async function reviewDealer(
             }
 
             /*
-             * An existing dealer account must not be silently
-             * re-verified through a second application.
+             * Prevent an existing dealer from receiving
+             * another dealer profile through a second application.
              */
             if (applicant.accountType === "DEALER") {
                 const [existingProfile] = await tx
@@ -276,8 +568,7 @@ export async function reviewDealer(
             }
 
             /*
-             * Do not overwrite an existing profile belonging
-             * to an unexpected account state.
+             * Do not overwrite an unexpected existing profile.
              */
             const [existingProfile] = await tx
                 .select({
@@ -300,20 +591,24 @@ export async function reviewDealer(
             }
         }
 
+        // ========================================================
+        // 5. UPDATE APPLICATION STATUS
+        // ========================================================
+
         const now = new Date();
 
-        /*
-         * Update the application review decision.
-         */
         const [updatedApplication] = await tx
             .update(dealerApplications)
             .set({
                 status: decision,
+
                 rejectionReason:
                     decision === "REJECTED"
                         ? normalizedRejectionReason
                         : null,
+
                 reviewedByUserId: normalizedReviewerId,
+
                 reviewedAt: now,
                 updatedAt: now,
             })
@@ -331,12 +626,11 @@ export async function reviewDealer(
             );
         }
 
+        // ========================================================
+        // 6. CREATE VERIFIED DEALER PROFILE
+        // ========================================================
+
         if (decision === "APPROVED") {
-            /*
-             * Create the verified dealer profile.
-             * No conflict-update is used: an unexpected
-             * existing profile must not be overwritten.
-             */
             const [createdProfile] = await tx
                 .insert(dealerProfiles)
                 .values({
@@ -356,7 +650,7 @@ export async function reviewDealer(
             }
 
             /*
-             * Upgrade the user's account type.
+             * Upgrade only an account that is still a regular user.
              */
             const [updatedUser] = await tx
                 .update(users)
@@ -381,18 +675,23 @@ export async function reviewDealer(
             }
         }
 
-        /*
-         * Audit logging is transactional.
-         * An audit failure rolls back the approval or rejection.
-         */
+        // ========================================================
+        // 7. TRANSACTIONAL AUDIT LOG
+        // ========================================================
+
         await writeAudit(tx, {
             actorUserId: normalizedReviewerId,
+
             action: `DEALER_${decision}`,
+
             entityType: "dealer_application",
+
             entityId: updatedApplication.id,
+
             metadata: {
                 userId: updatedApplication.userId,
                 companyName: updatedApplication.companyName,
+
                 rejectionReason:
                     decision === "REJECTED"
                         ? normalizedRejectionReason
@@ -400,35 +699,176 @@ export async function reviewDealer(
             },
         });
 
-        return updatedApplication;
+        /*
+         * Return everything needed by post-commit notifications
+         * and email delivery.
+         */
+        return {
+            ...updatedApplication,
+
+            applicantEmail: applicant.email,
+            applicantFirstName: applicant.firstName,
+            applicantLastName: applicant.lastName,
+        };
     });
 
+    // ============================================================
+    // 8. POST-COMMIT PREPARATION
+    // ============================================================
+
     /*
-     * Notify only after the transaction commits.
+     * The database transaction has committed successfully.
+     *
+     * Failures in notification or email delivery must not undo
+     * an approved/rejected application.
      */
-    await createNotification({
-        userId: result.userId,
-        type:
-            decision === "APPROVED"
-                ? "DEALER_VERIFIED"
-                : "DEALER_APPLICATION_REJECTED",
-        title:
-            decision === "APPROVED"
-                ? "Dealer application approved"
-                : "Dealer application rejected",
-        message:
-            decision === "APPROVED"
-                ? "Your dealer application has been approved. Your account is now upgraded to dealer status."
-                : `Your dealer application was rejected. Reason: ${normalizedRejectionReason}`,
-        data: {
-            applicationId: result.id,
-            status: decision,
-        },
-    });
+
+    const applicantName =
+        result.applicantFirstName?.trim() || "there";
+
+    const reviewDate = result.reviewedAt
+        ? new Date(result.reviewedAt).toLocaleString(
+            "en-NG",
+            {
+                dateStyle: "long",
+                timeStyle: "short",
+                timeZone: "Africa/Lagos",
+            },
+        )
+        : new Date().toLocaleString(
+            "en-NG",
+            {
+                dateStyle: "long",
+                timeStyle: "short",
+                timeZone: "Africa/Lagos",
+            },
+        );
+
+    const applicationUrl =
+        `${env.CLIENT_URL}/dashboard/dealer/applications`;
+
+    // ============================================================
+    // 9. CREATE IN-APP NOTIFICATION
+    // ============================================================
+
+    try {
+        await createNotification({
+            userId: result.userId,
+
+            type:
+                decision === "APPROVED"
+                    ? "DEALER_VERIFIED"
+                    : "DEALER_APPLICATION_REJECTED",
+
+            title:
+                decision === "APPROVED"
+                    ? "Dealer application approved"
+                    : "Dealer application rejected",
+
+            message:
+                decision === "APPROVED"
+                    ? "Congratulations! Your dealer application has been approved. Your account has been upgraded to dealer status."
+                    : `Your dealer application has been rejected. Reason: ${normalizedRejectionReason}`,
+
+            data: {
+                applicationId: result.id,
+                status: decision,
+                companyName: result.companyName,
+
+                rejectionReason:
+                    decision === "REJECTED"
+                        ? normalizedRejectionReason
+                        : null,
+            },
+        });
+    } catch (error: unknown) {
+        console.error(
+            "[DEALER] Failed to create review notification.",
+            {
+                applicationId: result.id,
+                userId: result.userId,
+                decision,
+
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : String(error),
+            },
+        );
+    }
+
+    // ============================================================
+    // 10. SEND BRANDED APPROVAL OR REJECTION EMAIL
+    // ============================================================
+
+    const email = result.applicantEmail?.trim();
+
+    if (!email) {
+        console.warn(
+            "[DEALER EMAIL] Review email skipped because the applicant has no email address.",
+            {
+                applicationId: result.id,
+                userId: result.userId,
+                decision,
+            },
+        );
+    } else {
+        try {
+            if (decision === "APPROVED") {
+                await sendDealerDecisionEmail({
+                    decision: "APPROVED",
+                    email,
+                    firstName: applicantName,
+                    companyName: result.companyName,
+                    reviewDate,
+                });
+            } else {
+                await sendDealerDecisionEmail({
+                    decision: "REJECTED",
+                    email,
+                    firstName: applicantName,
+                    companyName: result.companyName,
+                    rejectionReason: normalizedRejectionReason,
+                    reviewDate,
+                });
+            }
+
+            console.info(
+                `[DEALER EMAIL] ${decision} email submitted successfully.`,
+                {
+                    applicationId: result.id,
+                    userId: result.userId,
+                    email,
+                    decision,
+                },
+            );
+        } catch (error: unknown) {
+            console.error(
+                `[DEALER EMAIL] Failed to send ${decision.toLowerCase()} email.`,
+                {
+                    applicationId: result.id,
+                    userId: result.userId,
+                    email,
+                    decision,
+
+                    error:
+                        error instanceof Error
+                            ? {
+                                name: error.name,
+                                message: error.message,
+                            }
+                            : String(error),
+                },
+            );
+        }
+    }
+
+    // ============================================================
+    // 11. RETURN REVIEW RESULT
+    // ============================================================
 
     return result;
 }
-
 /* =========================================================
    REVIEW DEALER DOCUMENT
 ========================================================= */
@@ -637,3 +1077,83 @@ export async function reviewDealerDocument(
 
     return result;
 }
+
+/* =========================================================
+   ADMIN DEALER DOCUMENT PREVIEW
+========================================================= */
+
+export async function getAdminDealerDocumentSignedUrl(
+    documentId: string,
+) {
+    const normalizedDocumentId = documentId.trim();
+
+    const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (!uuidRegex.test(normalizedDocumentId)) {
+        throw new Error("Invalid dealer document ID.");
+    }
+
+    const [document] = await db
+        .select({
+            id: dealerDocuments.id,
+            applicationId: dealerDocuments.applicationId,
+            documentType: dealerDocuments.documentType,
+            status: dealerDocuments.status,
+            objectKey: dealerDocuments.objectKey,
+            applicationStatus: dealerApplications.status,
+        })
+        .from(dealerDocuments)
+        .innerJoin(
+            dealerApplications,
+            eq(
+                dealerApplications.id,
+                dealerDocuments.applicationId,
+            ),
+        )
+        .where(
+            eq(
+                dealerDocuments.id,
+                normalizedDocumentId,
+            ),
+        )
+        .limit(1);
+
+    if (!document) {
+        throw new Error(
+            "Dealer verification document not found.",
+        );
+    }
+
+    if (!document.objectKey) {
+        throw new Error(
+            "The dealer document has no valid storage reference.",
+        );
+    }
+
+    const expiresInSeconds = 300;
+
+    const signedUrl = getObjectStorage().signedUrl(
+        document.objectKey,
+        {
+            resourceType: "raw",
+            access: "private",
+            expiresInSeconds,
+            attachment: false,
+        },
+    );
+
+    return {
+        id: document.id,
+        applicationId: document.applicationId,
+        documentType: document.documentType,
+        status: document.status,
+        applicationStatus: document.applicationStatus,
+        url: signedUrl,
+        mimeType: getDealerDocumentMimeType(
+            document.objectKey,
+        ),
+        expiresInSeconds,
+    };
+}
+

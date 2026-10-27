@@ -13,6 +13,7 @@ import { db } from "../../../database/index.ts";
 import {
     dealerProfiles,
     listings,
+    userPrivacySettings,
     users,
     vehicleGenerations,
     vehicleMakes,
@@ -20,26 +21,28 @@ import {
     vehicleVariants,
 } from "../../../database/schema/index.ts";
 
+
 /**
- * Retrieves a public dealer profile.
+ * Resolves a publicly discoverable dealer using either:
  *
- * Only verified dealer profiles are publicly discoverable.
- * Private application information and verification documents
- * are never included in the response.
+ * - dealerProfiles.id
+ * - dealerProfiles.userId
+ *
+ * Only verified dealer accounts are discoverable.
  */
-export async function getPublicDealerProfile(
-    dealerUserId: string,
+async function findPublicDealer(
+    dealerId: string,
 ) {
-    const normalizedUserId = dealerUserId.trim();
+    const normalizedDealerId = dealerId.trim();
 
     const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-    if (!uuidRegex.test(normalizedUserId)) {
+    if (!uuidRegex.test(normalizedDealerId)) {
         throw new Error("Invalid dealer ID.");
     }
 
-    const [profile] = await db
+    const [dealer] = await db
         .select({
             id: dealerProfiles.id,
             userId: dealerProfiles.userId,
@@ -47,8 +50,22 @@ export async function getPublicDealerProfile(
             verified: dealerProfiles.verified,
             verifiedAt: dealerProfiles.verifiedAt,
             createdAt: dealerProfiles.createdAt,
+
+            // Public storefront customization.
+            bio: dealerProfiles.bio,
+            profilePictureUrl: dealerProfiles.profilePictureUrl,
+            coverPhotoUrl: dealerProfiles.coverPhotoUrl,
+
+            // Account information.
             firstName: users.firstName,
             lastName: users.lastName,
+
+            // Phone is selected internally.
+            // It will only be returned publicly when permitted.
+            phone: users.phone,
+
+            // Public phone visibility preference.
+            showPhone: userPrivacySettings.showPhone,
         })
         .from(dealerProfiles)
         .innerJoin(
@@ -58,11 +75,24 @@ export async function getPublicDealerProfile(
                 users.id,
             ),
         )
+        .leftJoin(
+            userPrivacySettings,
+            eq(
+                userPrivacySettings.userId,
+                users.id,
+            ),
+        )
         .where(
             and(
-                eq(
-                    dealerProfiles.userId,
-                    normalizedUserId,
+                or(
+                    eq(
+                        dealerProfiles.id,
+                        normalizedDealerId,
+                    ),
+                    eq(
+                        dealerProfiles.userId,
+                        normalizedDealerId,
+                    ),
                 ),
                 eq(
                     dealerProfiles.verified,
@@ -72,13 +102,44 @@ export async function getPublicDealerProfile(
                     users.accountType,
                     "DEALER",
                 ),
+                eq(
+                    users.status,
+                    "ACTIVE",
+                ),
             ),
         )
         .limit(1);
 
+    return dealer ?? null;
+}
+
+/**
+ * Retrieves a public dealer profile.
+ *
+ * Accepts either the dealer profile ID or dealer user ID.
+ *
+ * A phone number is returned only when:
+ * - The account is an active dealer.
+ * - The dealer profile is verified.
+ * - The dealer has enabled showPhone.
+ *
+ * Private application information and verification documents
+ * are never included in the response.
+ */
+export async function getPublicDealerProfile(
+    dealerId: string,
+) {
+    const profile = await findPublicDealer(
+        dealerId,
+    );
+
     if (!profile) {
         return null;
     }
+
+    const canShowPhone =
+        profile.verified === true &&
+        profile.showPhone === true;
 
     return {
         id: profile.id,
@@ -87,37 +148,43 @@ export async function getPublicDealerProfile(
         verified: profile.verified,
         verifiedAt: profile.verifiedAt,
         createdAt: profile.createdAt,
+
+        bio: profile.bio,
+        profilePictureUrl: profile.profilePictureUrl,
+        coverPhotoUrl: profile.coverPhotoUrl,
+
         contactName: [
             profile.firstName,
             profile.lastName,
         ]
             .filter(Boolean)
             .join(" "),
+
+        // Never expose the phone number unless permitted.
+        phone: canShowPhone
+            ? profile.phone
+            : null,
+
+        showPhone: canShowPhone,
     };
 }
 
+
 /**
  * Retrieves a dealer's public, approved marketplace listings.
+ *
+ * Accepts either the dealer profile ID or dealer user ID.
  *
  * Draft, pending, rejected, suspended, deleted, sold, and
  * expired listings are excluded.
  */
 export async function getPublicDealerListings(
-    dealerUserId: string,
+    dealerId: string,
     options?: {
         page?: number;
         limit?: number;
     },
 ) {
-    const normalizedUserId = dealerUserId.trim();
-
-    const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-    if (!uuidRegex.test(normalizedUserId)) {
-        throw new Error("Invalid dealer ID.");
-    }
-
     const page = Math.max(
         Math.floor(options?.page ?? 1),
         1,
@@ -132,56 +199,29 @@ export async function getPublicDealerListings(
     );
 
     const offset = (page - 1) * limit;
-    const now = new Date();
 
-    /*
-     * Verify the dealer is currently verified.
-     * This also prevents public listing access through
-     * this endpoint if the dealer profile is unverified.
-     */
-    const [profile] = await db
-        .select({
-            userId: dealerProfiles.userId,
-        })
-        .from(dealerProfiles)
-        .innerJoin(
-            users,
-            eq(
-                dealerProfiles.userId,
-                users.id,
-            ),
-        )
-        .where(
-            and(
-                eq(
-                    dealerProfiles.userId,
-                    normalizedUserId,
-                ),
-                eq(
-                    dealerProfiles.verified,
-                    true,
-                ),
-                eq(
-                    users.accountType,
-                    "DEALER",
-                ),
-            ),
-        )
-        .limit(1);
+    const emptyResult = {
+        items: [],
+        pagination: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 0,
+            hasNextPage: false,
+            hasPreviousPage: page > 1,
+        },
+    };
 
-    if (!profile) {
-        return {
-            items: [],
-            pagination: {
-                page,
-                limit,
-                total: 0,
-                totalPages: 0,
-                hasNextPage: false,
-                hasPreviousPage: page > 1,
-            },
-        };
+    // Resolve profile ID or user ID to the actual dealer.
+    const dealer = await findPublicDealer(
+        dealerId,
+    );
+
+    if (!dealer) {
+        return emptyResult;
     }
+
+    const now = new Date();
 
     const visibilityCondition = or(
         isNull(listings.expiresAt),
@@ -194,7 +234,7 @@ export async function getPublicDealerListings(
     const conditions = [
         eq(
             listings.sellerId,
-            normalizedUserId,
+            dealer.userId,
         ),
         eq(
             listings.status,

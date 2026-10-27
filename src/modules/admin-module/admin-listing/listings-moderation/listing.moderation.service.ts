@@ -350,10 +350,13 @@ export async function approveListing(
             type: "LISTING_APPROVED",
             title: "Listing approved",
             message:
-                "Your KARMASS listing has been approved and is now visible in the marketplace.",
+                `Your KARMASS listing (ID: ${listingId}) has been approved and is now visible in the marketplace. You can open your dashboard to view the listing.`,
             data: {
                 listingId,
+                event: "LISTING_APPROVED",
+                listingUrl: `/dashboard/my-listings`,
             },
+            idempotencykey: `listing-approved:${listingId}:seller:${result.listing.sellerId}`,
         });
     } catch (error) {
         logger.error(

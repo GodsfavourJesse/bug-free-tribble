@@ -208,12 +208,12 @@ export async function getById(
                 }
               : undefined;
 
-        const listing = await getListingById(
+        const result = await getListingById(
             listingId,
             viewer,
         );
 
-        if (!listing) {
+        if (!result) {
             response.status(404).json({
                 success: false,
                 message: "Listing not found.",
@@ -222,10 +222,24 @@ export async function getById(
             return;
         }
 
+        const {
+            listing,
+            variant,
+            generation,
+            model,
+            make,
+            images,
+        } = result;
+
         response.status(200).json({
             success: true,
             data: {
                 listing,
+                images,
+                vehicleVariant: variant,
+                vehicleGeneration: generation,
+                vehicleModel: model,
+                vehicleMake: make,
             },
         });
     } catch (error) {
@@ -649,9 +663,12 @@ export async function dashboard(
                 success: false,
                 message: "Authentication required.",
             });
-
             return;
         }
+
+        // --------------------------------------------------
+        // PAGINATION
+        // --------------------------------------------------
 
         const pageValue = Number(
             request.query.page ?? 1,
@@ -660,6 +677,25 @@ export async function dashboard(
         const limitValue = Number(
             request.query.limit ?? 20,
         );
+
+        const page =
+            Number.isFinite(pageValue) &&
+            pageValue > 0
+                ? Math.floor(pageValue)
+                : 1;
+
+        const limit =
+            Number.isFinite(limitValue) &&
+            limitValue > 0
+                ? Math.min(
+                    Math.floor(limitValue),
+                    100,
+                )
+                : 20;
+
+        // --------------------------------------------------
+        // STATUS FILTER
+        // --------------------------------------------------
 
         const statusValue = request.query.status;
 
@@ -672,31 +708,59 @@ export async function dashboard(
             status = statusValue;
         }
 
-        const page =
-            Number.isFinite(pageValue) && pageValue > 0
-                ? Math.floor(pageValue)
-                : 1;
+        // --------------------------------------------------
+        // DELETED LISTINGS
+        // --------------------------------------------------
 
-        const limit =
-            Number.isFinite(limitValue) &&
-            limitValue > 0
-                ? Math.min(Math.floor(limitValue), 100)
-                : 20;
+        // Deleted listings are included only when the
+        // request explicitly asks for the DELETED status.
+        //
+        // This prevents the normal dashboard from showing
+        // deleted listings accidentally.
+
+        const includeDeleted =
+            status === "DELETED";
+
+        // --------------------------------------------------
+        // BUILD OPTIONS
+        // --------------------------------------------------
 
         const options: SellerListingsOptions = {
             sellerId: request.user.id,
             page,
             limit,
-            ...(status !== undefined ? { status } : {}),
+
+            ...(status !== undefined
+                ? { status }
+                : {}),
+
+            includeDeleted,
         };
 
-        const [summary, listingsResult] = await Promise.all([
-            getSellerListingSummary(request.user.id),
-            getSellerListings(options),
+        // --------------------------------------------------
+        // FETCH SUMMARY AND LISTINGS
+        // --------------------------------------------------
+
+        const [
+            summary,
+            listingsResult,
+        ] = await Promise.all([
+            getSellerListingSummary(
+                request.user.id,
+            ),
+
+            getSellerListings(
+                options,
+            ),
         ]);
+
+        // --------------------------------------------------
+        // RESPONSE
+        // --------------------------------------------------
 
         response.status(200).json({
             success: true,
+
             data: {
                 summary,
                 ...listingsResult,

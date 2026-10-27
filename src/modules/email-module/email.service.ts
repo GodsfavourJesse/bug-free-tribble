@@ -9,6 +9,8 @@ import {
     env,
     isEmailConfigured,
 } from "../../config/env.ts";
+import { buildDealerApprovalEmail } from "./templates/dealer-approval.email.ts";
+import { buildDealerRejectionEmail } from "./templates/dealer-rejection.email.ts";
 
 let transporter: Transporter | null = null;
 
@@ -391,6 +393,114 @@ export async function sendPasswordResetEmail(
                     <p>KARMASS</p>
                 </div>
             `,
+        },
+    );
+}
+
+
+/**
+ * Sends a professionally branded dealer application decision email.
+ *
+ * Uses dedicated HTML templates for approval and rejection.
+ * Sends both HTML and plain-text versions for email compatibility.
+ */
+export async function sendDealerDecisionEmail(
+    input:
+        | {
+              decision: "APPROVED";
+              email: string;
+              firstName: string;
+              companyName: string;
+              reviewDate: string;
+          }
+        | {
+              decision: "REJECTED";
+              email: string;
+              firstName: string;
+              companyName: string;
+              rejectionReason: string;
+              reviewDate: string;
+          },
+): Promise<void> {
+    const dashboardUrl =
+        `${env.CLIENT_URL}/dashboard/dealer`;
+
+    const applicationUrl =
+        `${env.CLIENT_URL}/dashboard/dealer/applications`;
+
+    const isApproved = input.decision === "APPROVED";
+
+    const subject = isApproved
+        ? "Congratulations! Your KARMASS Dealer Application Has Been Approved"
+        : "An Update on Your KARMASS Dealer Application";
+
+    const html = isApproved
+        ? buildDealerApprovalEmail({
+              firstName: input.firstName,
+              companyName: input.companyName,
+              dashboardUrl,
+              reviewDate: input.reviewDate,
+          })
+        : buildDealerRejectionEmail({
+              firstName: input.firstName,
+              companyName: input.companyName,
+              rejectionReason: input.rejectionReason,
+              applicationUrl,
+              reviewDate: input.reviewDate,
+          });
+
+    const text = isApproved
+        ? [
+              `Hello ${input.firstName},`,
+              "",
+              "Congratulations! Your application to become a verified dealer on KARMASS has been approved.",
+              "",
+              `Business name: ${input.companyName}`,
+              `Approval date: ${input.reviewDate}`,
+              "",
+              "Your verified dealer profile has been created.",
+              "",
+              "You can access your dealer dashboard here:",
+              dashboardUrl,
+              "",
+              "Thank you for choosing KARMASS.",
+              "",
+              "KARMASS Team",
+          ].join("\n")
+        : [
+              `Hello ${input.firstName},`,
+              "",
+              "Thank you for your interest in becoming a verified dealer on KARMASS.",
+              "",
+              "Following our review, we are unable to approve your application at this time.",
+              "",
+              `Business name: ${input.companyName}`,
+              `Review date: ${input.reviewDate}`,
+              "",
+              "Reason for non-approval:",
+              input.rejectionReason,
+              "",
+              "Please review the issue identified and access your application details here:",
+              applicationUrl,
+              "",
+              "If you require clarification, please contact KARMASS support.",
+              "",
+              "Thank you for your understanding.",
+              "",
+              "KARMASS Team",
+          ].join("\n");
+
+    await sendMailAndConfirm(
+        isApproved
+            ? "dealer-application-approved"
+            : "dealer-application-rejected",
+        input.email,
+        {
+            from: getSender(),
+            to: input.email,
+            subject,
+            text,
+            html,
         },
     );
 }

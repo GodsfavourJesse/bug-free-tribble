@@ -9,6 +9,8 @@ import {
 } from "zod";
 
 import {
+    getAdminDealerDocumentSignedUrl,
+    listDealerApplicationHistory,
     listDealerApplications,
     reviewDealer,
     reviewDealerDocument,
@@ -41,49 +43,141 @@ export async function dealers(
     response: Response,
 ): Promise<void> {
     try {
-        const statusQuery =
-            request.query.status;
+        const statusQuery = request.query.status;
+
+        type ApplicationStatus =
+            | "PENDING"
+            | "APPROVED"
+            | "REJECTED";
+
+        let status: ApplicationStatus | "ALL" = "PENDING";
+
+        if (statusQuery !== undefined) {
+            if (
+                statusQuery !== "ALL" &&
+                statusQuery !== "PENDING" &&
+                statusQuery !== "APPROVED" &&
+                statusQuery !== "REJECTED"
+            ) {
+                response.status(400).json({
+                    success: false,
+                    message:
+                        "Status must be ALL, PENDING, APPROVED, or REJECTED.",
+                });
+
+                return;
+            }
+
+            status = statusQuery as ApplicationStatus | "ALL";
+        }
+
+        const page = Number(request.query.page ?? 1);
+        const limit = Number(request.query.limit ?? 20);
+
+        if (
+            !Number.isInteger(page) ||
+            page < 1 ||
+            !Number.isInteger(limit) ||
+            limit < 1 ||
+            limit > 100
+        ) {
+            response.status(400).json({
+                success: false,
+                message: "Invalid pagination parameters.",
+            });
+
+            return;
+        }
+
+        const result = await listDealerApplications(
+            status,
+            page,
+            limit,
+        );
+
+        response.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch (error: unknown) {
+        console.error(
+            "[ADMIN DEALERS] Failed to list dealer applications.",
+            error,
+        );
+
+        response.status(500).json({
+            success: false,
+            message: "Unable to retrieve dealer applications.",
+        });
+    }
+}
+
+export async function dealerApplicationHistory(
+    request: Request,
+    response: Response,
+): Promise<void> {
+    try {
+        const statusQuery = request.query.status;
 
         if (
             statusQuery !== undefined &&
-            statusQuery !== "PENDING" &&
             statusQuery !== "APPROVED" &&
             statusQuery !== "REJECTED"
         ) {
             response.status(400).json({
                 success: false,
                 message:
-                    "Invalid dealer application status.",
+                    "History status must be APPROVED or REJECTED.",
             });
 
             return;
         }
 
         const status =
-            statusQuery === "PENDING" ||
             statusQuery === "APPROVED" ||
             statusQuery === "REJECTED"
                 ? statusQuery
                 : undefined;
 
-        const applications =
-            await listDealerApplications(
+        const page = Number(request.query.page ?? 1);
+        const limit = Number(request.query.limit ?? 20);
+
+        if (
+            !Number.isInteger(page) ||
+            page < 1 ||
+            !Number.isInteger(limit) ||
+            limit < 1 ||
+            limit > 100
+        ) {
+            response.status(400).json({
+                success: false,
+                message: "Invalid pagination parameters.",
+            });
+
+            return;
+        }
+
+        const result =
+            await listDealerApplicationHistory(
                 status,
+                page,
+                limit,
             );
 
         response.status(200).json({
             success: true,
-            data: {
-                applications,
-            },
+            data: result,
         });
-    } catch (error) {
+    } catch (error: unknown) {
+        console.error(
+            "[ADMIN DEALERS] Failed to retrieve application history.",
+            error,
+        );
+
         response.status(500).json({
             success: false,
             message:
-                error instanceof Error
-                    ? error.message
-                    : "Unable to retrieve dealer applications.",
+                "Unable to retrieve dealer application history.",
         });
     }
 }
@@ -244,6 +338,58 @@ export async function reviewDealerVerificationDocument(
                     : error instanceof Error
                       ? error.message
                       : "Unable to review dealer document.",
+        });
+    }
+}
+
+/* =========================================================
+   ADMIN DEALER DOCUMENT PREVIEW
+========================================================= */
+
+export async function previewDealerDocument(
+    request: Request,
+    response: Response,
+): Promise<void> {
+    try {
+        const documentId = request.params.documentId;
+
+        if (
+            typeof documentId !== "string" ||
+            !documentId.trim()
+        ) {
+            response.status(400).json({
+                success: false,
+                message: "A valid document ID is required.",
+            });
+            return;
+        }
+
+        const document =
+            await getAdminDealerDocumentSignedUrl(documentId);
+
+        response.status(200).json({
+            success: true,
+            data: {
+                document,
+            },
+        });
+    } catch (error) {
+        const message =
+            error instanceof Error
+                ? error.message
+                : "Unable to generate the document preview.";
+
+        const notFound =
+            message === "Dealer verification document not found.";
+
+        const invalidId =
+            message === "Invalid dealer document ID.";
+
+        response.status(
+            notFound ? 404 : invalidId ? 400 : 500,
+        ).json({
+            success: false,
+            message,
         });
     }
 }

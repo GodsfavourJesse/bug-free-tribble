@@ -10,6 +10,7 @@ import {
 import { writeAuditRecord } from "../../helpers/audit/audit.service.ts";
 
 import {
+    dealerProfiles,
     listings,
     sessions,
     userPrivacySettings,
@@ -36,6 +37,51 @@ import type {
     UpdateMeInput,
     UpdatePrivacyInput,
 } from "./me.validation.ts";
+
+/**
+ * Determines whether the authenticated user is eligible
+ * to publicly display their phone number.
+ *
+ * Only verified dealer accounts are eligible.
+ */
+async function getPhoneVisibilityEligibility(
+    userId: string,
+): Promise<{
+    isVerifiedDealer: boolean;
+    canShowPhone: boolean;
+}> {
+    const result = await db
+        .select({
+            accountType: users.accountType,
+            dealerVerified: dealerProfiles.verified,
+        })
+        .from(users)
+        .leftJoin(
+            dealerProfiles,
+            eq(
+                dealerProfiles.userId,
+                users.id,
+            ),
+        )
+        .where(
+            eq(
+                users.id,
+                userId,
+            ),
+        )
+        .limit(1);
+
+    const account = result[0];
+
+    const isVerifiedDealer =
+        account?.accountType === "DEALER" &&
+        account.dealerVerified === true;
+
+    return {
+        isVerifiedDealer,
+        canShowPhone: isVerifiedDealer,
+    };
+}
 
 /**
  * Retrieves the authenticated user's account and privacy settings.
@@ -193,27 +239,66 @@ export async function updateMyAccount(
 }
 
 /**
- * Retrieves the authenticated user's privacy settings.
+ * Retrieves the authenticated user's privacy settings
+ * and phone visibility eligibility.
  */
 export async function getPrivacySettings(
     userId: string,
 ) {
-    return ensurePrivacySettings(
+    const settings = await ensurePrivacySettings(
         userId,
     );
+
+    const eligibility =
+        await getPhoneVisibilityEligibility(
+            userId,
+        );
+
+    return {
+        ...settings,
+        ...eligibility,
+    };
 }
 
 /**
  * Updates the authenticated user's privacy settings.
+ *
+ * Only verified dealers can enable showPhone.
+ * This rule is enforced by the backend, not just the UI.
  */
 export async function updatePrivacySettings(
     userId: string,
     input: UpdatePrivacyInput,
 ) {
-    await ensurePrivacySettings(
-        userId,
-    );
+    await ensurePrivacySettings(userId);
 
+    /*
+     * Enforce dealer verification server-side.
+     *
+     * This prevents users from bypassing the frontend
+     * and enabling phone visibility through direct API calls.
+     */
+    if (input.showPhone === true) {
+        const {
+            isVerifiedDealer,
+        } = await getPhoneVisibilityEligibility(
+            userId,
+        );
+
+        if (!isVerifiedDealer) {
+            throw new AppError(
+                "You must become a verified dealer before displaying your phone number.",
+                403,
+                "VERIFIED_DEALER_REQUIRED",
+            );
+        }
+    }
+
+    /*
+     * Save only the submitted privacy preferences.
+     * Eligibility fields are calculated separately and
+     * must never be written to the database.
+     */
     const updated = await db
         .update(userPrivacySettings)
         .set({
@@ -243,7 +328,15 @@ export async function updatePrivacySettings(
         "USER_PRIVACY_UPDATED",
     );
 
-    return settings;
+    const eligibility =
+        await getPhoneVisibilityEligibility(
+            userId,
+        );
+
+    return {
+        ...settings,
+        ...eligibility,
+    };
 }
 
 /**

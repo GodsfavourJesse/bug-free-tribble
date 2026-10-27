@@ -15,7 +15,7 @@ import { AppError } from "../../../errors/app-error.ts";
 
 import {
     sendNotificationEmail,
-} from "../../email/email.service.ts";
+} from "../../email-module/email.service.ts";
 
 const sendUserEmailParamsSchema = z.object({
     userId: z.string().uuid(),

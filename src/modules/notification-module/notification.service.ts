@@ -13,7 +13,7 @@ import {
     users,
 } from "../../database/schema/index.ts";
 import { getSocketIO } from "../../realtime/socket.ts";
-import { sendNotificationEmail } from "../email/email.service.ts";
+import { sendNotificationEmail } from "../email-module/email.service.ts";
 
 export type NotificationType =
     (typeof notificationTypeEnum.enumValues)[number];
