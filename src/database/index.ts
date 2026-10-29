@@ -10,14 +10,22 @@ const { Pool } = pg;
 
 function resolveSsl(): pg.PoolConfig["ssl"] {
     switch (databaseSslMode) {
-        case "verify":
+        case "verify": {
+            const certificate = env.SUPABASE_CA_CERT_BASE64;
+
+            if (!certificate) {
+                throw new Error(
+                    "SUPABASE_CA_CERT_BASE64 is required when DATABASE_SSL=verify.",
+                );
+            }
+
             return {
+                ca: Buffer.from(certificate, "base64").toString("utf8"),
                 rejectUnauthorized: true,
             };
+        }
 
         case "no-verify":
-            // Use only if your database provider requires it
-            // and you understand the security implications.
             return {
                 rejectUnauthorized: false,
             };

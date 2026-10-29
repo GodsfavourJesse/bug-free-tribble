@@ -86,6 +86,11 @@ const envSchema = z.object({
         .nonnegative()
         .default(30_000),
 
+    SUPABASE_CA_CERT_BASE64: z
+        .string()
+        .min(1)
+        .optional(),
+
     // Database TLS
     // disable: no TLS
     // verify: TLS with certificate verification
