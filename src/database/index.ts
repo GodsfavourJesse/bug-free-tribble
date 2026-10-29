@@ -11,10 +11,16 @@ const { Pool } = pg;
 function resolveSsl(): pg.PoolConfig["ssl"] {
     switch (databaseSslMode) {
         case "verify":
-            return { rejectUnauthorized: true };
+            return {
+                rejectUnauthorized: true,
+            };
 
         case "no-verify":
-            return { rejectUnauthorized: false };
+            // Use only if your database provider requires it
+            // and you understand the security implications.
+            return {
+                rejectUnauthorized: false,
+            };
 
         default:
             return undefined;
@@ -33,38 +39,39 @@ export const pool = new Pool({
     application_name: "karmass-api",
 
     ...(env.DATABASE_STATEMENT_TIMEOUT_MS > 0
-        ? { statement_timeout: env.DATABASE_STATEMENT_TIMEOUT_MS }
+        ? {
+              statement_timeout: env.DATABASE_STATEMENT_TIMEOUT_MS,
+          }
         : {}),
 
     ssl: resolveSsl(),
 });
 
-/**
- * An idle client can error (database restart, network drop).
- * Without this listener Node treats it as an unhandled
- * 'error' event and crashes the whole process.
- */
 pool.on("error", (error) => {
-    logger.error({ err: error }, "Unexpected PostgreSQL pool error");
+    logger.error(
+        { err: error },
+        "Unexpected PostgreSQL pool error",
+    );
 });
 
 export const db = drizzle(pool, {
     schema,
 });
 
-/**
- * Readiness probe helper: resolves true when the database
- * answers within the timeout, false otherwise. Never throws.
- */
-export async function isDatabaseHealthy(timeoutMs = 2_000): Promise<boolean> {
+export async function isDatabaseHealthy(
+    timeoutMs = 2_000,
+): Promise<boolean> {
     let timer: NodeJS.Timeout | undefined;
 
     try {
         await Promise.race([
             db.execute(sql`select 1`),
+
             new Promise<never>((_resolve, reject) => {
                 timer = setTimeout(
-                    () => reject(new Error("Database health check timed out.")),
+                    () => reject(
+                        new Error("Database health check timed out."),
+                    ),
                     timeoutMs,
                 );
             }),
@@ -72,7 +79,11 @@ export async function isDatabaseHealthy(timeoutMs = 2_000): Promise<boolean> {
 
         return true;
     } catch (error) {
-        logger.warn({ err: error }, "Database health check failed");
+        logger.warn(
+            { err: error },
+            "Database health check failed",
+        );
+
         return false;
     } finally {
         if (timer) {
@@ -83,10 +94,6 @@ export async function isDatabaseHealthy(timeoutMs = 2_000): Promise<boolean> {
 
 let closing: Promise<void> | null = null;
 
-/**
- * Safe to call more than once (server and worker both call it
- * during shutdown paths).
- */
 export function closeDatabase(): Promise<void> {
     closing ??= pool.end();
 
