@@ -42,7 +42,7 @@ const envSchema = z.object({
         .int()
         .min(0)
         .max(10)
-        .default(0),
+        .default(1),
 
     SHUTDOWN_TIMEOUT_MS: z.coerce
         .number()
@@ -97,7 +97,7 @@ const envSchema = z.object({
     // no-verify: TLS without certificate verification
     DATABASE_SSL: z
         .enum(["disable", "verify", "no-verify"])
-        .optional(),
+        .default("verify"),
 
     // SESSION
     SESSION_COOKIE_NAME: z

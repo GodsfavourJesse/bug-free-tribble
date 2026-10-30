@@ -2,11 +2,19 @@ import type { CorsOptions } from "cors";
 
 import { allowedOrigins } from "./env.ts";
 
-const originSet = new Set(allowedOrigins);
+// Normalize configured origins.
+const originSet = new Set(
+    allowedOrigins.map((origin) =>
+        origin.trim().replace(/\/+$/, ""),
+    ),
+);
 
 /**
- * Requests without an Origin header include server-to-server calls,
- * webhooks, health checks, and command-line requests.
+ * Requests without an Origin header include:
+ * - Server-to-server requests
+ * - Webhooks
+ * - Health checks
+ * - Command-line requests
  */
 export function isOriginAllowed(
     origin: string | undefined,
@@ -15,14 +23,24 @@ export function isOriginAllowed(
         return true;
     }
 
-    return originSet.has(origin);
+    const normalizedOrigin = origin
+        .trim()
+        .replace(/\/+$/, "");
+
+    return originSet.has(normalizedOrigin);
 }
 
 export const corsOptions: CorsOptions = {
     origin(origin, callback) {
+        if (isOriginAllowed(origin)) {
+            callback(null, true);
+            return;
+        }
+
         callback(
-            null,
-            isOriginAllowed(origin),
+            new Error(
+                `Origin ${origin} is not allowed by CORS.`,
+            ),
         );
     },
 
