@@ -1,11 +1,11 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-    entry: [
-        "src/server.ts",
-        "src/workers/worker.ts",
-        "scripts/image-analysis-worker.ts",
-    ],
+    entry: {
+        server:"src/server.ts",
+        "workers/worker":"src/workers/worker.ts",
+        "scripts/image-analysis-worker":"scripts/image-analysis-worker.ts",
+    },
 
     format: ["esm"],
 

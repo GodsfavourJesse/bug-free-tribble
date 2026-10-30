@@ -162,66 +162,92 @@ httpServer.on("error", (error) => {
     void shutdown("HTTP server error", 1);
 });
 
+async function waitForRedisReady(): Promise<void> {
+    if (redis.status === "ready") {
+        return;
+    }
+
+    await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            cleanup();
+            reject(new Error("Redis connection timed out after 15 seconds"));
+        }, 15000);
+
+        const cleanup = () => {
+            clearTimeout(timeout);
+            redis.off("ready", onReady);
+            redis.off("error", onError);
+            redis.off("end", onEnd);
+        };
+
+        const onReady = () => {
+            cleanup();
+            resolve();
+        };
+
+        const onError = (error: Error) => {
+            cleanup();
+            reject(error);
+        };
+
+        const onEnd = () => {
+            cleanup();
+            reject(new Error("Redis connection ended before becoming ready"));
+        };
+
+        redis.once("ready", onReady);
+        redis.once("error", onError);
+        redis.once("end", onEnd);
+
+        // Only initiate a connection if Redis has not started connecting.
+        if (redis.status === "wait") {
+            redis.connect().catch(onError);
+        }
+    });
+}
+
 // -----------------------------------------------------------------------------
 // APPLICATION STARTUP
 // -----------------------------------------------------------------------------
 
 async function start(): Promise<void> {
     try {
-        // Redis must be ready before background infrastructure starts.
-        await redis.connect();
+        // Wait for the existing Redis connection to become ready.
+        await waitForRedisReady();
 
-        logger.info(
-            "Redis connection established",
-        );
+        logger.info("Redis connection ready");
 
-        // Start the notification delivery worker.
-        //
-        // The worker polls PostgreSQL for pending notification jobs.
-        // Web Push delivery must be implemented separately before PUSH
-        // jobs can be delivered to devices.
         notificationWorker = startNotificationWorker();
 
-        logger.info(
-            "Notification delivery worker started",
-        );
+        logger.info("Notification delivery worker started");
 
-        // Start existing background schedulers.
         startPaymentReconcilationScheduler();
-
         startPaymentEventScheduler();
-
         startBoostExpiryScheduler();
 
-        // Start accepting HTTP requests.
         await new Promise<void>((resolve, reject) => {
             const onError = (error: Error): void => {
                 httpServer.off("listening", onListening);
-
                 reject(error);
             };
 
             const onListening = (): void => {
                 httpServer.off("error", onError);
-
                 resolve();
             };
 
             httpServer.once("error", onError);
             httpServer.once("listening", onListening);
 
-            httpServer.listen(
-                env.PORT,
-                () => {
-                    logger.info(
-                        {
-                            port: env.PORT,
-                            nodeEnv: env.NODE_ENV,
-                        },
-                        "KARMASS API listening",
-                    );
-                },
-            );
+            httpServer.listen(env.PORT, () => {
+                logger.info(
+                    {
+                        port: env.PORT,
+                        nodeEnv: env.NODE_ENV,
+                    },
+                    "KARMASS API listening",
+                );
+            });
         });
     } catch (error) {
         logger.fatal(

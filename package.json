@@ -11,8 +11,8 @@
         "worker": "tsx src/workers/worker.ts",
         "image-analysis:worker": "tsx scripts/image-analysis-worker.ts",
 
-        "build": "tsup",
-        
+        "build": "tsup --config tsup.config.ts",
+
         "start": "node dist/server.js",
         "start:worker": "node dist/workers/worker.js",
         "start:image-worker": "node dist/scripts/image-analysis-worker.js",
