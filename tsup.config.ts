@@ -1,7 +1,11 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-    entry: ["src/server.ts"],
+    entry: [
+        "src/server.ts",
+        "src/workers/worker.ts",
+        "scripts/image-analysis-worker.ts",
+    ],
 
     format: ["esm"],
 
@@ -18,4 +22,5 @@ export default defineConfig({
     dts: false,
 
     minify: false,
+
 });

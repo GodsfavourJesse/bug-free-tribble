@@ -45,10 +45,27 @@ function getTransporter(): Transporter {
             host: SMTP_HOST,
             port: env.SMTP_PORT,
             secure: env.SMTP_PORT === 465,
+
             auth: {
                 user: SMTP_USER,
                 pass: SMTP_PASSWORD,
             },
+
+            // Connection establishment timeout.
+            connectionTimeout: 8_000,
+
+            // Time allowed for SMTP greeting.
+            greetingTimeout: 8_000,
+
+            // Time allowed for SMTP commands.
+            socketTimeout: 12_000,
+
+            // Avoid waiting indefinitely for pooled connections.
+            pool: false,
+
+            // Keep SMTP errors explicit.
+            logger: false,
+            debug: false,
         });
     }
 
@@ -99,6 +116,8 @@ async function sendMailAndConfirm(
     recipient: string,
     options: SendMailOptions,
 ): Promise<void> {
+    const startedAt = Date.now();
+
     try {
         const info = await getTransporter().sendMail(
             options,
@@ -106,18 +125,6 @@ async function sendMailAndConfirm(
 
         const accepted = info.accepted ?? [];
         const rejected = info.rejected ?? [];
-
-        console.info(
-            "[EMAIL] SMTP submission result",
-            {
-                type,
-                recipient,
-                messageId: info.messageId,
-                accepted,
-                rejected,
-                response: info.response,
-            },
-        );
 
         const recipientAccepted = accepted.some(
             (address) =>
@@ -139,12 +146,23 @@ async function sendMailAndConfirm(
                 `SMTP did not confirm acceptance of recipient ${recipient}.`,
             );
         }
+
+        console.info(
+            "[EMAIL] SMTP submission successful",
+            {
+                type,
+                recipient,
+                messageId: info.messageId,
+                durationMs: Date.now() - startedAt,
+            },
+        );
     } catch (error: unknown) {
         console.error(
             "[EMAIL] Delivery submission failed",
             {
                 type,
                 recipient,
+                durationMs: Date.now() - startedAt,
                 error:
                     error instanceof Error
                         ? {

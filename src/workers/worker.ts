@@ -6,6 +6,10 @@ import {
     newWorkerId,
 } from "../infrastructure/jobs/job.queue.ts";
 
+import {
+    emailWorker,
+} from "../infrastructure/queues/email.worker.ts";
+
 const workerId = newWorkerId();
 
 const POLL_INTERVAL_MS = env.WORKER_POLL_MS;
@@ -22,8 +26,11 @@ function sleep(milliseconds: number): Promise<void> {
 
 async function loop(): Promise<void> {
     logger.info(
-        { workerId, pollIntervalMs: POLL_INTERVAL_MS },
-        "KARMASS general worker started; no job handlers are registered",
+        {
+            workerId,
+            pollIntervalMs: POLL_INTERVAL_MS,
+        },
+        "KARMASS general worker started",
     );
 
     while (running) {
@@ -47,7 +54,7 @@ async function shutdown(signal: string): Promise<void> {
     shutdownPromise = (async () => {
         logger.info(
             { signal, workerId },
-            "KARMASS general worker shutting down",
+            "KARMASS worker shutting down",
         );
 
         try {
@@ -55,16 +62,19 @@ async function shutdown(signal: string): Promise<void> {
                 await loopPromise;
             }
 
+            // Stop accepting new email jobs and finish active jobs.
+            await emailWorker.close();
+
             await closeDatabase();
 
             logger.info(
                 { workerId },
-                "KARMASS general worker shut down successfully",
+                "KARMASS worker shut down successfully",
             );
         } catch (error: unknown) {
             logger.error(
                 { err: error, workerId },
-                "KARMASS general worker shutdown failed",
+                "KARMASS worker shutdown failed",
             );
 
             process.exitCode = 1;
@@ -87,7 +97,7 @@ loopPromise = loop();
 void loopPromise.catch(async (error: unknown) => {
     logger.fatal(
         { err: error, workerId },
-        "KARMASS general worker stopped unexpectedly",
+        "KARMASS worker stopped unexpectedly",
     );
 
     await shutdown("Fatal worker error");

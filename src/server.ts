@@ -25,6 +25,7 @@ import {
     stopBoostExpiryScheduler,
 } from "./modules/boosts-module/boost-expiry/boost-expiry.scheduler.ts";
 import { startNotificationWorker } from "./modules/notification-module/notification-worker/notification-worker.ts";
+import { emailWorker } from "./jobs/workers/email.worker.ts";
 
 
 // -----------------------------------------------------------------------------
@@ -128,6 +129,8 @@ async function shutdown(
 
         // Close Redis before shutting down the database.
         await redis.quit();
+
+        await emailWorker.close();
 
         await closeDatabase();
 

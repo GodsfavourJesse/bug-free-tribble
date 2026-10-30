@@ -26,6 +26,7 @@ import { env } from "../../config/env.ts";
 import {
     sendPasswordResetEmail,
 } from "../../modules/email-module/email.service.ts";
+import { emailQueue } from "../../infrastructure/queues/queues.ts";
 
 function createExpiryDate(): Date {
     return new Date(
@@ -39,25 +40,17 @@ function createExpiryDate(): Date {
 export async function requestPasswordReset(
     email: string,
 ): Promise<void> {
-    const normalizedEmail =
-        normalizeEmail(email);
+    const normalizedEmail = normalizeEmail(email);
 
     const result = await db
         .select()
         .from(users)
-        .where(
-            eq(
-                users.email,
-                normalizedEmail,
-            ),
-        )
+        .where(eq(users.email, normalizedEmail))
         .limit(1);
 
     const user = result[0];
 
-    /*
-     * Never reveal whether the account exists.
-     */
+    // Never reveal whether an account exists.
     if (
         !user ||
         user.status !== "ACTIVE" ||
@@ -66,40 +59,26 @@ export async function requestPasswordReset(
         return;
     }
 
-    const latest =
-        await db
-            .select()
-            .from(passwordResetTokens)
-            .where(
-                and(
-                    eq(
-                        passwordResetTokens.userId,
-                        user.id,
-                    ),
-                    isNull(
-                        passwordResetTokens.usedAt,
-                    ),
-                    gt(
-                        passwordResetTokens.expiresAt,
-                        new Date(),
-                    ),
-                ),
-            )
-            .orderBy(
-                desc(
-                    passwordResetTokens.createdAt,
-                ),
-            )
-            .limit(1);
+    const latest = await db
+        .select({
+            createdAt: passwordResetTokens.createdAt,
+        })
+        .from(passwordResetTokens)
+        .where(
+            and(
+                eq(passwordResetTokens.userId, user.id),
+                isNull(passwordResetTokens.usedAt),
+                gt(passwordResetTokens.expiresAt, new Date()),
+            ),
+        )
+        .orderBy(desc(passwordResetTokens.createdAt))
+        .limit(1);
 
-    const latestCreatedAt =
-        latest[0]?.createdAt;
+    const latestCreatedAt = latest[0]?.createdAt;
 
     if (latestCreatedAt) {
         const elapsedSeconds =
-            (Date.now() -
-                latestCreatedAt.getTime()) /
-            1000;
+            (Date.now() - latestCreatedAt.getTime()) / 1000;
 
         if (
             elapsedSeconds <
@@ -111,47 +90,52 @@ export async function requestPasswordReset(
 
     const token = createPasswordResetToken();
     const tokenHash = hashVerificationValue(token);
+    const expiresAt = createExpiryDate();
 
-    await db.transaction(
-        async (tx) => {
-            await tx
-                .update(
-                    passwordResetTokens,
-                )
-                .set({
-                    usedAt: new Date(),
-                })
-                .where(
-                    and(
-                        eq(
-                            passwordResetTokens.userId,
-                            user.id,
-                        ),
-                        isNull(
-                            passwordResetTokens.usedAt,
-                        ),
-                    ),
-                );
+    await db.transaction(async (tx) => {
+        await tx
+            .update(passwordResetTokens)
+            .set({
+                usedAt: new Date(),
+            })
+            .where(
+                and(
+                    eq(passwordResetTokens.userId, user.id),
+                    isNull(passwordResetTokens.usedAt),
+                ),
+            );
 
-            await tx
-                .insert(
-                    passwordResetTokens,
-                )
-                .values({
-                    userId: user.id,
-                    tokenHash,
-                    expiresAt:
-                        createExpiryDate(),
-                });
+        await tx
+            .insert(passwordResetTokens)
+            .values({
+                userId: user.id,
+                tokenHash,
+                expiresAt,
+            });
+    });
+
+    // Queue email delivery instead of waiting for SMTP.
+    await emailQueue.add(
+        "password-reset",
+        {
+            type: "PASSWORD_RESET",
+            email: user.email,
+            firstName: user.firstName,
+            token,
+        },
+        {
+            attempts: 3,
+            backoff: {
+                type: "exponential",
+                delay: 3000,
+            },
+            removeOnComplete: true,
+            removeOnFail: {
+                age: 7 * 24 * 60 * 60,
+                count: 1000,
+            },
         },
     );
-
-    await sendPasswordResetEmail({
-        email: user.email,
-        firstName:
-            user.firstName,
-        token,
-    });
 }
 
 export async function resetPassword(
