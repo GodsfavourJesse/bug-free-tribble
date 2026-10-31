@@ -16,6 +16,11 @@ import {
     imageReviewDecisions,
     listingImages,
     listings,
+    users,
+    vehicleMakes,
+    vehicleModels,
+    vehicleGenerations,
+    vehicleVariants,
 } from "../../../database/schema/index.ts";
 
 import {
@@ -34,9 +39,20 @@ import type {
     AdminImageReviewDecisionInput,
     AdminImageReviewListQuery,
 } from "./admin-image-review.validation.ts";
-import { ImageAnalysisJob } from "../../../jobs/jobs.types.ts";
+
+import {
+    ImageAnalysisJob,
+} from "../../../jobs/jobs.types.ts";
+
+import {
+    getObjectStorage,
+} from "../../../infrastructure/storage/object-storage.ts";
 
 const IMAGE_REVIEW_PAGE_SIZE_DEFAULT = 20;
+
+// ============================================================
+// IMAGE REVIEW FILTERS
+// ============================================================
 
 function getImageStatusFilter(
     status: AdminImageReviewListQuery["status"],
@@ -51,10 +67,15 @@ function getImageStatusFilter(
     );
 }
 
+// ============================================================
+// LIST ADMIN IMAGE REVIEWS
+// ============================================================
+
 export async function listAdminImageReviews(
     query: AdminImageReviewListQuery,
 ) {
     const page = query.page;
+
     const limit =
         query.limit ??
         IMAGE_REVIEW_PAGE_SIZE_DEFAULT;
@@ -92,20 +113,30 @@ export async function listAdminImageReviews(
                     width: listingImages.width,
                     height: listingImages.height,
                     sortOrder: listingImages.sortOrder,
+
                     imageCheckStatus:
                         listingImages.imageCheckStatus,
+
                     similarityScore:
                         listingImages.similarityScore,
+
                     matchedImageId:
                         listingImages.matchedImageId,
+
                     matchedListingId:
                         listingImages.matchedListingId,
+
                     checkReason:
                         listingImages.checkReason,
+
                     imageCreatedAt:
                         listingImages.createdAt,
-                    listingStatus: listings.status,
-                    sellerId: listings.sellerId,
+
+                    listingStatus:
+                        listings.status,
+
+                    sellerId:
+                        listings.sellerId,
                 })
                 .from(listingImages)
                 .innerJoin(
@@ -139,8 +170,29 @@ export async function listAdminImageReviews(
         countRows[0]?.total ?? 0,
     );
 
+    // ---------------------------------------------------------
+    // Generate optimized image URLs
+    // ---------------------------------------------------------
+
+    const storage = getObjectStorage();
+
+    const items = rows.map((row) => ({
+        ...row,
+
+        imageUrl: storage.transformedImageUrl(
+            row.objectKey,
+            {
+                width: 600,
+                height: 600,
+                quality: "auto",
+                format: "webp",
+            },
+        ),
+    }));
+
     return {
-        items: rows,
+        items,
+
         pagination: {
             page,
             limit,
@@ -152,9 +204,17 @@ export async function listAdminImageReviews(
     };
 }
 
+// ============================================================
+// GET ADMIN IMAGE REVIEW DETAILS
+// ============================================================
+
 export async function getAdminImageReview(
     imageId: string,
 ) {
+    // ---------------------------------------------------------
+    // 1. Retrieve the image and its associated listing
+    // ---------------------------------------------------------
+
     const rows = await db
         .select({
             imageId: listingImages.id,
@@ -165,23 +225,36 @@ export async function getAdminImageReview(
             width: listingImages.width,
             height: listingImages.height,
             sortOrder: listingImages.sortOrder,
-            sha256: listingImages.sha256,
+
+            sha256:
+                listingImages.sha256,
+
             perceptualHash:
                 listingImages.perceptualHash,
+
             imageCheckStatus:
                 listingImages.imageCheckStatus,
+
             similarityScore:
                 listingImages.similarityScore,
+
             matchedImageId:
                 listingImages.matchedImageId,
+
             matchedListingId:
                 listingImages.matchedListingId,
+
             checkReason:
                 listingImages.checkReason,
+
             imageCreatedAt:
                 listingImages.createdAt,
-            listingStatus: listings.status,
-            sellerId: listings.sellerId,
+
+            listingStatus:
+                listings.status,
+
+            sellerId:
+                listings.sellerId,
         })
         .from(listingImages)
         .innerJoin(
@@ -209,6 +282,164 @@ export async function getAdminImageReview(
         );
     }
 
+    // ---------------------------------------------------------
+    // 2. Generate optimized full-size review image URL
+    // ---------------------------------------------------------
+
+    const storage = getObjectStorage();
+
+    const imageWithUrl = {
+        ...image,
+
+        imageUrl: storage.transformedImageUrl(
+            image.objectKey,
+            {
+                width: 1600,
+                height: 1600,
+                quality: "auto",
+                format: "webp",
+            },
+        ),
+    };
+
+    // ---------------------------------------------------------
+    // 3. Retrieve complete listing, vehicle and seller context
+    // ---------------------------------------------------------
+
+    const [listingContext] = await db
+        .select({
+            listing: {
+                id: listings.id,
+                title: listings.title,
+                description: listings.description,
+                price: listings.price,
+                currency: listings.currency,
+                mileage: listings.mileage,
+                condition: listings.condition,
+                country: listings.country,
+                state: listings.state,
+                city: listings.city,
+                status: listings.status,
+                viewCount: listings.viewCount,
+                rejectionReason: listings.rejectionReason,
+                publishedAt: listings.publishedAt,
+                expiresAt: listings.expiresAt,
+                createdAt: listings.createdAt,
+                updatedAt: listings.updatedAt,
+            },
+
+            vehicle: {
+                variantId: vehicleVariants.id,
+                year: vehicleVariants.year,
+                variantName: vehicleVariants.name,
+
+                fuelType:
+                    vehicleVariants.fuelType,
+
+                transmission:
+                    vehicleVariants.transmission,
+
+                driveType:
+                    vehicleVariants.driveType,
+
+                bodyStyle:
+                    vehicleVariants.bodyStyle,
+
+                seats:
+                    vehicleVariants.seats,
+
+                doors:
+                    vehicleVariants.doors,
+
+                engineName:
+                    vehicleVariants.engineName,
+
+                engineDisplacementCc:
+                    vehicleVariants.engineDisplacementCc,
+
+                horsepower:
+                    vehicleVariants.horsepower,
+
+                generationId:
+                    vehicleGenerations.id,
+
+                generationName:
+                    vehicleGenerations.name,
+
+                modelId:
+                    vehicleModels.id,
+
+                modelName:
+                    vehicleModels.name,
+
+                makeId:
+                    vehicleMakes.id,
+
+                makeName:
+                    vehicleMakes.name,
+            },
+
+            seller: {
+                id: users.id,
+                firstName: users.firstName,
+                lastName: users.lastName,
+                email: users.email,
+                phone: users.phone,
+                avatarUrl: users.avatarUrl,
+                accountType: users.accountType,
+                status: users.status,
+                emailVerified: users.emailVerified,
+                createdAt: users.createdAt,
+            },
+        })
+        .from(listings)
+        .innerJoin(
+            users,
+            eq(
+                listings.sellerId,
+                users.id,
+            ),
+        )
+        .innerJoin(
+            vehicleVariants,
+            eq(
+                listings.vehicleVariantId,
+                vehicleVariants.id,
+            ),
+        )
+        .innerJoin(
+            vehicleGenerations,
+            eq(
+                vehicleVariants.generationId,
+                vehicleGenerations.id,
+            ),
+        )
+        .innerJoin(
+            vehicleModels,
+            eq(
+                vehicleGenerations.modelId,
+                vehicleModels.id,
+            ),
+        )
+        .innerJoin(
+            vehicleMakes,
+            eq(
+                vehicleModels.makeId,
+                vehicleMakes.id,
+            ),
+        )
+        .where(
+            eq(
+                listings.id,
+                image.listingId,
+            ),
+        )
+        .limit(1);
+
+    // ---------------------------------------------------------
+    // 4. Retrieve automated analysis and review history
+    // ---------------------------------------------------------
+
     const [analysis, decisions] =
         await Promise.all([
             getImageAnalysisStatus(imageId),
@@ -216,18 +447,25 @@ export async function getAdminImageReview(
             db
                 .select({
                     id: imageReviewDecisions.id,
+
                     listingImageId:
                         imageReviewDecisions.listingImageId,
+
                     listingId:
                         imageReviewDecisions.listingId,
+
                     reviewerId:
                         imageReviewDecisions.reviewerId,
+
                     decision:
                         imageReviewDecisions.decision,
+
                     reason:
                         imageReviewDecisions.reason,
+
                     notes:
                         imageReviewDecisions.notes,
+
                     createdAt:
                         imageReviewDecisions.createdAt,
                 })
@@ -245,12 +483,47 @@ export async function getAdminImageReview(
                 ),
         ]);
 
+    // ---------------------------------------------------------
+    // 5. Build seller information
+    // ---------------------------------------------------------
+
+    const seller = listingContext?.seller
+        ? {
+            ...listingContext.seller,
+
+            fullName: [
+                listingContext.seller.firstName,
+                listingContext.seller.lastName,
+            ]
+                .filter(Boolean)
+                .join(" "),
+        }
+        : null;
+
+    // ---------------------------------------------------------
+    // 6. Return complete review details
+    // ---------------------------------------------------------
+
     return {
-        image,
+        image: imageWithUrl,
+
+        listing:
+            listingContext?.listing ?? null,
+
+        vehicle:
+            listingContext?.vehicle ?? null,
+
+        seller,
+
         analysis,
+
         reviewHistory: decisions,
     };
 }
+
+// ============================================================
+// RECORD ADMIN IMAGE REVIEW DECISION
+// ============================================================
 
 export async function recordAdminImageReviewDecision(
     imageId: string,
@@ -296,6 +569,7 @@ export async function recordAdminImageReviewDecision(
          * completion, provided both services use this same
          * lock order.
          */
+
         const images = await tx
             .select({
                 imageId: listingImages.id,
@@ -324,9 +598,11 @@ export async function recordAdminImageReviewDecision(
         /*
          * 2. Lock active jobs for this image.
          */
+
         const activeJobs = await tx
             .select({
                 id: imageAnalysisJobs.id,
+
                 analysisRunId:
                     imageAnalysisJobs.analysisRunId,
             })
@@ -337,11 +613,13 @@ export async function recordAdminImageReviewDecision(
                         imageAnalysisJobs.listingImageId,
                         image.imageId,
                     ),
+
                     or(
                         eq(
                             imageAnalysisJobs.status,
                             "QUEUED",
                         ),
+
                         eq(
                             imageAnalysisJobs.status,
                             "PROCESSING",
@@ -357,6 +635,7 @@ export async function recordAdminImageReviewDecision(
         /*
          * 3. Cancel active jobs.
          */
+
         for (const job of activeJobs) {
             await tx
                 .update(imageAnalysisJobs)
@@ -372,11 +651,13 @@ export async function recordAdminImageReviewDecision(
                             imageAnalysisJobs.id,
                             job.id,
                         ),
+
                         or(
                             eq(
                                 imageAnalysisJobs.status,
                                 "QUEUED",
                             ),
+
                             eq(
                                 imageAnalysisJobs.status,
                                 "PROCESSING",
@@ -398,6 +679,7 @@ export async function recordAdminImageReviewDecision(
                                 imageAnalysisRuns.id,
                                 job.analysisRunId,
                             ),
+
                             eq(
                                 imageAnalysisRuns.status,
                                 "RUNNING",
@@ -410,6 +692,7 @@ export async function recordAdminImageReviewDecision(
         /*
          * 4. Save the review decision.
          */
+
         const decisions = await tx
             .insert(imageReviewDecisions)
             .values({
@@ -422,18 +705,25 @@ export async function recordAdminImageReviewDecision(
             })
             .returning({
                 id: imageReviewDecisions.id,
+
                 listingImageId:
                     imageReviewDecisions.listingImageId,
+
                 listingId:
                     imageReviewDecisions.listingId,
+
                 reviewerId:
                     imageReviewDecisions.reviewerId,
+
                 decision:
                     imageReviewDecisions.decision,
+
                 reason:
                     imageReviewDecisions.reason,
+
                 notes:
                     imageReviewDecisions.notes,
+
                 createdAt:
                     imageReviewDecisions.createdAt,
             });
@@ -451,6 +741,7 @@ export async function recordAdminImageReviewDecision(
         /*
          * 5. Update the authoritative image status.
          */
+
         const updatedImages = await tx
             .update(listingImages)
             .set({
@@ -467,9 +758,15 @@ export async function recordAdminImageReviewDecision(
             )
             .returning({
                 id: listingImages.id,
-                imageCheckStatus: listingImages.imageCheckStatus,
-                checkReason: listingImages.checkReason,
-                checkedAt: listingImages.checkedAt,
+
+                imageCheckStatus:
+                    listingImages.imageCheckStatus,
+
+                checkReason:
+                    listingImages.checkReason,
+
+                checkedAt:
+                    listingImages.checkedAt,
             });
 
         const updatedImage = updatedImages[0];
@@ -489,6 +786,10 @@ export async function recordAdminImageReviewDecision(
     });
 }
 
+// ============================================================
+// RETRY ADMIN IMAGE ANALYSIS
+// ============================================================
+
 export async function retryAdminImageAnalysis(
     imageId: string,
 ) {
@@ -499,10 +800,15 @@ export async function retryAdminImageAnalysis(
     const rows = await db
         .select({
             imageId: listingImages.id,
-            listingId: listingImages.listingId,
+
+            listingId:
+                listingImages.listingId,
+
             imageCheckStatus:
                 listingImages.imageCheckStatus,
-            checkedAt: listingImages.checkedAt,
+
+            checkedAt:
+                listingImages.checkedAt,
         })
         .from(listingImages)
         .where(
@@ -543,9 +849,14 @@ export async function retryAdminImageAnalysis(
 
     const decisionRows = await db
         .select({
-            decision: imageReviewDecisions.decision,
-            reason: imageReviewDecisions.reason,
-            createdAt: imageReviewDecisions.createdAt,
+            decision:
+                imageReviewDecisions.decision,
+
+            reason:
+                imageReviewDecisions.reason,
+
+            createdAt:
+                imageReviewDecisions.createdAt,
         })
         .from(imageReviewDecisions)
         .where(
@@ -655,6 +966,7 @@ export async function retryAdminImageAnalysis(
         listingId: image.listingId,
         jobId: job.id,
         status: job.status,
+
         message:
             job.status === "QUEUED"
                 ? "Image analysis is queued."

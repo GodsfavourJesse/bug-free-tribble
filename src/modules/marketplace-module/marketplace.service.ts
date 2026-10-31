@@ -6,6 +6,7 @@ import {
     gte,
     gt,
     ilike,
+    inArray,
     isNull,
     lte,
     or,
@@ -16,6 +17,7 @@ import { db } from "../../database/index.ts";
 
 import {
     dealerProfiles,
+    listingImages,
     listings,
     users,
     vehicleGenerations,
@@ -23,7 +25,17 @@ import {
     vehicleModels,
     vehicleVariants,
 } from "../../database/schema/index.ts";
-import { MarketplaceFilters, MarketplaceSearchProvider, MarketplaceSearchResult } from "./marketplace.types.ts";
+
+import {
+    MarketplaceFilters,
+    MarketplaceImage,
+    MarketplaceSearchProvider,
+    MarketplaceSearchResult,
+} from "./marketplace.types.ts";
+
+import {
+    getObjectStorage,
+} from "../../infrastructure/storage/object-storage.ts";
 
 function validateFilters(
     filters: MarketplaceFilters,
@@ -106,11 +118,95 @@ function validateFilters(
 }
 
 /**
+ * Fetches listing images separately to avoid
+ * duplicating marketplace search results.
+ */
+async function getMarketplaceImages(
+    listingIds: string[],
+): Promise<Map<string, MarketplaceImage[]>> {
+    const imageMap = new Map<string, MarketplaceImage[]>();
+
+    if (listingIds.length === 0) {
+        return imageMap;
+    }
+
+    const imageRows = await db
+        .select({
+            id: listingImages.id,
+            listingId: listingImages.listingId,
+            objectKey: listingImages.objectKey,
+            mimeType: listingImages.mimeType,
+            width: listingImages.width,
+            height: listingImages.height,
+            sortOrder: listingImages.sortOrder,
+        })
+        .from(listingImages)
+        .where(
+            inArray(
+                listingImages.listingId,
+                listingIds,
+            ),
+        )
+        .orderBy(
+            asc(listingImages.sortOrder),
+        );
+
+    const storage = getObjectStorage();
+
+    for (const image of imageRows) {
+        const marketplaceImage: MarketplaceImage = {
+            id: image.id,
+            objectKey: image.objectKey,
+            sortOrder: image.sortOrder,
+            mimeType: image.mimeType,
+            width: image.width,
+            height: image.height,
+
+            url: storage.publicUrl(
+                image.objectKey,
+                {
+                    resourceType: "image",
+                    access: "public",
+                },
+            ),
+
+            thumbnailUrl: storage.transformedImageUrl(
+                image.objectKey,
+                {
+                    width: 600,
+                    height: 600,
+                    quality: "auto",
+                    format: "webp",
+                },
+            ),
+
+            detailUrl: storage.transformedImageUrl(
+                image.objectKey,
+                {
+                    width: 1600,
+                    height: 1600,
+                    quality: "auto",
+                    format: "webp",
+                },
+            ),
+        };
+
+        const existingImages =
+            imageMap.get(image.listingId) ?? [];
+
+        existingImages.push(marketplaceImage);
+
+        imageMap.set(
+            image.listingId,
+            existingImages,
+        );
+    }
+
+    return imageMap;
+}
+
+/**
  * PostgreSQL-backed marketplace search provider.
- *
- * The public search function is intentionally separate from
- * this implementation so a future OpenSearch/Elasticsearch
- * provider can replace it without changing controller contracts.
  */
 class PostgresMarketplaceSearchProvider
 implements MarketplaceSearchProvider {
@@ -291,8 +387,7 @@ implements MarketplaceSearchProvider {
         const whereCondition = and(...conditions);
 
         /*
-         * A listing is boosted only when an active boost's
-         * time window is currently valid.
+         * Active boost priority.
          */
         const activeBoostPriority = sql<number>`
             CASE
@@ -312,8 +407,7 @@ implements MarketplaceSearchProvider {
         `;
 
         /*
-         * Reuse the same joins and filters for the count query.
-         * LEFT JOIN keeps non-dealer listings in the marketplace.
+         * Count matching listings.
          */
         const [countResult] = await db
             .select({
@@ -366,8 +460,9 @@ implements MarketplaceSearchProvider {
 
         const orderBy = [];
 
-        // Boost ranking is primary; selected sorting follows.
-        orderBy.push(desc(activeBoostPriority));
+        orderBy.push(
+            desc(activeBoostPriority),
+        );
 
         if (sort === "price_asc") {
             orderBy.push(
@@ -414,13 +509,39 @@ implements MarketplaceSearchProvider {
             );
         }
 
+        /*
+         * Fetch listings, vehicles, sellers and dealers.
+         *
+         * Profile picture is fetched through users.avatarUrl.
+         * If the user has no profile picture, avatarUrl is null.
+         */
         const results = await db
             .select({
                 listing: listings,
+
                 make: vehicleMakes,
+
                 model: vehicleModels,
+
                 generation: vehicleGenerations,
+
                 variant: vehicleVariants,
+
+                seller: {
+                    id: users.id,
+                    firstName: users.firstName,
+                    lastName: users.lastName,
+                    accountType: users.accountType,
+                    avatarUrl: users.avatarUrl,
+                    createdAt: users.createdAt,
+                },
+
+                dealer: {
+                    companyName: dealerProfiles.companyName,
+                    verified: dealerProfiles.verified,
+                    verifiedAt: dealerProfiles.verifiedAt,
+                },
+
                 boostPriority: activeBoostPriority,
             })
             .from(listings)
@@ -465,10 +586,60 @@ implements MarketplaceSearchProvider {
             .limit(limit)
             .offset(offset);
 
+        /*
+         * Fetch all images for the returned listings.
+         */
+        const listingIds = results.map(
+            (item) => item.listing.id,
+        );
+
+        const imagesByListing =
+            await getMarketplaceImages(listingIds);
+
+        /*
+         * Normalize the marketplace response.
+         */
+        const marketplaceListings = results.map(
+            (result) => ({
+                listing: result.listing,
+
+                make: result.make,
+
+                model: result.model,
+
+                generation: result.generation,
+
+                variant: result.variant,
+
+                seller: {
+                    ...result.seller,
+
+                    displayName: [
+                        result.seller.firstName,
+                        result.seller.lastName,
+                    ]
+                        .filter(Boolean)
+                        .join(" "),
+                },
+
+                dealer: result.dealer?.companyName
+                    ? result.dealer
+                    : null,
+
+                images:
+                    imagesByListing.get(
+                        result.listing.id,
+                    ) ?? [],
+
+                boostPriority: result.boostPriority,
+            }),
+        );
+
         const totalPages = Math.ceil(total / limit);
 
         return {
-            listings: results,
+            listings: marketplaceListings,
+
             pagination: {
                 page,
                 limit,
@@ -484,12 +655,6 @@ implements MarketplaceSearchProvider {
 const postgresMarketplaceSearchProvider =
     new PostgresMarketplaceSearchProvider();
 
-/**
- * Stable service API.
- *
- * Replace the provider implementation later without requiring
- * changes to controllers or frontend marketplace requests.
- */
 export async function searchMarketplace(
     filters: MarketplaceFilters,
 ): Promise<MarketplaceSearchResult> {

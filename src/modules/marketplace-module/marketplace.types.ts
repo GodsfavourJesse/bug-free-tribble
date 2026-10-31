@@ -1,4 +1,13 @@
-import { listings, vehicleGenerations, vehicleMakes, vehicleModels, vehicleVariants } from "../../database/schema/index.ts";
+import {
+    listings,
+    listingImages,
+    users,
+    dealerProfiles,
+    vehicleGenerations,
+    vehicleMakes,
+    vehicleModels,
+    vehicleVariants,
+} from "../../database/schema/index.ts";
 
 export type MarketplaceSort =
     | "newest"
@@ -78,15 +87,56 @@ export interface MarketplacePagination {
     hasPreviousPage: boolean;
 }
 
+export interface MarketplaceImage {
+    id: string;
+    objectKey: string;
+    sortOrder: number;
+    mimeType: string | null;
+    width: number | null;
+    height: number | null;
+    url: string;
+    thumbnailUrl: string;
+    detailUrl: string;
+}
+
+export interface MarketplaceSeller {
+    id: string;
+    firstName: string;
+    lastName: string;
+    displayName: string;
+    accountType: typeof users.$inferSelect.accountType;
+    avatarUrl: string | null;
+    createdAt: Date;
+}
+
+export interface MarketplaceDealer {
+    companyName: string | null;
+    verified: boolean | null;
+    verifiedAt: Date | null;
+}
+
+export interface MarketplaceSearchItem {
+    listing: typeof listings.$inferSelect;
+
+    make: typeof vehicleMakes.$inferSelect;
+
+    model: typeof vehicleModels.$inferSelect;
+
+    generation: typeof vehicleGenerations.$inferSelect;
+
+    variant: typeof vehicleVariants.$inferSelect;
+
+    seller: MarketplaceSeller;
+
+    dealer: MarketplaceDealer | null;
+
+    images: MarketplaceImage[];
+
+    boostPriority: number;
+}
+
 export interface MarketplaceSearchResult {
-    listings: Array<{
-        listing: typeof listings.$inferSelect;
-        make: typeof vehicleMakes.$inferSelect;
-        model: typeof vehicleModels.$inferSelect;
-        generation: typeof vehicleGenerations.$inferSelect;
-        variant: typeof vehicleVariants.$inferSelect;
-        boostPriority: number;
-    }>;
+    listings: MarketplaceSearchItem[];
 
     pagination: MarketplacePagination;
 }

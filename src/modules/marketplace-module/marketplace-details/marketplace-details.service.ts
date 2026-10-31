@@ -3,6 +3,7 @@ import {
     asc,
     eq,
     gt,
+    inArray,
     isNull,
     or,
     sql,
@@ -39,8 +40,7 @@ export async function getMarketplaceListingDetails(
             listing: {
                 id: listings.id,
                 sellerId: listings.sellerId,
-                vehicleVariantId:
-                    listings.vehicleVariantId,
+                vehicleVariantId: listings.vehicleVariantId,
                 title: listings.title,
                 description: listings.description,
                 price: listings.price,
@@ -54,6 +54,7 @@ export async function getMarketplaceListingDetails(
                 viewCount: listings.viewCount,
                 publishedAt: listings.publishedAt,
                 createdAt: listings.createdAt,
+                updatedAt: listings.updatedAt,
                 expiresAt: listings.expiresAt,
             },
 
@@ -67,11 +68,9 @@ export async function getMarketplaceListingDetails(
             },
 
             dealer: {
-                companyName:
-                    dealerProfiles.companyName,
+                companyName: dealerProfiles.companyName,
                 verified: dealerProfiles.verified,
-                verifiedAt:
-                    dealerProfiles.verifiedAt,
+                verifiedAt: dealerProfiles.verifiedAt,
             },
 
             make: {
@@ -93,22 +92,15 @@ export async function getMarketplaceListingDetails(
                 id: vehicleVariants.id,
                 name: vehicleVariants.name,
                 year: vehicleVariants.year,
-                engineName:
-                    vehicleVariants.engineName,
+                engineName: vehicleVariants.engineName,
                 engineDisplacementCc:
                     vehicleVariants.engineDisplacementCc,
-                cylinders:
-                    vehicleVariants.cylinders,
-                horsepower:
-                    vehicleVariants.horsepower,
-                fuelType:
-                    vehicleVariants.fuelType,
-                transmission:
-                    vehicleVariants.transmission,
-                driveType:
-                    vehicleVariants.driveType,
-                bodyStyle:
-                    vehicleVariants.bodyStyle,
+                cylinders: vehicleVariants.cylinders,
+                horsepower: vehicleVariants.horsepower,
+                fuelType: vehicleVariants.fuelType,
+                transmission: vehicleVariants.transmission,
+                driveType: vehicleVariants.driveType,
+                bodyStyle: vehicleVariants.bodyStyle,
                 seats: vehicleVariants.seats,
                 doors: vehicleVariants.doors,
             },
@@ -197,6 +189,9 @@ export async function getMarketplaceListingDetails(
         return null;
     }
 
+    /*
+     * Fetch listing images.
+     */
     const imageRows = await db
         .select({
             id: listingImages.id,
@@ -226,6 +221,7 @@ export async function getMarketplaceListingDetails(
         mimeType: image.mimeType,
         width: image.width,
         height: image.height,
+
         url: storage.publicUrl(
             image.objectKey,
             {
@@ -233,40 +229,51 @@ export async function getMarketplaceListingDetails(
                 access: "public",
             },
         ),
-        thumbnailUrl:
-            storage.transformedImageUrl(
-                image.objectKey,
-                {
-                    width: 600,
-                    height: 600,
-                    fit: "fit",
-                    quality: "auto",
-                    format: "webp",
-                },
-            ),
-        detailUrl:
-            storage.transformedImageUrl(
-                image.objectKey,
-                {
-                    width: 1600,
-                    height: 1600,
-                    fit: "limit",
-                    quality: "auto",
-                    format: "webp",
-                },
-            ),
+
+        thumbnailUrl: storage.transformedImageUrl(
+            image.objectKey,
+            {
+                width: 600,
+                height: 600,
+                quality: "auto",
+                format: "webp",
+            },
+        ),
+
+        detailUrl: storage.transformedImageUrl(
+            image.objectKey,
+            {
+                width: 1600,
+                height: 1600,
+                quality: "auto",
+                format: "webp",
+            },
+        ),
     }));
+
+    /*
+     * Build the seller profile.
+     *
+     * avatarUrl contains the profile picture URL when available.
+     * It remains null when the seller has not uploaded one.
+     */
+    const seller = {
+        ...result.seller,
+
+        displayName: [
+            result.seller.firstName,
+            result.seller.lastName,
+        ]
+            .filter(Boolean)
+            .join(" "),
+
+        avatarUrl: result.seller.avatarUrl || null,
+    };
 
     return {
         ...result,
 
-        seller: {
-            ...result.seller,
-            displayName: [
-                result.seller.firstName,
-                result.seller.lastName,
-            ].join(" "),
-        },
+        seller,
 
         dealer: result.dealer?.companyName
             ? result.dealer
