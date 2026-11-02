@@ -1,7 +1,12 @@
 import { Router } from "express";
 
-import { requireAdminAuth } from "../../../middleware/admin-middleware/admin-auth.middleware.ts";
-import { requirePermission } from "../../../middleware/admin-middleware/admin.middleware.ts";
+import {
+    requireAdminAuth,
+} from "../../../middleware/admin-middleware/admin-auth.middleware.ts";
+
+import {
+    requirePermission,
+} from "../../../middleware/admin-middleware/admin.middleware.ts";
 
 import {
     createSubscriptionPlan,
@@ -9,17 +14,27 @@ import {
     subscriptionsList,
     updateSubscriptionPlan,
 } from "./admin-subscription.controller.ts";
+import { subscriptionHistoryList } from "./admin-subscription-history/admin-subscription-history.controller.ts";
 
 const router = Router();
 
 router.use(requireAdminAuth);
 
+// Subscription records
 router.get(
     "/",
     requirePermission("subscription:view"),
     subscriptionsList,
 );
 
+// Individual subscription history
+router.get(
+    "/:subscriptionId/history",
+    requirePermission("subscription:view"),
+    subscriptionHistoryList,
+);
+
+// Subscription plans
 router.get(
     "/subscription-plans",
     requirePermission("subscription:manage"),

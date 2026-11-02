@@ -14,8 +14,18 @@ import notificationRoutes from "../../modules/notification-module/notification.r
 import paymentRoutes from "../../modules/payment-module/payment.routes.ts";
 import creditRoutes from "../../modules/credits/credit.routes.ts";
 import meRoutes from "../../modules/me-module/me.routes.ts";
+import subscriptionRoutes from "../../modules/subscriptions/subscription.routes.ts";
+
+console.log("[DEBUG] PUBLIC ROUTER MODULE LOADED");
 
 const router = Router();
+
+router.get("/__public-debug", (_req, res) => {
+    res.json({
+        success: true,
+        message: "Public router is working",
+    });
+});
 
 /*
  * Authentication
@@ -89,6 +99,21 @@ router.use(
     "/notifications",
     notificationRoutes,
 );
+
+/*
+ * Subscriptions
+ */
+router.use(
+    "/subscriptions",
+    subscriptionRoutes,
+);
+
+router.get("/subscriptions/__debug", (_req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Public subscription routes are mounted",
+    });
+});
 
 /*
  * Payments

@@ -14,6 +14,7 @@ import {
 
 import {
     createPendingSubscriptionInTransaction,
+    recordSubscriptionHistoryEvent,
 } from "../../subscriptions/subscription.service.ts";
 
 import {
@@ -191,6 +192,39 @@ export async function initializeSubscriptionPayment(
             "Unable to create payment record.",
         );
     }
+
+    /*
+     * Record PAYMENT_PENDING in subscription history.
+     *
+     * The subscription itself remains in PENDING status.
+     * The Paystack reference is stored in metadata because
+     * subscriptionHistory.referenceId expects a UUID.
+     */
+    await db.transaction(async (tx) => {
+        await recordSubscriptionHistoryEvent(tx, {
+            subscriptionId: subscription.id,
+
+            userId,
+
+            event: "PAYMENT_PENDING",
+
+            newStatus: "PENDING",
+
+            amount: subscription.effectivePrice,
+
+            currency: subscription.currency,
+
+            reason: "Subscription payment initialized.",
+
+            metadata: JSON.stringify({
+                paymentId: payment.id,
+
+                paymentReference: reference,
+
+                provider: "PAYSTACK",
+            }),
+        });
+    });
 
     /*
      * Queue reconciliation immediately after payment creation.

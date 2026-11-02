@@ -262,16 +262,16 @@ async function writeSubscriptionHistory(
         subscriptionId: string;
         userId: string;
         event: SubscriptionHistoryEvent;
-        previousStatus?: SubscriptionStatus;
-        newStatus?: SubscriptionStatus;
-        amount?: string;
-        currency?: string;
-        referenceId?: string;
-        reason?: string;
-        metadata?: string;
-        createdBy?: string;
+        previousStatus?: SubscriptionStatus | null;
+        newStatus?: SubscriptionStatus | null;
+        amount?: string | null;
+        currency?: string | null;
+        referenceId?: string | null;
+        reason?: string | null;
+        metadata?: string | null;
+        createdBy?: string | null;
     },
-) {
+): Promise<void> {
     const values: typeof subscriptionHistory.$inferInsert = {
         subscriptionId: input.subscriptionId,
         userId: input.userId,
@@ -313,6 +313,25 @@ async function writeSubscriptionHistory(
     await executor
         .insert(subscriptionHistory)
         .values(values);
+}
+
+export async function recordSubscriptionHistoryEvent(
+    executor: DatabaseExecutor,
+    input: {
+        subscriptionId: string;
+        userId: string;
+        event: SubscriptionHistoryEvent;
+        previousStatus?: SubscriptionStatus | null;
+        newStatus?: SubscriptionStatus | null;
+        amount?: string | null;
+        currency?: string | null;
+        referenceId?: string | null;
+        reason?: string | null;
+        metadata?: string | null;
+        createdBy?: string | null;
+    },
+): Promise<void> {
+    await writeSubscriptionHistory(executor, input);
 }
 
 /*

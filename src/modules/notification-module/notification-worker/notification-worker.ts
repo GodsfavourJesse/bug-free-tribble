@@ -6,6 +6,7 @@ import {
     lt,
     sql,
 } from "drizzle-orm";
+
 import { randomUUID } from "node:crypto";
 
 import { db } from "../../../database/index.ts";
@@ -15,15 +16,24 @@ import {
     notifications,
     pushSubscriptions,
     users,
+    subscriptions,
+    subscriptionPlans,
+    subscriptionPlanVersions,
+    payments,
 } from "../../../database/schema/index.ts";
 
 import { getSocketIO } from "../../../realtime/socket.ts";
-import { sendNotificationEmail } from "../../email-module/email.service.ts";
+
+import {
+    sendNotificationEmail,
+    sendSubscriptionActivatedEmail,
+    sendSubscriptionExpiryReminderEmail,
+} from "../../email-module/email.service.ts";
+
 import { sendWebPushToUser } from "../web-push/web-push.service.ts";
 
 const DEFAULT_BATCH_SIZE = 10;
 const DEFAULT_POLL_INTERVAL_MS = 2_000;
-const DEFAULT_MAX_ATTEMPTS = 5;
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
 
 export interface NotificationWorkerOptions {
@@ -42,6 +52,24 @@ interface NotificationPayload {
     data?: Record<string, unknown>;
 }
 
+interface SubscriptionActivatedEmailPayload {
+    kind: "SUBSCRIPTION_ACTIVATED";
+    userId: string;
+    subscriptionId: string;
+    paymentId: string;
+}
+
+interface SubscriptionExpiryReminderEmailPayload {
+    kind: "SUBSCRIPTION_EXPIRY_REMINDER";
+    userId: string;
+    subscriptionId: string;
+    expiresAt: string;
+}
+
+type SubscriptionEmailPayload =
+    | SubscriptionActivatedEmailPayload
+    | SubscriptionExpiryReminderEmailPayload;
+
 interface ClaimedJob {
     id: string;
     userId: string;
@@ -51,6 +79,9 @@ interface ClaimedJob {
     maxAttempts: number;
 }
 
+/**
+ * Validate a generic notification payload.
+ */
 function getPayload(
     value: Record<string, unknown>,
 ): NotificationPayload {
@@ -100,6 +131,63 @@ function getPayload(
             }
             : {}),
     };
+}
+
+/**
+ * Validate dedicated subscription email payloads.
+ */
+function getSubscriptionEmailPayload(
+    value: Record<string, unknown>,
+): SubscriptionEmailPayload {
+    if (value.kind === "SUBSCRIPTION_ACTIVATED") {
+        if (
+            typeof value.userId !== "string" ||
+            typeof value.subscriptionId !== "string" ||
+            typeof value.paymentId !== "string"
+        ) {
+            throw new Error(
+                "Subscription activation email payload is invalid.",
+            );
+        }
+
+        return {
+            kind: "SUBSCRIPTION_ACTIVATED",
+            userId: value.userId,
+            subscriptionId: value.subscriptionId,
+            paymentId: value.paymentId,
+        };
+    }
+
+    if (value.kind === "SUBSCRIPTION_EXPIRY_REMINDER") {
+        if (
+            typeof value.userId !== "string" ||
+            typeof value.subscriptionId !== "string" ||
+            typeof value.expiresAt !== "string"
+        ) {
+            throw new Error(
+                "Subscription expiry reminder payload is invalid.",
+            );
+        }
+
+        const expiry = new Date(value.expiresAt);
+
+        if (Number.isNaN(expiry.getTime())) {
+            throw new Error(
+                "Subscription expiry reminder contains an invalid expiry date.",
+            );
+        }
+
+        return {
+            kind: "SUBSCRIPTION_EXPIRY_REMINDER",
+            userId: value.userId,
+            subscriptionId: value.subscriptionId,
+            expiresAt: value.expiresAt,
+        };
+    }
+
+    throw new Error(
+        "Unsupported subscription email payload.",
+    );
 }
 
 /**
@@ -184,16 +272,13 @@ async function claimJobs(
 }
 
 /**
-* Persist an in-app notification idempotently.
-*
-* The same domain event must not create duplicate notifications
-* when a delivery job is retried.
-  */
+ * Persist an in-app notification idempotently.
+ */
 async function deliverInApp(
     payload: NotificationPayload,
 ): Promise<void> {
     const idempotencyKey =
-    `${payload.eventId}:${payload.userId}:IN_APP`;
+        `${payload.eventId}:${payload.userId}:IN_APP`;
 
     if (idempotencyKey.length > 255) {
         throw new Error(
@@ -204,19 +289,18 @@ async function deliverInApp(
     await db
         .insert(notifications)
         .values({
-        userId: payload.userId,
-        type: payload.type as
-        (typeof notifications.$inferInsert)["type"],
-        title: payload.title,
-        message: payload.message,
-        data: payload.data ?? null,
-        idempotencyKey,
-    })
-    .onConflictDoNothing({
-        target: notifications.idempotencyKey,
-    });
+            userId: payload.userId,
+            type: payload.type as
+                (typeof notifications.$inferInsert)["type"],
+            title: payload.title,
+            message: payload.message,
+            data: payload.data ?? null,
+            idempotencyKey,
+        })
+        .onConflictDoNothing({
+            target: notifications.idempotencyKey,
+        });
 }
-
 
 /**
  * Deliver a realtime notification to connected clients.
@@ -239,7 +323,7 @@ async function deliverSocket(
 }
 
 /**
- * Deliver an email notification.
+ * Deliver a generic email notification.
  */
 async function deliverEmail(
     payload: NotificationPayload,
@@ -269,10 +353,296 @@ async function deliverEmail(
 }
 
 /**
- * Web Push is implemented in Phase 18.
+ * Send a subscription activation confirmation.
  *
- * Throwing allows this job to follow the same retry and failure
- * tracking behavior as other delivery channels.
+ * Payment and subscription records are re-read from the database.
+ * The email never trusts dates or prices supplied by the job payload.
+ */
+async function deliverSubscriptionActivatedEmail(
+    payload: SubscriptionActivatedEmailPayload,
+): Promise<void> {
+    const [result] = await db
+        .select({
+            subscriptionId: subscriptions.id,
+            subscriptionUserId: subscriptions.userId,
+            subscriptionStatus: subscriptions.status,
+            startsAt: subscriptions.startsAt,
+            expiresAt: subscriptions.expiresAt,
+            listingCredits: subscriptions.listingCredits,
+            effectivePrice: subscriptions.effectivePrice,
+            subscriptionCurrency: subscriptions.currency,
+
+            planName: subscriptionPlans.name,
+
+            paymentId: payments.id,
+            paymentUserId: payments.userId,
+            paymentStatus: payments.status,
+            paymentAmount: payments.amount,
+            paymentCurrency: payments.currency,
+            paidAt: payments.paidAt,
+
+            email: users.email,
+            firstName: users.firstName,
+            userStatus: users.status,
+        })
+        .from(subscriptions)
+        .innerJoin(
+            subscriptionPlans,
+            eq(
+                subscriptions.planId,
+                subscriptionPlans.id,
+            ),
+        )
+        .innerJoin(
+            subscriptionPlanVersions,
+            eq(
+                subscriptions.planVersionId,
+                subscriptionPlanVersions.id,
+            ),
+        )
+        .innerJoin(
+            payments,
+            eq(
+                payments.id,
+                payload.paymentId,
+            ),
+        )
+        .innerJoin(
+            users,
+            eq(
+                users.id,
+                subscriptions.userId,
+            ),
+        )
+        .where(
+            and(
+                eq(
+                    subscriptions.id,
+                    payload.subscriptionId,
+                ),
+                eq(
+                    subscriptions.userId,
+                    payload.userId,
+                ),
+                eq(
+                    payments.subscriptionId,
+                    subscriptions.id,
+                ),
+            ),
+        )
+        .limit(1);
+
+    if (!result) {
+        throw new Error(
+            "Subscription activation email records could not be found.",
+        );
+    }
+
+    if (
+        result.paymentUserId !== payload.userId ||
+        result.paymentStatus !== "SUCCESS"
+    ) {
+        throw new Error(
+            "Subscription activation email requires a successfully verified payment.",
+        );
+    }
+
+    if (!result.startsAt || !result.expiresAt) {
+        throw new Error(
+            "Subscription activation dates are unavailable.",
+        );
+    }
+
+    if (
+        !result.paidAt ||
+        result.userStatus !== "ACTIVE"
+    ) {
+        throw new Error(
+            "Payment date is missing or the email recipient is inactive.",
+        );
+    }
+
+    await sendSubscriptionActivatedEmail({
+        email: result.email,
+        firstName: result.firstName,
+        planName: result.planName,
+        amount: result.paymentAmount,
+        currency: result.paymentCurrency,
+        listingCredits: result.listingCredits,
+        paymentDate: result.paidAt,
+        activationDate: result.startsAt,
+        expiryDate: result.expiresAt,
+    });
+}
+
+/**
+ * Deliver a three-day subscription expiry reminder.
+ *
+ * A reminder is discarded if the subscription has been renewed,
+ * replaced, expired, or its expiry date has changed.
+ */
+async function deliverSubscriptionExpiryReminderEmail(
+    payload: SubscriptionExpiryReminderEmailPayload,
+): Promise<void> {
+    const [result] = await db
+        .select({
+            subscriptionId: subscriptions.id,
+            subscriptionUserId: subscriptions.userId,
+            subscriptionStatus: subscriptions.status,
+            startsAt: subscriptions.startsAt,
+            expiresAt: subscriptions.expiresAt,
+            listingCredits: subscriptions.listingCredits,
+
+            planName: subscriptionPlans.name,
+
+            email: users.email,
+            firstName: users.firstName,
+            userStatus: users.status,
+        })
+        .from(subscriptions)
+        .innerJoin(
+            subscriptionPlans,
+            eq(
+                subscriptions.planId,
+                subscriptionPlans.id,
+            ),
+        )
+        .innerJoin(
+            subscriptionPlanVersions,
+            eq(
+                subscriptions.planVersionId,
+                subscriptionPlanVersions.id,
+            ),
+        )
+        .innerJoin(
+            users,
+            eq(
+                users.id,
+                subscriptions.userId,
+            ),
+        )
+        .where(
+            and(
+                eq(
+                    subscriptions.id,
+                    payload.subscriptionId,
+                ),
+                eq(
+                    subscriptions.userId,
+                    payload.userId,
+                ),
+            ),
+        )
+        .limit(1);
+
+    // Missing subscription means this reminder is no longer relevant.
+    if (!result) {
+        return;
+    }
+
+    if (
+        result.userStatus !== "ACTIVE" ||
+        !result.expiresAt
+    ) {
+        return;
+    }
+
+    // Both ACTIVE and CANCELLED retain access until expiry.
+    if (
+        result.subscriptionStatus !== "ACTIVE" &&
+        result.subscriptionStatus !== "CANCELLED"
+    ) {
+        return;
+    }
+
+    const currentExpiry = result.expiresAt;
+    const queuedExpiry = new Date(payload.expiresAt);
+
+    // Do not send reminders for an outdated expiry date.
+    if (
+        currentExpiry.getTime() !== queuedExpiry.getTime()
+    ) {
+        return;
+    }
+
+    // Do not send reminders for subscriptions that have expired.
+    if (currentExpiry.getTime() <= Date.now()) {
+        return;
+    }
+
+    // A newer active subscription supersedes this reminder.
+    const [newerSubscription] = await db
+        .select({
+            id: subscriptions.id,
+        })
+        .from(subscriptions)
+        .where(
+            and(
+                eq(
+                    subscriptions.userId,
+                    payload.userId,
+                ),
+                eq(
+                    subscriptions.status,
+                    "ACTIVE",
+                ),
+                sql`${subscriptions.createdAt} > (
+                    SELECT created_at
+                    FROM subscriptions
+                    WHERE id = ${payload.subscriptionId}
+                )`,
+            ),
+        )
+        .limit(1);
+
+    if (newerSubscription) {
+        return;
+    }
+
+    await sendSubscriptionExpiryReminderEmail({
+        email: result.email,
+        firstName: result.firstName,
+        planName: result.planName,
+        expiryDate: result.expiresAt,
+        listingCredits: result.listingCredits,
+    });
+}
+
+/**
+ * Route dedicated subscription emails separately from generic emails.
+ */
+async function deliverSubscriptionEmail(
+    value: Record<string, unknown>,
+    jobUserId: string,
+): Promise<void> {
+    const payload = getSubscriptionEmailPayload(value);
+
+    if (payload.userId !== jobUserId) {
+        throw new Error(
+            "Subscription email recipient does not match the delivery job.",
+        );
+    }
+
+    switch (payload.kind) {
+        case "SUBSCRIPTION_ACTIVATED":
+            await deliverSubscriptionActivatedEmail(payload);
+            return;
+
+        case "SUBSCRIPTION_EXPIRY_REMINDER":
+            await deliverSubscriptionExpiryReminderEmail(payload);
+            return;
+
+        default: {
+            const unsupportedKind: never = payload;
+            throw new Error(
+                `Unsupported subscription email: ${unsupportedKind}`,
+            );
+        }
+    }
+}
+
+/**
+ * Web Push delivery.
  */
 async function deliverPush(
     payload: NotificationPayload,
@@ -297,8 +667,6 @@ async function deliverPush(
     );
 
     if (results.length === 0) {
-        // No active devices means there is no push endpoint
-        // to deliver to. Do not retry this job forever.
         return;
     }
 
@@ -313,14 +681,31 @@ async function deliverPush(
             `Web Push failed for ${transientFailures.length} subscription(s).`,
         );
     }
-
-    // At least one valid subscription was attempted. Invalid
-    // subscriptions have already been deactivated.
 }
 
+/**
+ * Deliver one notification job.
+ */
 async function deliverJob(
     job: ClaimedJob,
 ): Promise<void> {
+    // Subscription emails have their own payload format.
+    // Do not pass them through the generic notification parser.
+    if (
+        job.channel === "EMAIL" &&
+        (
+            job.payload.kind === "SUBSCRIPTION_ACTIVATED" ||
+            job.payload.kind === "SUBSCRIPTION_EXPIRY_REMINDER"
+        )
+    ) {
+        await deliverSubscriptionEmail(
+            job.payload,
+            job.userId,
+        );
+
+        return;
+    }
+
     const payload = getPayload(job.payload);
 
     if (payload.userId !== job.userId) {
@@ -348,6 +733,7 @@ async function deliverJob(
 
         default: {
             const unsupportedChannel: never = job.channel;
+
             throw new Error(
                 `Unsupported notification channel: ${unsupportedChannel}`,
             );
@@ -356,12 +742,8 @@ async function deliverJob(
 }
 
 /**
-
-* Complete a successfully processed job.
-*
-* Only the worker that currently owns the processing lock
-* may complete the job.
-  */
+ * Complete a successfully processed job.
+ */
 async function completeJob(
     jobId: string,
     workerId: string,
@@ -400,11 +782,8 @@ async function completeJob(
     }
 }
 
-
 /**
  * Retry a failed job with exponential backoff.
- *
- * When attempts are exhausted, the job becomes FAILED.
  */
 async function failJob(
     job: ClaimedJob,
@@ -498,10 +877,6 @@ async function recoverStaleJobs(
             ),
         );
 
-    /*
-     * Jobs that have exhausted their attempts while abandoned
-     * should not remain PROCESSING forever.
-     */
     await db
         .update(notificationDeliveryJobs)
         .set({
@@ -542,12 +917,14 @@ export async function processNotificationBatch(
     succeeded: number;
     failed: number;
 }> {
-    const batchSize = options.batchSize ?? DEFAULT_BATCH_SIZE;
+    const batchSize =
+        options.batchSize ?? DEFAULT_BATCH_SIZE;
 
     const lockTimeoutMs =
         options.lockTimeoutMs ?? DEFAULT_LOCK_TIMEOUT_MS;
 
-    const workerId = options.workerId ?? randomUUID();
+    const workerId =
+        options.workerId ?? randomUUID();
 
     if (
         !Number.isSafeInteger(batchSize) ||

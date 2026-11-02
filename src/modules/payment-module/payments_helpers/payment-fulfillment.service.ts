@@ -11,9 +11,17 @@ import {
     subscriptions,
 } from "../../../database/schema/index.ts";
 
-import { activateSubscriptionInTransaction } from "../../subscriptions/subscription.service.ts";
+import {
+    activateSubscriptionInTransaction,
+    recordSubscriptionHistoryEvent,
+} from "../../subscriptions/subscription.service.ts";
 
 import { createNotification } from "../../notification-module/notification.service.ts";
+
+// import {
+//     enqueueSubscriptionActivatedEmail,
+//     enqueueSubscriptionExpiryReminderEmail,
+// } from "../../notification-module/subscription-email-delivery.service.ts";
 
 import { verifyPaystackTransaction } from "../paystack/paystack.service.ts";
 
@@ -24,6 +32,7 @@ import {
 } from "../../../helpers/payment/payment.helpers.ts";
 
 import type { PaystackTransactionDataLike } from "../payment.types.ts";
+import { enqueueSubscriptionActivatedEmail, enqueueSubscriptionExpiryReminderEmail } from "../../notification-module/subscription-email-delivery.service.ts";
 
 /*
  * ============================================================
@@ -59,12 +68,6 @@ export class UnsupportedPaystackEventError extends Error {
  * ============================================================
  * PERSISTED PAYSTACK EVENT PROCESSING
  * ============================================================
- *
- * Called by the payment-event worker after the webhook has been
- * signature-verified and durably persisted.
- *
- * The worker should handle UnsupportedPaystackEventError by marking
- * the event IGNORED instead of retrying it indefinitely.
  */
 
 export async function processPersistedPaystackEvent(
@@ -79,10 +82,6 @@ export async function processPersistedPaystackEvent(
 
     switch (eventType) {
         case "charge.success": {
-            /*
-             * Never fulfill a payment using webhook payload data alone.
-             * Independently verify the transaction with Paystack.
-             */
             const gateway = await verifyPaystackTransaction(reference);
 
             const verifiedTransaction = gateway.data;
@@ -108,11 +107,6 @@ export async function processPersistedPaystackEvent(
 
         case "charge.failed":
         case "charge.abandoned": {
-            /*
-             * Verify the transaction before updating its status.
-             * A delayed failure event must never downgrade a successful
-             * payment.
-             */
             const gateway = await verifyPaystackTransaction(reference);
 
             const verifiedTransaction = gateway.data;
@@ -125,10 +119,6 @@ export async function processPersistedPaystackEvent(
 
             validateEventTransactionReference(reference, verifiedTransaction);
 
-            /*
-             * A transaction may have succeeded even if an older
-             * failure event is being delivered.
-             */
             if (verifiedTransaction.status === "success") {
                 await fulfillSuccessfulPayment(reference, verifiedTransaction);
 
@@ -145,17 +135,6 @@ export async function processPersistedPaystackEvent(
         }
 
         case "charge.reversed": {
-            /*
-             * A reversal is a financial event, not an ordinary failed
-             * payment. Do not overwrite SUCCESS with FAILED.
-             *
-             * A dedicated reversal workflow should record the reversal,
-             * reconcile the original transaction, and determine whether
-             * subscription or boost access needs to be adjusted.
-             *
-             * Until that workflow exists, throw so the worker can retain
-             * the event for retry/dead-letter investigation.
-             */
             throw new Error(
                 "Reversed payment events require the dedicated reversal workflow.",
             );
@@ -171,17 +150,6 @@ export async function processPersistedPaystackEvent(
  * ============================================================
  * PAYSTACK HTTP WEBHOOK HANDLER
  * ============================================================
- *
- * IMPORTANT:
- * This function verifies the signature and validates the payload.
- * It does not fulfill payments synchronously.
- *
- * To use durable webhook processing, the controller must persist the
- * complete webhook event using the payment-event ingestion service,
- * then return HTTP 200 after persistence succeeds.
- *
- * This handler currently remains available for compatibility with
- * existing callers. Do not use it as a substitute for event ingestion.
  */
 
 export async function handlePaystackWebhook(
@@ -218,11 +186,6 @@ export async function handlePaystackWebhook(
         throw new Error("Invalid Paystack webhook transaction data.");
     }
 
-    /*
-     * This validates the basic transaction shape. Durable ingestion
-     * should store the complete original payload and let the worker
-     * perform independent gateway verification.
-     */
     const transaction = payload.data as PaystackTransactionDataLike;
 
     if (
@@ -232,15 +195,6 @@ export async function handlePaystackWebhook(
         throw new Error("Paystack webhook transaction reference is missing.");
     }
 
-    /*
-     * Do not call fulfillSuccessfulPayment() directly here.
-     * The controller should use the ingestion service to persist this
-     * event after signature verification.
-     *
-     * This compatibility handler processes the event through the same
-     * gateway-verification path. New webhook controllers should instead
-     * persist the event and let the background worker process it.
-     */
     await processPersistedPaystackEvent(payload.event, transaction);
 }
 
@@ -248,9 +202,6 @@ export async function handlePaystackWebhook(
  * ============================================================
  * VERIFY PAYMENT AND FULFILL
  * ============================================================
- *
- * Used by an authenticated user-facing payment verification endpoint.
- * The user must own the payment reference.
  */
 
 export async function verifyAndFulfillPayment(
@@ -269,9 +220,6 @@ export async function verifyAndFulfillPayment(
         throw new Error("Payment not found.");
     }
 
-    /*
-     * An already successful payment is idempotent.
-     */
     if (payment.status === "SUCCESS") {
         return payment;
     }
@@ -319,19 +267,73 @@ async function updatePaymentStatusFromGateway(
 ): Promise<void> {
     const mappedStatus = mapGatewayStatus(gatewayStatus);
 
-    await db
-        .update(payments)
-        .set({
-            status: mappedStatus,
-            providerData,
-            updatedAt: new Date(),
-        })
-        .where(
-            and(
-                eq(payments.reference, reference),
-                sql`${payments.status} <> 'SUCCESS'`,
-            ),
-        );
+    await db.transaction(async (tx) => {
+        const updatedRows = await tx
+            .update(payments)
+            .set({
+                status: mappedStatus,
+                providerData,
+                updatedAt: new Date(),
+            })
+            .where(
+                and(
+                    eq(payments.reference, reference),
+                    sql`${payments.status} <> 'SUCCESS'`,
+                ),
+            )
+            .returning();
+
+        const updatedPayment = updatedRows[0];
+
+        if (!updatedPayment) {
+            return;
+        }
+
+        if (
+            updatedPayment.purpose !== "SUBSCRIPTION" ||
+            !updatedPayment.subscriptionId
+        ) {
+            return;
+        }
+
+        if (mappedStatus !== "FAILED") {
+            return;
+        }
+
+        const subscriptionRows = await tx
+            .select()
+            .from(subscriptions)
+            .where(
+                eq(
+                    subscriptions.id,
+                    updatedPayment.subscriptionId,
+                ),
+            )
+            .limit(1);
+
+        const subscription = subscriptionRows[0];
+
+        if (!subscription) {
+            throw new Error(
+                "Subscription not found while recording payment failure.",
+            );
+        }
+
+        await recordSubscriptionHistoryEvent(tx, {
+            subscriptionId: subscription.id,
+            userId: subscription.userId,
+            event: "PAYMENT_FAILED",
+            newStatus: subscription.status,
+            amount: updatedPayment.amount,
+            currency: updatedPayment.currency,
+            reason: "Paystack payment was not successful.",
+            metadata: JSON.stringify({
+                paymentId: updatedPayment.id,
+                paymentReference: updatedPayment.reference,
+                gatewayStatus,
+            }),
+        });
+    });
 }
 
 /*
@@ -373,9 +375,6 @@ function validateGatewayTransaction(
  * ============================================================
  * SUCCESSFUL PAYMENT FULFILLMENT
  * ============================================================
- *
- * Uses a database transaction and a PostgreSQL advisory transaction
- * lock to prevent concurrent fulfillment of the same payment.
  */
 
 async function fulfillSuccessfulPayment(
@@ -396,11 +395,6 @@ async function fulfillSuccessfulPayment(
                 throw new Error("Payment record not found.");
             }
 
-            /*
-             * Serialize fulfillment attempts for this payment.
-             * The lock is held until this transaction commits
-             * or rolls back.
-             */
             await tx.execute(
                 sql`
                     SELECT pg_advisory_xact_lock(
@@ -411,11 +405,6 @@ async function fulfillSuccessfulPayment(
                 `,
             );
 
-            /*
-             * CRITICAL: re-read the payment after acquiring the
-             * advisory lock. The previously selected row may have
-             * become stale while this transaction was waiting.
-             */
             const lockedPaymentRows = await tx
                 .select()
                 .from(payments)
@@ -430,10 +419,6 @@ async function fulfillSuccessfulPayment(
                 );
             }
 
-            /*
-             * Another request may have fulfilled the payment while
-             * this request was waiting for the lock.
-             */
             if (payment.status === "SUCCESS") {
                 return {
                     payment,
@@ -471,19 +456,28 @@ async function fulfillSuccessfulPayment(
             }
 
             if (payment.purpose === "BOOST") {
-                return fulfillBoostPayment(tx, payment, transaction, paidAt);
+                return fulfillBoostPayment(
+                    tx,
+                    payment,
+                    transaction,
+                    paidAt,
+                );
             }
 
-            throw new Error(`Unsupported payment purpose: ${payment.purpose}.`);
+            throw new Error(
+                `Unsupported payment purpose: ${payment.purpose}.`,
+            );
         },
     );
 
     /*
-     * The database transaction has committed before notifications
-     * are attempted. Notification delivery should eventually be moved
-     * to a durable outbox so a notification failure cannot lose the
-     * notification permanently.
+     * The transaction has committed before in-app notifications
+     * are attempted.
+     *
+     * Subscription emails are handled by the durable email jobs
+     * inserted inside the payment transaction.
      */
+
     if (result.alreadyFulfilled) {
         return result.payment;
     }
@@ -507,6 +501,9 @@ async function fulfillSuccessfulPayment(
                 reference,
                 subscriptionId: result.payment.subscriptionId,
             },
+
+            // The dedicated subscription email is queued separately.
+            sendEmail: false,
         });
     }
 
@@ -521,7 +518,8 @@ async function fulfillSuccessfulPayment(
 
             title: "Boost payment successful",
 
-            message: "Your payment was received successfully. Your listing boost is awaiting administrator approval. Its duration will begin after approval.",
+            message:
+                "Your payment was received successfully. Your listing boost is awaiting administrator approval. Its duration will begin after approval.",
 
             data: {
                 paymentId: result.payment.id,
@@ -553,11 +551,6 @@ async function fulfillSubscriptionPayment(
         );
     }
 
-    /*
-     * Lock the subscription row so its ownership, pricing,
-     * and lifecycle state cannot be changed concurrently
-     * while this payment is being fulfilled.
-     */
     const subscriptionRows = await tx
         .select()
         .from(subscriptions)
@@ -578,38 +571,24 @@ async function fulfillSubscriptionPayment(
         );
     }
 
-    /*
-     * A payment must never activate another user's subscription.
-     */
     if (subscription.userId !== payment.userId) {
         throw new Error(
             "Payment and subscription ownership mismatch.",
         );
     }
 
-    /*
-     * Validate the persisted financial snapshot.
-     */
-    if (
-        payment.amount !== subscription.effectivePrice
-    ) {
+    if (payment.amount !== subscription.effectivePrice) {
         throw new Error(
             "Payment amount does not match the subscription price.",
         );
     }
 
-    if (
-        payment.currency !== subscription.currency
-    ) {
+    if (payment.currency !== subscription.currency) {
         throw new Error(
             "Payment currency does not match the subscription currency.",
         );
     }
 
-    /*
-     * Check that the payment metadata references the same
-     * subscription and plan, when those fields are present.
-     */
     const providerData = payment.providerData;
 
     if (
@@ -617,10 +596,7 @@ async function fulfillSubscriptionPayment(
         providerData !== null &&
         !Array.isArray(providerData)
     ) {
-        const storedData = providerData as Record<
-            string,
-            unknown
-        >;
+        const storedData = providerData as Record<string, unknown>;
 
         if (
             storedData.subscriptionId !== undefined &&
@@ -641,11 +617,6 @@ async function fulfillSubscriptionPayment(
         }
     }
 
-    /*
-     * Confirm that Paystack reports a successful transaction.
-     * The caller independently validates the gateway reference,
-     * amount, and currency before reaching this function.
-     */
     if (transaction.status !== "success") {
         throw new Error(
             "Paystack transaction is not successful.",
@@ -653,8 +624,8 @@ async function fulfillSubscriptionPayment(
     }
 
     /*
-     * Activate the subscription and grant credits in the same
-     * database transaction as the payment update.
+     * Activate the subscription and grant its listing credits.
+     * Everything remains inside this payment transaction.
      */
     const activatedSubscription =
         await activateSubscriptionInTransaction(
@@ -667,19 +638,14 @@ async function fulfillSubscriptionPayment(
         .update(payments)
         .set({
             status: "SUCCESS",
-            gatewayTransactionId: String(
-                transaction.id,
-            ),
+            gatewayTransactionId: String(transaction.id),
             providerData: transaction,
             paidAt,
             updatedAt: new Date(),
         })
         .where(
             and(
-                eq(
-                    payments.id,
-                    payment.id,
-                ),
+                eq(payments.id, payment.id),
                 sql`${payments.status} <> 'SUCCESS'`,
             ),
         )
@@ -692,6 +658,31 @@ async function fulfillSubscriptionPayment(
             "Subscription payment fulfillment failed.",
         );
     }
+
+    /*
+     * Queue both subscription emails inside the same transaction.
+     *
+     * If this transaction rolls back, neither email job is created.
+     * If it commits, the notification worker can deliver them later.
+     */
+
+    if (!activatedSubscription.expiresAt) {
+        throw new Error(
+            "Activated subscription has no expiry date.",
+        );
+    }
+
+    await enqueueSubscriptionActivatedEmail(tx, {
+        userId: subscription.userId,
+        subscriptionId: subscription.id,
+        paymentId: fulfilled.id,
+    });
+
+    await enqueueSubscriptionExpiryReminderEmail(tx, {
+        userId: subscription.userId,
+        subscriptionId: subscription.id,
+        expiresAt: activatedSubscription.expiresAt,
+    });
 
     await writeAuditRecord(tx, {
         actorUserId: payment.userId,
@@ -736,9 +727,6 @@ async function fulfillBoostPayment(
         );
     }
 
-    /*
-     * Find the boost and its associated listing.
-     */
     const boostRows = await tx
         .select({
             boost: listingBoosts,
@@ -763,22 +751,11 @@ async function fulfillBoostPayment(
     const boostRecord = boostRows[0];
 
     if (!boostRecord) {
-        /*
-         * Throwing here rolls back the payment update.
-         * The caller must retain/retry the event and alert
-         * operations for reconciliation.
-         *
-         * Do not silently discard a payment whose boost
-         * target is missing.
-         */
         throw new Error(
             "Boost record or associated listing not found. Manual payment reconciliation is required.",
         );
     }
 
-    /*
-     * Serialize fulfillment for this listing.
-     */
     await tx.execute(sql`
         SELECT pg_advisory_xact_lock(
             hashtext(
@@ -787,9 +764,6 @@ async function fulfillBoostPayment(
         )
     `);
 
-    /*
-     * Re-read the boost after acquiring the listing lock.
-     */
     const lockedBoostRows = await tx
         .select({
             boost: listingBoosts,
@@ -811,26 +785,12 @@ async function fulfillBoostPayment(
         );
     }
 
-    /*
-     * A boost that is already active, rejected, cancelled,
-     * or otherwise transitioned must not be silently moved
-     * into the approval queue.
-     *
-     * The payment and entitlement need explicit reconciliation
-     * if this happens after the gateway reports success.
-     */
     if (lockedBoost.status !== "PENDING") {
         throw new Error(
             `Boost is no longer pending (current status: ${lockedBoost.status}). Manual payment reconciliation is required.`,
         );
     }
 
-    /*
-     * Record the payment as successful first, within the same
-     * transaction as the transition to AWAITING_APPROVAL.
-     *
-     * This does not activate the boost or start its duration.
-     */
     const updatedPaymentRows = await tx
         .update(payments)
         .set({
@@ -842,10 +802,7 @@ async function fulfillBoostPayment(
         })
         .where(
             and(
-                eq(
-                    payments.id,
-                    payment.id,
-                ),
+                eq(payments.id, payment.id),
                 sql`${payments.status} <> 'SUCCESS'`,
             ),
         )
@@ -877,14 +834,8 @@ async function fulfillBoostPayment(
         .set({
             status: "AWAITING_APPROVAL",
             paymentVerifiedAt: paidAt,
-
-            /*
-             * Activation timestamps must remain unset
-             * until the administrator approves the boost.
-             */
             startsAt: null,
             expiresAt: null,
-
             reviewedBy: null,
             reviewedAt: null,
             reviewNote: null,

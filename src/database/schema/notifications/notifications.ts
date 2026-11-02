@@ -10,9 +10,9 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { users } from "../users/users.ts";
-import { table } from "node:console";
 
-// Every notification is stored so the user can read it later even when offline.
+// Every notification is stored so the user can read it later,
+// even when they are offline.
 export const notificationTypeEnum = pgEnum(
     "notification_type",
     [
@@ -22,13 +22,17 @@ export const notificationTypeEnum = pgEnum(
         "LISTING_REJECTED",
         "LISTING_EXPIRED",
         "LISTING_SOLD",
+
         "SUBSCRIPTION_PAYMENT_PENDING",
         "SUBSCRIPTION_ACTIVATED",
         "SUBSCRIPTION_EXPIRED",
+        "SUBSCRIPTION_EXPIRY_REMINDER",
+
         "BOOST_PAYMENT_PENDING",
         "BOOST_PAYMENT_SUCCESSFUL",
         "BOOST_ACTIVATED",
         "BOOST_EXPIRED",
+
         "MESSAGE_RECEIVED",
         "DEALER_VERIFIED",
         "DEALER_APPLICATION_REJECTED",
@@ -38,9 +42,10 @@ export const notificationTypeEnum = pgEnum(
 export const notifications = pgTable(
     "notifications",
     {
-        id: uuid("id").defaultRandom().primaryKey(),
+        id: uuid("id")
+            .defaultRandom()
+            .primaryKey(),
 
-        // The user who should receive this notification.
         userId: uuid("user_id")
             .notNull()
             .references(() => users.id, {
@@ -59,14 +64,12 @@ export const notifications = pgTable(
             length: 1000,
         }).notNull(),
 
-        // Extra structured information for the frontend, such as listingId/paymentId.
         data: jsonb("data"),
 
         idempotencyKey: varchar("idempotency_key", {
             length: 255,
         }),
 
-        // Read notifications remain stored for history, but unread count uses this flag.
         read: boolean("read")
             .notNull()
             .default(false),
@@ -91,9 +94,10 @@ export const notifications = pgTable(
 export const notificationPreferences = pgTable(
     "notification_preferences",
     {
-        id: uuid("id").defaultRandom().primaryKey(),
+        id: uuid("id")
+            .defaultRandom()
+            .primaryKey(),
 
-        // One preference row belongs to one user.
         userId: uuid("user_id")
             .notNull()
             .unique()

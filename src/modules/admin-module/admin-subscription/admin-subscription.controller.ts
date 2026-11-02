@@ -103,7 +103,12 @@ export async function subscriptionsList(
         const query = z.object({
             page: z.coerce.number().int().min(1).default(1),
             limit: z.coerce.number().int().min(1).max(100).default(20),
-            status: z.enum(["PENDING", "ACTIVE", "EXPIRED", "CANCELLED"]).optional(),
+            status: z.enum([
+                "PENDING",
+                "ACTIVE",
+                "EXPIRED",
+                "CANCELLED",
+            ]).optional(),
         }).parse(request.query);
 
         const result = await listAdminSubscriptions({
@@ -114,13 +119,27 @@ export async function subscriptionsList(
                 : {}),
         });
 
+        const items = result.items.map(
+            ({ subscription, customer, plan }) => ({
+                ...subscription,
+                user: customer,
+                plan,
+            }),
+        );
+
         response.status(200).json({
             success: true,
-            data: result.items,
-            pagination: result.pagination,
+            data: {
+                items,
+                pagination: result.pagination,
+            },
         });
     } catch (error) {
-        sendError(response, error, "Unable to retrieve subscriptions.");
+        sendError(
+            response,
+            error,
+            "Unable to retrieve subscriptions.",
+        );
     }
 }
 

@@ -9,16 +9,21 @@ import {
     env,
     isEmailConfigured,
 } from "../../config/env.ts";
+
 import { buildDealerApprovalEmail } from "./templates/dealer-approval.email.ts";
 import { buildDealerRejectionEmail } from "./templates/dealer-rejection.email.ts";
+
+const BRAND_COLOR = "#1491FF";
+const BRAND_DARK = "#0877D9";
+const BRAND_LIGHT = "#EAF5FF";
+const BRAND_SOFT = "#F4F9FF";
+
+const CLIENT_URL = env.CLIENT_URL.replace(/\/+$/, "");
 
 let transporter: Transporter | null = null;
 
 /**
  * Returns the configured Nodemailer transporter.
- *
- * The transporter is created lazily and reused for subsequent
- * email operations.
  */
 function getTransporter(): Transporter {
     const {
@@ -51,19 +56,11 @@ function getTransporter(): Transporter {
                 pass: SMTP_PASSWORD,
             },
 
-            // Connection establishment timeout.
             connectionTimeout: 8_000,
-
-            // Time allowed for SMTP greeting.
             greetingTimeout: 8_000,
-
-            // Time allowed for SMTP commands.
             socketTimeout: 12_000,
 
-            // Avoid waiting indefinitely for pooled connections.
             pool: false,
-
-            // Keep SMTP errors explicit.
             logger: false,
             debug: false,
         });
@@ -104,10 +101,277 @@ function escapeHtml(value: string): string {
 }
 
 /**
+ * Formats dates using Nigerian local time.
+ */
+function formatEmailDate(
+    value: Date | string,
+): string {
+    const date = value instanceof Date
+        ? value
+        : new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Not available";
+    }
+
+    return new Intl.DateTimeFormat("en-NG", {
+        dateStyle: "long",
+        timeStyle: "short",
+        timeZone: "Africa/Lagos",
+    }).format(date);
+}
+
+/**
+ * Formats monetary values safely.
+ */
+function formatEmailMoney(
+    amount: string | number,
+    currency: string,
+): string {
+    const numericAmount = Number(amount);
+
+    if (!Number.isFinite(numericAmount)) {
+        return `${currency} ${String(amount)}`;
+    }
+
+    try {
+        return new Intl.NumberFormat("en-NG", {
+            style: "currency",
+            currency: currency.toUpperCase(),
+        }).format(numericAmount);
+    } catch {
+        return `${currency.toUpperCase()} ${numericAmount.toLocaleString("en-NG")}`;
+    }
+}
+
+/**
+ * Shared branded email layout.
+ */
+function buildEmailLayout(input: {
+    title: string;
+    preheader: string;
+    content: string;
+    footer?: string;
+}): string {
+    return `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8" />
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            />
+            <meta
+                name="color-scheme"
+                content="light"
+            />
+            <title>${escapeHtml(input.title)}</title>
+        </head>
+
+        <body style="
+            margin:0;
+            padding:0;
+            background:#F3F6FA;
+            font-family:Arial,Helvetica,sans-serif;
+            color:#172033;
+        ">
+            <div style="
+                display:none;
+                max-height:0;
+                overflow:hidden;
+                opacity:0;
+                color:transparent;
+            ">
+                ${escapeHtml(input.preheader)}
+            </div>
+
+            <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="background:#F3F6FA;padding:32px 12px;"
+            >
+                <tr>
+                    <td align="center">
+
+                        <table
+                            role="presentation"
+                            width="600"
+                            cellspacing="0"
+                            cellpadding="0"
+                            border="0"
+                            style="
+                                width:100%;
+                                max-width:600px;
+                                background:#ffffff;
+                                border-radius:16px;
+                                overflow:hidden;
+                                border:1px solid #E5EAF1;
+                            "
+                        >
+
+                            <tr>
+                                <td style="
+                                    background:${BRAND_COLOR};
+                                    padding:30px 32px;
+                                    text-align:center;
+                                ">
+                                    <div style="
+                                        font-size:29px;
+                                        line-height:1.2;
+                                        font-weight:800;
+                                        letter-spacing:1px;
+                                        color:#ffffff;
+                                    ">
+                                        KARMASS
+                                    </div>
+
+                                    <div style="
+                                        margin-top:7px;
+                                        font-size:12px;
+                                        color:#EAF5FF;
+                                        letter-spacing:1.5px;
+                                    ">
+                                        YOUR CAR MARKETPLACE
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="
+                                    padding:36px 32px;
+                                ">
+                                    <h1 style="
+                                        margin:0 0 20px;
+                                        font-size:25px;
+                                        line-height:1.35;
+                                        color:#172033;
+                                    ">
+                                        ${escapeHtml(input.title)}
+                                    </h1>
+
+                                    ${input.content}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="
+                                    padding:24px 32px;
+                                    background:${BRAND_SOFT};
+                                    border-top:1px solid #E5EAF1;
+                                    text-align:center;
+                                ">
+                                    <p style="
+                                        margin:0 0 8px;
+                                        font-size:13px;
+                                        color:#64748B;
+                                    ">
+                                        ${escapeHtml(
+                                            input.footer ??
+                                            "Thank you for choosing KARMASS."
+                                        )}
+                                    </p>
+
+                                    <p style="
+                                        margin:0;
+                                        font-size:12px;
+                                        color:#94A3B8;
+                                    ">
+                                        &copy; ${new Date().getFullYear()} KARMASS.
+                                        All rights reserved.
+                                    </p>
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+    `;
+}
+
+/**
+ * Reusable information row for subscription emails.
+ */
+function buildEmailDetailRow(
+    label: string,
+    value: string,
+): string {
+    return `
+        <tr>
+            <td style="
+                padding:13px 14px;
+                border-bottom:1px solid #E8EDF4;
+                font-size:13px;
+                color:#64748B;
+                width:42%;
+            ">
+                ${escapeHtml(label)}
+            </td>
+
+            <td style="
+                padding:13px 14px;
+                border-bottom:1px solid #E8EDF4;
+                font-size:14px;
+                font-weight:600;
+                color:#172033;
+                text-align:right;
+            ">
+                ${escapeHtml(value)}
+            </td>
+        </tr>
+    `;
+}
+
+/**
+ * Reusable CTA button.
+ */
+function buildEmailButton(
+    url: string,
+    label: string,
+): string {
+    return `
+        <table
+            role="presentation"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="margin:26px 0 12px;"
+        >
+            <tr>
+                <td
+                    align="center"
+                    bgcolor="${BRAND_COLOR}"
+                    style="border-radius:8px;"
+                >
+                    <a
+                        href="${escapeHtml(url)}"
+                        style="
+                            display:inline-block;
+                            padding:15px 26px;
+                            color:#ffffff;
+                            font-size:14px;
+                            font-weight:700;
+                            text-decoration:none;
+                            border-radius:8px;
+                        "
+                    >
+                        ${escapeHtml(label)}
+                    </a>
+                </td>
+            </tr>
+        </table>
+    `;
+}
+
+/**
  * Shared email delivery function.
- *
- * Logs the result of submitting an email to the SMTP provider.
- * Throws when SMTP fails or does not accept the recipient.
  *
  * SMTP acceptance does not guarantee final inbox delivery.
  */
@@ -119,9 +383,7 @@ async function sendMailAndConfirm(
     const startedAt = Date.now();
 
     try {
-        const info = await getTransporter().sendMail(
-            options,
-        );
+        const info = await getTransporter().sendMail(options);
 
         const accepted = info.accepted ?? [];
         const rejected = info.rejected ?? [];
@@ -166,9 +428,9 @@ async function sendMailAndConfirm(
                 error:
                     error instanceof Error
                         ? {
-                              name: error.name,
-                              message: error.message,
-                          }
+                            name: error.name,
+                            message: error.message,
+                        }
                         : String(error),
             },
         );
@@ -178,10 +440,7 @@ async function sendMailAndConfirm(
 }
 
 /**
- * Verifies that Nodemailer can connect to and authenticate
- * with the configured SMTP server.
- *
- * This does not guarantee delivery to a particular inbox.
+ * Verifies SMTP connectivity and authentication.
  */
 export async function verifyEmailTransport(): Promise<void> {
     const mailTransporter = getTransporter();
@@ -190,8 +449,7 @@ export async function verifyEmailTransport(): Promise<void> {
 }
 
 /**
- * Sends an account verification email containing a code
- * and a verification link.
+ * Account verification email.
  */
 export async function sendEmailVerificationEmail(
     input: {
@@ -202,7 +460,7 @@ export async function sendEmailVerificationEmail(
     },
 ): Promise<void> {
     const verificationUrl =
-        `${env.CLIENT_URL}/verify-email?token=${encodeURIComponent(input.token)}`;
+        `${CLIENT_URL}/verify-email?token=${encodeURIComponent(input.token)}`;
 
     await sendMailAndConfirm(
         "verification",
@@ -221,7 +479,7 @@ export async function sendEmailVerificationEmail(
                 "",
                 `Your verification code is: ${input.code}`,
                 "",
-                `You can also verify your email using this link: ${verificationUrl}`,
+                `Verify your email: ${verificationUrl}`,
                 "",
                 `This verification request expires in ${env.EMAIL_VERIFICATION_TTL_MINUTES} minutes.`,
                 "",
@@ -230,68 +488,64 @@ export async function sendEmailVerificationEmail(
                 "KARMASS",
             ].join("\n"),
 
-            html: `
-                <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;max-width:600px;margin:0 auto;padding:24px">
-                    <h2 style="color:#7008E7">
-                        Verify your KARMASS account
-                    </h2>
+            html: buildEmailLayout({
+                title: "Verify your KARMASS account",
+                preheader: "Complete your email verification.",
+                content: `
+                    <p>Hello ${escapeHtml(input.firstName)},</p>
 
-                    <p>
-                        Hello ${escapeHtml(input.firstName)},
+                    <p style="line-height:1.7;color:#475569;">
+                        Welcome to KARMASS. Please verify your email
+                        address to activate your account.
                     </p>
 
-                    <p>
-                        Welcome to KARMASS. Please verify your
-                        email address to activate your account.
-                    </p>
-
-                    <p>
+                    <p style="color:#475569;">
                         Your verification code is:
                     </p>
 
-                    <div style="padding:16px;background:#f5f3ff;border-radius:8px;text-align:center">
-                        <span style="font-size:28px;font-weight:700;letter-spacing:8px;color:#7008E7">
+                    <div style="
+                        padding:22px;
+                        background:${BRAND_LIGHT};
+                        border:1px solid #CDE5FF;
+                        border-radius:10px;
+                        text-align:center;
+                    ">
+                        <span style="
+                            font-size:30px;
+                            font-weight:800;
+                            letter-spacing:8px;
+                            color:${BRAND_DARK};
+                        ">
                             ${escapeHtml(input.code)}
                         </span>
                     </div>
 
-                    <p>
-                        You can also verify your email using
-                        the button below.
+                    <p style="color:#475569;line-height:1.7;">
+                        You can also verify your email using the button below.
                     </p>
 
-                    <p>
-                        <a
-                            href="${escapeHtml(verificationUrl)}"
-                            style="display:inline-block;padding:12px 20px;background:#7008E7;color:#ffffff;text-decoration:none;border-radius:6px"
-                        >
-                            Verify Email
-                        </a>
-                    </p>
+                    ${buildEmailButton(
+                        verificationUrl,
+                        "Verify Email Address",
+                    )}
 
-                    <p>
+                    <p style="font-size:13px;color:#64748B;">
                         This verification request expires in
-                        ${env.EMAIL_VERIFICATION_TTL_MINUTES}
-                        minutes.
+                        ${env.EMAIL_VERIFICATION_TTL_MINUTES} minutes.
                     </p>
 
-                    <p>
+                    <p style="font-size:13px;color:#64748B;">
                         If you did not create a KARMASS account,
                         you can ignore this email.
                     </p>
-
-                    <p>KARMASS</p>
-                </div>
-            `,
+                `,
+            }),
         },
     );
 }
 
 /**
- * Sends a general notification email.
- *
- * Used for application notifications and administrator-sent
- * messages to individual users.
+ * General notification email.
  */
 export async function sendNotificationEmail(
     input: {
@@ -317,29 +571,28 @@ export async function sendNotificationEmail(
                 "KARMASS",
             ].join("\n"),
 
-            html: `
-                <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;max-width:600px;margin:0 auto;padding:24px">
-                    <h2 style="color:#7008E7">
-                        ${escapeHtml(input.title)}
-                    </h2>
+            html: buildEmailLayout({
+                title: input.title,
+                preheader: input.message,
+                content: `
+                    <p>Hello ${escapeHtml(input.firstName)},</p>
 
-                    <p>
-                        Hello ${escapeHtml(input.firstName)},
-                    </p>
-
-                    <p style="white-space:pre-wrap">
+                    <p style="
+                        white-space:pre-wrap;
+                        line-height:1.8;
+                        color:#475569;
+                        font-size:15px;
+                    ">
                         ${escapeHtml(input.message)}
                     </p>
-
-                    <p>KARMASS</p>
-                </div>
-            `,
+                `,
+            }),
         },
     );
 }
 
 /**
- * Sends a password-reset email.
+ * Password-reset email.
  */
 export async function sendPasswordResetEmail(
     input: {
@@ -349,7 +602,7 @@ export async function sendPasswordResetEmail(
     },
 ): Promise<void> {
     const resetUrl =
-        `${env.CLIENT_URL}/reset-password?token=${encodeURIComponent(input.token)}`;
+        `${CLIENT_URL}/reset-password?token=${encodeURIComponent(input.token)}`;
 
     await sendMailAndConfirm(
         "password-reset",
@@ -373,78 +626,463 @@ export async function sendPasswordResetEmail(
                 "KARMASS",
             ].join("\n"),
 
-            html: `
-                <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;max-width:600px;margin:0 auto;padding:24px">
-                    <h2 style="color:#7008E7">
-                        Reset your KARMASS password
-                    </h2>
+            html: buildEmailLayout({
+                title: "Reset your KARMASS password",
+                preheader: "Use the secure link to reset your password.",
+                content: `
+                    <p>Hello ${escapeHtml(input.firstName)},</p>
 
-                    <p>
-                        Hello ${escapeHtml(input.firstName)},
+                    <p style="line-height:1.7;color:#475569;">
+                        We received a request to reset your KARMASS password.
                     </p>
 
-                    <p>
-                        We received a request to reset your
-                        KARMASS password.
-                    </p>
+                    ${buildEmailButton(
+                        resetUrl,
+                        "Reset My Password",
+                    )}
 
-                    <p>
-                        <a
-                            href="${escapeHtml(resetUrl)}"
-                            style="display:inline-block;padding:12px 20px;background:#7008E7;color:#ffffff;text-decoration:none;border-radius:6px"
-                        >
-                            Reset Password
-                        </a>
-                    </p>
-
-                    <p>
+                    <p style="font-size:13px;color:#64748B;">
                         This link expires in
-                        ${env.PASSWORD_RESET_TTL_MINUTES}
-                        minutes.
+                        ${env.PASSWORD_RESET_TTL_MINUTES} minutes.
                     </p>
 
-                    <p>
+                    <p style="font-size:13px;color:#64748B;">
                         If you did not request a password reset,
                         you can safely ignore this email.
                     </p>
-
-                    <p>KARMASS</p>
-                </div>
-            `,
+                `,
+            }),
         },
     );
 }
 
+/**
+ * Subscription activation confirmation email.
+ *
+ * Payment date, activation date and expiry date are intentionally
+ * displayed separately to avoid confusing payment verification
+ * with the actual subscription activation time.
+ */
+export async function sendSubscriptionActivatedEmail(
+    input: {
+        email: string;
+        firstName: string;
+        planName: string;
+        amount: string | number;
+        currency: string;
+        listingCredits: number;
+        paymentDate: Date;
+        activationDate: Date;
+        expiryDate: Date;
+    },
+): Promise<void> {
+    const paymentDate = formatEmailDate(input.paymentDate);
+    const activationDate = formatEmailDate(input.activationDate);
+    const expiryDate = formatEmailDate(input.expiryDate);
+
+    const amount = formatEmailMoney(
+        input.amount,
+        input.currency,
+    );
+
+    const dashboardUrl =
+        `${CLIENT_URL}/dashboard/subscriptions/plans`;
+
+    const html = buildEmailLayout({
+        title: "Your subscription is now active!",
+        preheader: `Your ${input.planName} subscription has been successfully activated.`,
+        content: `
+            <div style="
+                display:inline-block;
+                padding:7px 13px;
+                background:${BRAND_LIGHT};
+                color:${BRAND_DARK};
+                border-radius:30px;
+                font-size:12px;
+                font-weight:700;
+                margin-bottom:18px;
+            ">
+                SUBSCRIPTION ACTIVATED
+            </div>
+
+            <p>Hello ${escapeHtml(input.firstName)},</p>
+
+            <p style="
+                font-size:15px;
+                line-height:1.8;
+                color:#475569;
+            ">
+                Great news! Your payment has been successfully verified
+                and your KARMASS subscription is now active.
+            </p>
+
+            <div style="
+                margin:24px 0;
+                padding:22px;
+                background:${BRAND_SOFT};
+                border:1px solid #DCEEFF;
+                border-radius:12px;
+            ">
+                <p style="
+                    margin:0 0 7px;
+                    font-size:12px;
+                    color:#64748B;
+                    text-transform:uppercase;
+                    letter-spacing:1px;
+                ">
+                    Your subscription plan
+                </p>
+
+                <h2 style="
+                    margin:0;
+                    font-size:23px;
+                    color:${BRAND_DARK};
+                ">
+                    ${escapeHtml(input.planName)}
+                </h2>
+
+                <p style="
+                    margin:10px 0 0;
+                    font-size:14px;
+                    color:#475569;
+                ">
+                    ${escapeHtml(amount)} paid
+                </p>
+            </div>
+
+            <h3 style="
+                margin:26px 0 12px;
+                font-size:16px;
+                color:#172033;
+            ">
+                Subscription details
+            </h3>
+
+            <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="
+                    border:1px solid #E8EDF4;
+                    border-radius:9px;
+                    overflow:hidden;
+                "
+            >
+                ${buildEmailDetailRow(
+                    "Plan",
+                    input.planName,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Payment amount",
+                    amount,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Listing credits granted",
+                    input.listingCredits.toLocaleString("en-NG"),
+                )}
+
+                ${buildEmailDetailRow(
+                    "Payment date",
+                    paymentDate,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Activation date",
+                    activationDate,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Expiry date",
+                    expiryDate,
+                )}
+            </table>
+
+            <div style="
+                margin-top:24px;
+                padding:17px;
+                background:#F0FDF4;
+                border:1px solid #BBF7D0;
+                border-radius:9px;
+            ">
+                <p style="
+                    margin:0;
+                    font-size:14px;
+                    line-height:1.7;
+                    color:#166534;
+                ">
+                    Your subscription benefits are now available.
+                    You can visit your dashboard to manage your
+                    subscription and vehicle listings.
+                </p>
+            </div>
+
+            ${buildEmailButton(
+                dashboardUrl,
+                "Go to My Dashboard",
+            )}
+
+            <p style="
+                margin-top:24px;
+                font-size:13px;
+                line-height:1.7;
+                color:#64748B;
+            ">
+                Thank you for choosing KARMASS. We're glad to have
+                you with us.
+            </p>
+        `,
+    });
+
+    const text = [
+        `Hello ${input.firstName},`,
+        "",
+        "Your payment has been successfully verified and your KARMASS subscription is now active.",
+        "",
+        "SUBSCRIPTION DETAILS",
+        `Plan: ${input.planName}`,
+        `Payment amount: ${amount}`,
+        `Listing credits granted: ${input.listingCredits}`,
+        "",
+        `Payment date: ${paymentDate}`,
+        `Activation date: ${activationDate}`,
+        `Expiry date: ${expiryDate}`,
+        "",
+        "Your subscription benefits are now available.",
+        "",
+        `Manage your subscription: ${dashboardUrl}`,
+        "",
+        "Thank you for choosing KARMASS.",
+        "",
+        "KARMASS Team",
+    ].join("\n");
+
+    await sendMailAndConfirm(
+        "subscription-activated",
+        input.email,
+        {
+            from: getSender(),
+            to: input.email,
+            subject: `Your ${input.planName} Subscription Is Now Active | KARMASS`,
+            text,
+            html,
+        },
+    );
+}
 
 /**
- * Sends a professionally branded dealer application decision email.
+ * Subscription expiry reminder email.
  *
- * Uses dedicated HTML templates for approval and rejection.
- * Sends both HTML and plain-text versions for email compatibility.
+ * This email warns the customer that subscription access and
+ * plan-specific benefits are approaching their expiry date.
+ *
+ * It deliberately does not claim that unused listing credits
+ * will disappear when the subscription expires.
+ */
+export async function sendSubscriptionExpiryReminderEmail(
+    input: {
+        email: string;
+        firstName: string;
+        planName: string;
+        expiryDate: Date;
+        listingCredits: number;
+    },
+): Promise<void> {
+    const expiryDate = formatEmailDate(input.expiryDate);
+
+    const renewalUrl =
+        `${CLIENT_URL}/dashboard/subscriptions/plans`;
+
+    const html = buildEmailLayout({
+        title: "Your subscription is expiring soon",
+        preheader: `Your ${input.planName} subscription is approaching its expiry date.`,
+        content: `
+            <div style="
+                display:inline-block;
+                padding:7px 13px;
+                background:#FFF7ED;
+                color:#C2410C;
+                border-radius:30px;
+                font-size:12px;
+                font-weight:700;
+                margin-bottom:18px;
+            ">
+                EXPIRY REMINDER
+            </div>
+
+            <p>Hello ${escapeHtml(input.firstName)},</p>
+
+            <p style="
+                font-size:15px;
+                line-height:1.8;
+                color:#475569;
+            ">
+                This is a friendly reminder that your KARMASS
+                subscription is approaching its expiry date.
+            </p>
+
+            <div style="
+                margin:24px 0;
+                padding:23px;
+                background:${BRAND_SOFT};
+                border:1px solid #DCEEFF;
+                border-radius:12px;
+            ">
+                <p style="
+                    margin:0 0 7px;
+                    font-size:12px;
+                    color:#64748B;
+                    text-transform:uppercase;
+                    letter-spacing:1px;
+                ">
+                    Current subscription
+                </p>
+
+                <h2 style="
+                    margin:0;
+                    font-size:22px;
+                    color:${BRAND_DARK};
+                ">
+                    ${escapeHtml(input.planName)}
+                </h2>
+
+                <div style="
+                    margin-top:18px;
+                    padding-top:17px;
+                    border-top:1px solid #DCEEFF;
+                ">
+                    <p style="
+                        margin:0 0 5px;
+                        font-size:12px;
+                        color:#64748B;
+                    ">
+                        EXPIRY DATE
+                    </p>
+
+                    <p style="
+                        margin:0;
+                        font-size:17px;
+                        font-weight:700;
+                        color:#172033;
+                    ">
+                        ${escapeHtml(expiryDate)}
+                    </p>
+                </div>
+            </div>
+
+            <div style="
+                margin:22px 0;
+                padding:17px;
+                background:#FFF7ED;
+                border:1px solid #FED7AA;
+                border-radius:9px;
+            ">
+                <p style="
+                    margin:0;
+                    font-size:14px;
+                    line-height:1.8;
+                    color:#9A3412;
+                ">
+                    When your subscription expires, access to its
+                    subscription-specific benefits will end.
+                    Renewing before expiry helps you maintain
+                    uninterrupted access to those benefits.
+                </p>
+            </div>
+
+            <p style="
+                font-size:14px;
+                line-height:1.8;
+                color:#475569;
+            ">
+                You currently have
+                <strong>
+                    ${input.listingCredits.toLocaleString("en-NG")}
+                </strong>
+                listing credits recorded for your account.
+                Your available credit balance can be viewed
+                from your KARMASS dashboard.
+            </p>
+
+            ${buildEmailButton(
+                renewalUrl,
+                "Renew My Subscription",
+            )}
+
+            <p style="
+                margin-top:23px;
+                font-size:13px;
+                line-height:1.7;
+                color:#64748B;
+            ">
+                If you have already renewed your subscription,
+                you can disregard this reminder.
+            </p>
+        `,
+    });
+
+    const text = [
+        `Hello ${input.firstName},`,
+        "",
+        `Your ${input.planName} KARMASS subscription is approaching its expiry date.`,
+        "",
+        `Expiry date: ${expiryDate}`,
+        "",
+        "When your subscription expires, access to its subscription-specific benefits will end.",
+        "",
+        `Listing credits recorded for your account: ${input.listingCredits}`,
+        "",
+        "You can view your available credit balance from your dashboard.",
+        "",
+        `Renew your subscription: ${renewalUrl}`,
+        "",
+        "If you have already renewed, you can disregard this reminder.",
+        "",
+        "KARMASS Team",
+    ].join("\n");
+
+    await sendMailAndConfirm(
+        "subscription-expiry-reminder",
+        input.email,
+        {
+            from: getSender(),
+            to: input.email,
+            subject: `Your ${input.planName} Subscription Expires Soon | KARMASS`,
+            text,
+            html,
+        },
+    );
+}
+
+/**
+ * Dealer application decision email.
  */
 export async function sendDealerDecisionEmail(
     input:
         | {
-              decision: "APPROVED";
-              email: string;
-              firstName: string;
-              companyName: string;
-              reviewDate: string;
-          }
+            decision: "APPROVED";
+            email: string;
+            firstName: string;
+            companyName: string;
+            reviewDate: string;
+        }
         | {
-              decision: "REJECTED";
-              email: string;
-              firstName: string;
-              companyName: string;
-              rejectionReason: string;
-              reviewDate: string;
-          },
+            decision: "REJECTED";
+            email: string;
+            firstName: string;
+            companyName: string;
+            rejectionReason: string;
+            reviewDate: string;
+        },
 ): Promise<void> {
     const dashboardUrl =
-        `${env.CLIENT_URL}/dashboard/dealer`;
+        `${CLIENT_URL}/dashboard/dealer`;
 
     const applicationUrl =
-        `${env.CLIENT_URL}/dashboard/dealer/applications`;
+        `${CLIENT_URL}/dashboard/dealer/applications`;
 
     const isApproved = input.decision === "APPROVED";
 
@@ -454,59 +1092,59 @@ export async function sendDealerDecisionEmail(
 
     const html = isApproved
         ? buildDealerApprovalEmail({
-              firstName: input.firstName,
-              companyName: input.companyName,
-              dashboardUrl,
-              reviewDate: input.reviewDate,
-          })
+            firstName: input.firstName,
+            companyName: input.companyName,
+            dashboardUrl,
+            reviewDate: input.reviewDate,
+        })
         : buildDealerRejectionEmail({
-              firstName: input.firstName,
-              companyName: input.companyName,
-              rejectionReason: input.rejectionReason,
-              applicationUrl,
-              reviewDate: input.reviewDate,
-          });
+            firstName: input.firstName,
+            companyName: input.companyName,
+            rejectionReason: input.rejectionReason,
+            applicationUrl,
+            reviewDate: input.reviewDate,
+        });
 
     const text = isApproved
         ? [
-              `Hello ${input.firstName},`,
-              "",
-              "Congratulations! Your application to become a verified dealer on KARMASS has been approved.",
-              "",
-              `Business name: ${input.companyName}`,
-              `Approval date: ${input.reviewDate}`,
-              "",
-              "Your verified dealer profile has been created.",
-              "",
-              "You can access your dealer dashboard here:",
-              dashboardUrl,
-              "",
-              "Thank you for choosing KARMASS.",
-              "",
-              "KARMASS Team",
-          ].join("\n")
+            `Hello ${input.firstName},`,
+            "",
+            "Congratulations! Your application to become a verified dealer on KARMASS has been approved.",
+            "",
+            `Business name: ${input.companyName}`,
+            `Approval date: ${input.reviewDate}`,
+            "",
+            "Your verified dealer profile has been created.",
+            "",
+            "You can access your dealer dashboard here:",
+            dashboardUrl,
+            "",
+            "Thank you for choosing KARMASS.",
+            "",
+            "KARMASS Team",
+        ].join("\n")
         : [
-              `Hello ${input.firstName},`,
-              "",
-              "Thank you for your interest in becoming a verified dealer on KARMASS.",
-              "",
-              "Following our review, we are unable to approve your application at this time.",
-              "",
-              `Business name: ${input.companyName}`,
-              `Review date: ${input.reviewDate}`,
-              "",
-              "Reason for non-approval:",
-              input.rejectionReason,
-              "",
-              "Please review the issue identified and access your application details here:",
-              applicationUrl,
-              "",
-              "If you require clarification, please contact KARMASS support.",
-              "",
-              "Thank you for your understanding.",
-              "",
-              "KARMASS Team",
-          ].join("\n");
+            `Hello ${input.firstName},`,
+            "",
+            "Thank you for your interest in becoming a verified dealer on KARMASS.",
+            "",
+            "Following our review, we are unable to approve your application at this time.",
+            "",
+            `Business name: ${input.companyName}`,
+            `Review date: ${input.reviewDate}`,
+            "",
+            "Reason for non-approval:",
+            input.rejectionReason,
+            "",
+            "Please review the issue identified and access your application details here:",
+            applicationUrl,
+            "",
+            "If you require clarification, please contact KARMASS support.",
+            "",
+            "Thank you for your understanding.",
+            "",
+            "KARMASS Team",
+        ].join("\n");
 
     await sendMailAndConfirm(
         isApproved

@@ -25,6 +25,10 @@ export interface CreateNotificationInput {
     message: string;
     data?: Record<string, unknown>;
     idempotencykey?: string;
+
+    // Allows callers to suppress the generic email.
+    // Dedicated email delivery jobs can handle the email separately.
+    sendEmail?: boolean;
 }
 
 function emitRealtimeNotification(
@@ -105,8 +109,12 @@ export async function createNotification(
         );
     }
 
-    // Email is a secondary channel. SMTP failures are isolated so they never prevent in-app notifications.
-    if (preference[0]?.emailEnabled !== false) {
+    // Email is a secondary channel. It can be suppressed when
+    // a dedicated durable email-delivery job handles the message.
+    if (
+        input.sendEmail !== false &&
+        preference[0]?.emailEnabled !== false
+    ) {
         const user = await db
             .select({
                 email: users.email,
