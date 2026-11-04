@@ -72,6 +72,16 @@ export interface MarketplaceFilters {
     dealerOnly?: boolean;
     verifiedDealerOnly?: boolean;
 
+    /**
+     * Return only listings with an active boost.
+     */
+    boostedOnly?: boolean;
+
+    /**
+     * Exclude listings with an active boost.
+     */
+    excludeBoosted?: boolean;
+
     page: number;
     limit: number;
 

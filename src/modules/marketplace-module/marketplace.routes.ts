@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import {
+    featured,
     search,
 } from "./marketplace.controller.ts";
 
@@ -19,6 +20,16 @@ const router = Router();
 router.get(
     "/search",
     search,
+);
+
+/**
+ * Public featured marketplace listings.
+ *
+ * GET /api/v1/marketplace/featured
+ */
+router.get(
+    "/featured",
+    featured,
 );
 
 router.get(

@@ -20,7 +20,7 @@ import type {
 } from "./boost-admin.service.ts";
 
 type AuthenticatedAdminRequest = Request & {
-    user?: {
+    admin?: {
         id: string;
     };
 };

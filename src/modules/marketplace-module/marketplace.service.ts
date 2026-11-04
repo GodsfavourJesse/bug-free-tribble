@@ -230,6 +230,19 @@ implements MarketplaceSearchProvider {
                 ? filters.limit
                 : 20;
 
+        const activeBoostExists = sql<boolean>`
+            EXISTS (
+                SELECT 1
+                FROM listing_boosts AS boost
+                WHERE boost.listing_id = ${listings.id}
+                AND boost.status = 'ACTIVE'
+                AND boost.starts_at IS NOT NULL
+                AND boost.starts_at <= ${now}
+                AND boost.expires_at IS NOT NULL
+                AND boost.expires_at > ${now}
+            )
+        `;
+
         const conditions = [
             eq(listings.status, "APPROVED"),
 
@@ -238,6 +251,23 @@ implements MarketplaceSearchProvider {
                 gt(listings.expiresAt, now),
             )!,
         ];
+
+        /*
+        * Featured listings must have a currently active boost.
+        */
+        if (filters.boostedOnly) {
+            conditions.push(activeBoostExists);
+        }
+
+        /*
+        * Ordinary homepage listings must not have a currently
+        * active boost.
+        */
+        if (filters.excludeBoosted) {
+            conditions.push(
+                sql<boolean>`NOT (${activeBoostExists})`,
+            );
+        }
 
         if (filters.makeId) {
             conditions.push(
@@ -391,16 +421,7 @@ implements MarketplaceSearchProvider {
          */
         const activeBoostPriority = sql<number>`
             CASE
-                WHEN EXISTS (
-                    SELECT 1
-                    FROM listing_boosts AS boost
-                    WHERE boost.listing_id = ${listings.id}
-                      AND boost.status = 'ACTIVE'
-                      AND boost.starts_at IS NOT NULL
-                      AND boost.starts_at <= ${now}
-                      AND boost.expires_at IS NOT NULL
-                      AND boost.expires_at > ${now}
-                )
+                WHEN ${activeBoostExists}
                 THEN 100
                 ELSE 0
             END
@@ -659,4 +680,22 @@ export async function searchMarketplace(
     filters: MarketplaceFilters,
 ): Promise<MarketplaceSearchResult> {
     return postgresMarketplaceSearchProvider.search(filters);
+}
+
+/**
+ * Fetch exclusively currently boosted marketplace listings.
+ *
+ * A listing is featured only while its boost is ACTIVE
+ * and within its approved start/end window.
+ */
+export async function getFeaturedMarketplaceListings(
+    page = 1,
+    limit = 12,
+): Promise<MarketplaceSearchResult> {
+    return postgresMarketplaceSearchProvider.search({
+        page,
+        limit,
+        boostedOnly: true,
+        sort: "newest",
+    });
 }

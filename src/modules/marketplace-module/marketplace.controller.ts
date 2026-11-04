@@ -3,7 +3,7 @@ import type {
     Response,
 } from "express";
 
-import { searchMarketplace } from "./marketplace.service.ts";
+import { getFeaturedMarketplaceListings, searchMarketplace } from "./marketplace.service.ts";
 import { MarketplaceBodyStyle, MarketplaceFilters, MarketplaceFuelType, MarketplaceSort, MarketplaceTransmission } from "./marketplace.types.ts";
 
 function optionalString(
@@ -166,6 +166,7 @@ export async function search(
             request.query.maxYear,
         );
 
+        // Validate price range.
         if (
             minPrice !== undefined
             && maxPrice !== undefined
@@ -179,6 +180,7 @@ export async function search(
             return;
         }
 
+        // Validate mileage range.
         if (
             minMileage !== undefined
             && maxMileage !== undefined
@@ -192,6 +194,7 @@ export async function search(
             return;
         }
 
+        // Validate minimum year.
         if (
             minYear !== undefined
             && (
@@ -208,6 +211,7 @@ export async function search(
             return;
         }
 
+        // Validate maximum year.
         if (
             maxYear !== undefined
             && (
@@ -224,6 +228,7 @@ export async function search(
             return;
         }
 
+        // Validate year range.
         if (
             minYear !== undefined
             && maxYear !== undefined
@@ -237,6 +242,7 @@ export async function search(
             return;
         }
 
+        // Validate condition.
         const condition = optionalString(
             request.query.condition,
         );
@@ -254,6 +260,7 @@ export async function search(
             return;
         }
 
+        // Validate sorting.
         const sort = optionalString(
             request.query.sort,
         );
@@ -270,6 +277,7 @@ export async function search(
             return;
         }
 
+        // Validate fuel type.
         const fuelType = optionalString(
             request.query.fuelType,
         );
@@ -280,12 +288,12 @@ export async function search(
         ) {
             response.status(400).json({
                 success: false,
-                message:
-                    "Unsupported fuelType.",
+                message: "Unsupported fuelType.",
             });
             return;
         }
 
+        // Validate transmission.
         const transmission = optionalString(
             request.query.transmission,
         );
@@ -299,12 +307,12 @@ export async function search(
         ) {
             response.status(400).json({
                 success: false,
-                message:
-                    "Unsupported transmission.",
+                message: "Unsupported transmission.",
             });
             return;
         }
 
+        // Validate body style.
         const bodyStyle = optionalString(
             request.query.bodyStyle,
         );
@@ -315,18 +323,23 @@ export async function search(
         ) {
             response.status(400).json({
                 success: false,
-                message:
-                    "Unsupported bodyStyle.",
+                message: "Unsupported bodyStyle.",
             });
             return;
         }
 
+        // Parse dealer filters.
         const dealerOnly = parseBoolean(
             request.query.dealerOnly,
         );
 
         const verifiedDealerOnly = parseBoolean(
             request.query.verifiedDealerOnly,
+        );
+
+        // Parse homepage ordinary-listing filter.
+        const excludeBoosted = parseBoolean(
+            request.query.excludeBoosted,
         );
 
         if (
@@ -354,6 +367,18 @@ export async function search(
         }
 
         if (
+            request.query.excludeBoosted !== undefined
+            && excludeBoosted === undefined
+        ) {
+            response.status(400).json({
+                success: false,
+                message:
+                    "excludeBoosted must be true, false, 1, or 0.",
+            });
+            return;
+        }
+
+        if (
             verifiedDealerOnly === true
             && dealerOnly === false
         ) {
@@ -365,11 +390,13 @@ export async function search(
             return;
         }
 
+        // Initialize marketplace filters.
         const filters: MarketplaceFilters = {
             page,
             limit,
         };
 
+        // String filters.
         const stringFilters = {
             q: optionalString(request.query.q),
             makeId: optionalString(request.query.makeId),
@@ -387,6 +414,7 @@ export async function search(
             }
         }
 
+        // Price filters.
         if (minPrice !== undefined) {
             filters.minPrice = minPrice;
         }
@@ -395,6 +423,7 @@ export async function search(
             filters.maxPrice = maxPrice;
         }
 
+        // Mileage filters.
         if (minMileage !== undefined) {
             filters.minMileage = minMileage;
         }
@@ -403,6 +432,7 @@ export async function search(
             filters.maxMileage = maxMileage;
         }
 
+        // Year filters.
         if (minYear !== undefined) {
             filters.minYear = minYear;
         }
@@ -411,14 +441,20 @@ export async function search(
             filters.maxYear = maxYear;
         }
 
+        // Condition.
         if (condition === "NEW" || condition === "USED") {
             filters.condition = condition;
         }
 
-        if (fuelType !== undefined && isOneOf(fuelType, supportedFuelTypes)) {
+        // Fuel type.
+        if (
+            fuelType !== undefined
+            && isOneOf(fuelType, supportedFuelTypes)
+        ) {
             filters.fuelType = fuelType;
         }
 
+        // Transmission.
         if (
             transmission !== undefined
             && isOneOf(transmission, supportedTransmissions)
@@ -426,6 +462,7 @@ export async function search(
             filters.transmission = transmission;
         }
 
+        // Body style.
         if (
             bodyStyle !== undefined
             && isOneOf(bodyStyle, supportedBodyStyles)
@@ -433,6 +470,7 @@ export async function search(
             filters.bodyStyle = bodyStyle;
         }
 
+        // Dealer filters.
         if (dealerOnly !== undefined) {
             filters.dealerOnly = dealerOnly;
         }
@@ -441,10 +479,20 @@ export async function search(
             filters.verifiedDealerOnly = verifiedDealerOnly;
         }
 
-        if (sort !== undefined && isOneOf(sort, supportedSorts)) {
+        // Exclude currently boosted listings when requested.
+        if (excludeBoosted !== undefined) {
+            filters.excludeBoosted = excludeBoosted;
+        }
+
+        // Sorting.
+        if (
+            sort !== undefined
+            && isOneOf(sort, supportedSorts)
+        ) {
             filters.sort = sort;
         }
 
+        // Execute marketplace search.
         const result = await searchMarketplace(filters);
 
         response.status(200).json({
@@ -461,6 +509,54 @@ export async function search(
             success: false,
             message:
                 "Unable to search marketplace listings.",
+        });
+    }
+
+}
+
+
+
+/**
+ * GET /api/v1/marketplace/featured
+ *
+ * Returns currently active boosted listings only.
+ */
+export async function featured(
+    request: Request,
+    response: Response,
+): Promise<void> {
+    try {
+        const page = positiveInteger(
+            request.query.page,
+            1,
+            Number.MAX_SAFE_INTEGER,
+        );
+
+        const limit = positiveInteger(
+            request.query.limit,
+            12,
+            50,
+        );
+
+        const result = await getFeaturedMarketplaceListings(
+            page,
+            limit,
+        );
+
+        response.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch (error) {
+        console.error(
+            "[marketplace.featured]",
+            error,
+        );
+
+        response.status(500).json({
+            success: false,
+            message:
+                "Unable to load featured marketplace listings.",
         });
     }
 }
