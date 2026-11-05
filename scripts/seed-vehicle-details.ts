@@ -13,26 +13,105 @@ import {
     vehicleVariants,
     vehicleModelYears,
     vehicleModelYearVariants,
+
+    vehicleMarkets,
+    vehicleMakeMarkets,
+    vehicleModelMarkets,
+    vehicleGenerationMarkets,
+    vehicleEngineMarkets,
+    vehicleModelYearMarkets,
+    vehicleVariantMarkets,
 } from "../src/database/schema/index.ts";
 
 /**
  * KARMASS VEHICLE DETAILS SEED
  *
  * Populates:
+ *
  * 1. Vehicle generations
  * 2. Vehicle engines
  * 3. Vehicle variants
  * 4. Vehicle model years
  * 5. Model-year/variant associations
+ * 6. Vehicle markets
+ * 7. Make market associations
+ * 8. Model market associations
+ * 9. Generation market associations
+ * 10. Engine market associations
+ * 11. Model-year market associations
+ * 12. Variant market associations
  *
- * The script is idempotent:
- * running it repeatedly does not create duplicate
- * records for the catalog entries defined below.
+ * FEATURES:
+ *
+ * - Idempotent
+ * - Updates existing catalog records
+ * - Preserves existing record IDs
+ * - Does not delete existing records
+ * - Does not duplicate market associations
+ * - Validates composite relationships
  *
  * IMPORTANT:
- * This is a curated initial catalog, not a complete
- * specification database for every vehicle worldwide.
+ *
+ * This is a curated initial catalog.
+ * It is not a complete global vehicle specification database.
  */
+
+/**
+ * SUPPORTED MARKET SEED
+ *
+ * Nigeria is the initial market.
+ *
+ * Additional markets should only be associated with
+ * vehicle configurations after their availability
+ * has been verified.
+ */
+
+const initialMarkets = [
+    {
+        countryCode: "NG",
+        name: "Nigeria",
+        currencyCode: "NGN",
+    },
+] as const;
+
+/**
+ * VEHICLE TYPES
+ */
+
+type FuelType =
+    | "PETROL"
+    | "DIESEL"
+    | "HYBRID"
+    | "PLUG_IN_HYBRID"
+    | "ELECTRIC"
+    | "CNG"
+    | "LPG";
+
+type Transmission =
+    | "MANUAL"
+    | "AUTOMATIC"
+    | "CVT"
+    | "DCT"
+    | "AMT";
+
+type DriveType =
+    | "FWD"
+    | "RWD"
+    | "AWD"
+    | "FOUR_WD";
+
+type BodyStyle =
+    | "SEDAN"
+    | "SUV"
+    | "COUPE"
+    | "HATCHBACK"
+    | "WAGON"
+    | "MPV"
+    | "PICKUP"
+    | "VAN"
+    | "CONVERTIBLE"
+    | "TRUCK"
+    | "BUS";
 
 type VehicleSeed = {
     make: string;
@@ -50,44 +129,14 @@ type VehicleSeed = {
             cylinders: number | null;
             horsepower: number | null;
 
-            fuelType:
-                | "PETROL"
-                | "DIESEL"
-                | "HYBRID"
-                | "PLUG_IN_HYBRID"
-                | "ELECTRIC"
-                | "CNG"
-                | "LPG";
-
-            transmission:
-                | "MANUAL"
-                | "AUTOMATIC"
-                | "CVT"
-                | "DCT"
-                | "AMT";
-
-            driveType:
-                | "FWD"
-                | "RWD"
-                | "AWD"
-                | "FOUR_WD";
+            fuelType: FuelType;
+            transmission: Transmission;
+            driveType: DriveType;
 
             variants: Array<{
                 name: string;
                 slug: string;
-                bodyStyle:
-                    | "SEDAN"
-                    | "SUV"
-                    | "COUPE"
-                    | "HATCHBACK"
-                    | "WAGON"
-                    | "MPV"
-                    | "PICKUP"
-                    | "VAN"
-                    | "CONVERTIBLE"
-                    | "TRUCK"
-                    | "BUS";
-
+                bodyStyle: BodyStyle;
                 seats: number;
                 doors: number;
             }>;
@@ -101,7 +150,7 @@ type VehicleSeed = {
  * Add additional configurations here as the catalog
  * is verified and expanded.
  *
- * Do not add an engine/variant combination unless
+ * Do not add engine/variant combinations unless
  * the configuration is applicable to the generation.
  */
 
@@ -423,6 +472,34 @@ const vehicleCatalog: VehicleSeed[] = [
 ];
 
 /**
+ * TYPES
+ */
+
+type VehicleMake = typeof vehicleMakes.$inferSelect;
+type VehicleModel = typeof vehicleModels.$inferSelect;
+type VehicleGeneration = typeof vehicleGenerations.$inferSelect;
+type VehicleEngine = typeof vehicleEngines.$inferSelect;
+type VehicleVariant = typeof vehicleVariants.$inferSelect;
+type VehicleModelYear = typeof vehicleModelYears.$inferSelect;
+type VehicleMarket = typeof vehicleMarkets.$inferSelect;
+
+/**
+ * COUNTERS
+ */
+
+const counters = {
+    markets: 0,
+    makes: 0,
+    models: 0,
+    generations: 0,
+    engines: 0,
+    modelYears: 0,
+    variants: 0,
+    yearVariantAssociations: 0,
+    marketAssociations: 0,
+};
+
+/**
  * HELPERS
  */
 
@@ -434,10 +511,57 @@ function slugify(value: string): string {
         .replace(/^-+|-+$/g, "");
 }
 
-async function findModel(
+/**
+ * SEED MARKETS
+ */
+
+async function seedMarkets(): Promise<VehicleMarket[]> {
+    const results: VehicleMarket[] = [];
+
+    for (const market of initialMarkets) {
+        const [saved] = await db
+            .insert(vehicleMarkets)
+            .values({
+                countryCode: market.countryCode,
+                name: market.name,
+                currencyCode: market.currencyCode,
+                active: true,
+            })
+            .onConflictDoUpdate({
+                target: vehicleMarkets.countryCode,
+                set: {
+                    name: market.name,
+                    currencyCode: market.currencyCode,
+                    active: true,
+                    updatedAt: new Date(),
+                },
+            })
+            .returning();
+
+        if (!saved) {
+            throw new Error(
+                `Failed to seed market: ${market.name}`,
+            );
+        }
+
+        results.push(saved);
+        counters.markets++;
+    }
+
+    return results;
+}
+
+/**
+ * FIND VEHICLE MAKE AND MODEL
+ */
+
+async function findVehicle(
     makeName: string,
     modelName: string,
-) {
+): Promise<{
+    make: VehicleMake;
+    model: VehicleModel;
+} | null> {
     const [make] = await db
         .select()
         .from(vehicleMakes)
@@ -477,7 +601,143 @@ async function findModel(
         return null;
     }
 
-    return model;
+    return {
+        make,
+        model,
+    };
+}
+
+/**
+ * MARKET ASSOCIATION HELPER
+ *
+ * Uses ON CONFLICT DO NOTHING so existing associations
+ * are preserved and duplicate associations are avoided.
+ */
+
+async function associateMakeWithMarket(
+    makeId: string,
+    marketId: string,
+) {
+    const result = await db
+        .insert(vehicleMakeMarkets)
+        .values({
+            makeId,
+            marketId,
+        })
+        .onConflictDoNothing({
+            target: [
+                vehicleMakeMarkets.makeId,
+                vehicleMakeMarkets.marketId,
+            ],
+        })
+        .returning();
+
+    counters.marketAssociations += result.length;
+}
+
+async function associateModelWithMarket(
+    modelId: string,
+    marketId: string,
+) {
+    const result = await db
+        .insert(vehicleModelMarkets)
+        .values({
+            modelId,
+            marketId,
+        })
+        .onConflictDoNothing({
+            target: [
+                vehicleModelMarkets.modelId,
+                vehicleModelMarkets.marketId,
+            ],
+        })
+        .returning();
+
+    counters.marketAssociations += result.length;
+}
+
+async function associateGenerationWithMarket(
+    generationId: string,
+    marketId: string,
+) {
+    const result = await db
+        .insert(vehicleGenerationMarkets)
+        .values({
+            generationId,
+            marketId,
+        })
+        .onConflictDoNothing({
+            target: [
+                vehicleGenerationMarkets.generationId,
+                vehicleGenerationMarkets.marketId,
+            ],
+        })
+        .returning();
+
+    counters.marketAssociations += result.length;
+}
+
+async function associateEngineWithMarket(
+    engineId: string,
+    marketId: string,
+) {
+    const result = await db
+        .insert(vehicleEngineMarkets)
+        .values({
+            engineId,
+            marketId,
+        })
+        .onConflictDoNothing({
+            target: [
+                vehicleEngineMarkets.engineId,
+                vehicleEngineMarkets.marketId,
+            ],
+        })
+        .returning();
+
+    counters.marketAssociations += result.length;
+}
+
+async function associateModelYearWithMarket(
+    modelYearId: string,
+    marketId: string,
+) {
+    const result = await db
+        .insert(vehicleModelYearMarkets)
+        .values({
+            modelYearId,
+            marketId,
+        })
+        .onConflictDoNothing({
+            target: [
+                vehicleModelYearMarkets.modelYearId,
+                vehicleModelYearMarkets.marketId,
+            ],
+        })
+        .returning();
+
+    counters.marketAssociations += result.length;
+}
+
+async function associateVariantWithMarket(
+    variantId: string,
+    marketId: string,
+) {
+    const result = await db
+        .insert(vehicleVariantMarkets)
+        .values({
+            variantId,
+            marketId,
+        })
+        .onConflictDoNothing({
+            target: [
+                vehicleVariantMarkets.variantId,
+                vehicleVariantMarkets.marketId,
+            ],
+        })
+        .returning();
+
+    counters.marketAssociations += result.length;
 }
 
 /**
@@ -487,23 +747,8 @@ async function findModel(
 async function seedGeneration(
     modelId: string,
     generation: VehicleSeed["generations"][number],
-) {
-    const [existing] = await db
-        .select()
-        .from(vehicleGenerations)
-        .where(
-            and(
-                eq(vehicleGenerations.modelId, modelId),
-                eq(vehicleGenerations.name, generation.name),
-            ),
-        )
-        .limit(1);
-
-    if (existing) {
-        return existing;
-    }
-
-    const [created] = await db
+): Promise<VehicleGeneration> {
+    const [saved] = await db
         .insert(vehicleGenerations)
         .values({
             modelId,
@@ -515,9 +760,30 @@ async function seedGeneration(
             nigeriaMarket: true,
             active: true,
         })
+        .onConflictDoUpdate({
+            target: [
+                vehicleGenerations.modelId,
+                vehicleGenerations.name,
+            ],
+            set: {
+                slug: slugify(generation.name),
+                startYear: generation.startYear,
+                endYear: generation.endYear,
+                active: true,
+                updatedAt: new Date(),
+            },
+        })
         .returning();
 
-    return created;
+    if (!saved) {
+        throw new Error(
+            `Failed to seed generation: ${generation.name}`,
+        );
+    }
+
+    counters.generations++;
+
+    return saved;
 }
 
 /**
@@ -527,23 +793,8 @@ async function seedGeneration(
 async function seedEngine(
     modelId: string,
     engine: VehicleSeed["generations"][number]["engines"][number],
-) {
-    const [existing] = await db
-        .select()
-        .from(vehicleEngines)
-        .where(
-            and(
-                eq(vehicleEngines.modelId, modelId),
-                eq(vehicleEngines.slug, engine.slug),
-            ),
-        )
-        .limit(1);
-
-    if (existing) {
-        return existing;
-    }
-
-    const [created] = await db
+): Promise<VehicleEngine> {
+    const [saved] = await db
         .insert(vehicleEngines)
         .values({
             modelId,
@@ -556,9 +807,31 @@ async function seedEngine(
             nigeriaMarket: true,
             active: true,
         })
+        .onConflictDoUpdate({
+            target: [
+                vehicleEngines.modelId,
+                vehicleEngines.slug,
+            ],
+            set: {
+                name: engine.name,
+                displacementCc: engine.displacementCc,
+                cylinders: engine.cylinders,
+                horsepower: engine.horsepower,
+                active: true,
+                updatedAt: new Date(),
+            },
+        })
         .returning();
 
-    return created;
+    if (!saved) {
+        throw new Error(
+            `Failed to seed engine: ${engine.name}`,
+        );
+    }
+
+    counters.engines++;
+
+    return saved;
 }
 
 /**
@@ -566,34 +839,21 @@ async function seedEngine(
  */
 
 async function seedVariant(
+    modelId: string,
     generationId: string,
     engineId: string,
     year: number,
     engine: VehicleSeed["generations"][number]["engines"][number],
     variant: VehicleSeed["generations"][number]["engines"][number]["variants"][number],
-) {
-    const [existing] = await db
-        .select()
-        .from(vehicleVariants)
-        .where(
-            and(
-                eq(vehicleVariants.generationId, generationId),
-                eq(vehicleVariants.year, year),
-                eq(vehicleVariants.slug, variant.slug),
-            ),
-        )
-        .limit(1);
-
-    if (existing) {
-        return existing;
-    }
-
-    const [created] = await db
+): Promise<VehicleVariant> {
+    const [saved] = await db
         .insert(vehicleVariants)
         .values({
+            modelId,
             generationId,
             engineId,
             year,
+
             name: variant.name,
             slug: variant.slug,
 
@@ -614,9 +874,46 @@ async function seedVariant(
             nigeriaMarket: true,
             active: true,
         })
+        .onConflictDoUpdate({
+            target: [
+                vehicleVariants.generationId,
+                vehicleVariants.year,
+                vehicleVariants.slug,
+            ],
+            set: {
+                modelId,
+                engineId,
+
+                name: variant.name,
+
+                engineName: engine.name,
+                engineDisplacementCc: engine.displacementCc,
+                cylinders: engine.cylinders,
+                horsepower: engine.horsepower,
+
+                fuelType: engine.fuelType,
+                transmission: engine.transmission,
+                driveType: engine.driveType,
+
+                bodyStyle: variant.bodyStyle,
+                seats: variant.seats,
+                doors: variant.doors,
+
+                active: true,
+                updatedAt: new Date(),
+            },
+        })
         .returning();
 
-    return created;
+    if (!saved) {
+        throw new Error(
+            `Failed to seed variant: ${variant.name} (${year})`,
+        );
+    }
+
+    counters.variants++;
+
+    return saved;
 }
 
 /**
@@ -626,23 +923,8 @@ async function seedVariant(
 async function seedModelYear(
     generationId: string,
     year: number,
-) {
-    const [existing] = await db
-        .select()
-        .from(vehicleModelYears)
-        .where(
-            and(
-                eq(vehicleModelYears.generationId, generationId),
-                eq(vehicleModelYears.year, year),
-            ),
-        )
-        .limit(1);
-
-    if (existing) {
-        return existing;
-    }
-
-    const [created] = await db
+): Promise<VehicleModelYear> {
+    const [saved] = await db
         .insert(vehicleModelYears)
         .values({
             generationId,
@@ -650,46 +932,80 @@ async function seedModelYear(
             nigeriaMarket: true,
             active: true,
         })
+        .onConflictDoUpdate({
+            target: [
+                vehicleModelYears.generationId,
+                vehicleModelYears.year,
+            ],
+            set: {
+                active: true,
+                updatedAt: new Date(),
+            },
+        })
         .returning();
 
-    return created;
+    if (!saved) {
+        throw new Error(
+            `Failed to seed model year: ${year}`,
+        );
+    }
+
+    counters.modelYears++;
+
+    return saved;
 }
 
 /**
  * LINK MODEL YEARS TO VARIANTS
+ *
+ * The composite relationship requires:
+ *
+ * modelYearId
+ * variantId
+ * generationId
+ * year
+ *
+ * Both records must belong to the same generation
+ * and the same model year.
  */
 
 async function linkModelYearVariant(
-    modelYearId: string,
-    variantId: string,
+    modelYear: VehicleModelYear,
+    variant: VehicleVariant,
 ) {
-    const [existing] = await db
-        .select()
-        .from(vehicleModelYearVariants)
-        .where(
-            and(
-                eq(
-                    vehicleModelYearVariants.modelYearId,
-                    modelYearId,
-                ),
-                eq(
-                    vehicleModelYearVariants.variantId,
-                    variantId,
-                ),
-            ),
-        )
-        .limit(1);
-
-    if (existing) {
-        return;
+    if (
+        modelYear.generationId !== variant.generationId ||
+        modelYear.year !== variant.year
+    ) {
+        throw new Error(
+            [
+                "Invalid model-year/variant relationship.",
+                `Model year: ${modelYear.year}`,
+                `Variant: ${variant.name}`,
+                `Variant year: ${variant.year}`,
+            ].join(" "),
+        );
     }
 
-    await db
+    const [saved] = await db
         .insert(vehicleModelYearVariants)
         .values({
-            modelYearId,
-            variantId,
-        });
+            modelYearId: modelYear.id,
+            variantId: variant.id,
+            generationId: modelYear.generationId,
+            year: modelYear.year,
+        })
+        .onConflictDoNothing({
+            target: [
+                vehicleModelYearVariants.modelYearId,
+                vehicleModelYearVariants.variantId,
+            ],
+        })
+        .returning();
+
+    if (saved) {
+        counters.yearVariantAssociations++;
+    }
 }
 
 /**
@@ -697,29 +1013,66 @@ async function linkModelYearVariant(
  */
 
 async function seedVehicleDetails() {
-    let generationsCount = 0;
-    let enginesCount = 0;
-    let variantsCount = 0;
-    let yearsCount = 0;
-    let linksCount = 0;
-
     console.log(
-        "Starting KARMASS vehicle details seed...",
+        "\nStarting KARMASS vehicle details seed...\n",
     );
 
+    /**
+     * 1. Seed supported markets.
+     */
+
+    const markets = await seedMarkets();
+
+    const nigeriaMarket = markets.find(
+        (market) => market.countryCode === "NG",
+    );
+
+    if (!nigeriaMarket) {
+        throw new Error(
+            "Nigeria market was not initialized.",
+        );
+    }
+
+    /**
+     * 2. Process vehicle catalog.
+     */
+
     for (const vehicle of vehicleCatalog) {
-        const model = await findModel(
+        const vehicleRecords = await findVehicle(
             vehicle.make,
             vehicle.model,
         );
 
-        if (!model) {
+        if (!vehicleRecords) {
             continue;
         }
+
+        const {
+            make,
+            model,
+        } = vehicleRecords;
 
         console.log(
             `Processing ${vehicle.make} ${vehicle.model}`,
         );
+
+        /**
+         * Associate make and model with Nigeria.
+         */
+
+        await associateMakeWithMarket(
+            make.id,
+            nigeriaMarket.id,
+        );
+
+        await associateModelWithMarket(
+            model.id,
+            nigeriaMarket.id,
+        );
+
+        /**
+         * Process generations.
+         */
 
         for (const generationData of vehicle.generations) {
             const generation = await seedGeneration(
@@ -727,30 +1080,54 @@ async function seedVehicleDetails() {
                 generationData,
             );
 
-            generationsCount++;
+            await associateGenerationWithMarket(
+                generation.id,
+                nigeriaMarket.id,
+            );
 
-            for (
-                let year = generationData.startYear;
-                year <= generationData.endYear;
-                year++
-            ) {
-                const modelYear = await seedModelYear(
-                    generation.id,
-                    year,
+            /**
+             * Process engines once per generation.
+             *
+             * Engines are model-level records.
+             */
+
+            for (const engineData of generationData.engines) {
+                const engine = await seedEngine(
+                    model.id,
+                    engineData,
                 );
 
-                yearsCount++;
+                await associateEngineWithMarket(
+                    engine.id,
+                    nigeriaMarket.id,
+                );
 
-                for (const engineData of generationData.engines) {
-                    const engine = await seedEngine(
-                        model.id,
-                        engineData,
+                /**
+                 * Process model years.
+                 */
+
+                for (
+                    let year = generationData.startYear;
+                    year <= generationData.endYear;
+                    year++
+                ) {
+                    const modelYear = await seedModelYear(
+                        generation.id,
+                        year,
                     );
 
-                    enginesCount++;
+                    await associateModelYearWithMarket(
+                        modelYear.id,
+                        nigeriaMarket.id,
+                    );
+
+                    /**
+                     * Process variants.
+                     */
 
                     for (const variantData of engineData.variants) {
                         const variant = await seedVariant(
+                            model.id,
                             generation.id,
                             engine.id,
                             year,
@@ -758,35 +1135,62 @@ async function seedVehicleDetails() {
                             variantData,
                         );
 
-                        variantsCount++;
-
-                        await linkModelYearVariant(
-                            modelYear.id,
+                        await associateVariantWithMarket(
                             variant.id,
+                            nigeriaMarket.id,
                         );
 
-                        linksCount++;
+                        /**
+                         * Link model year and variant.
+                         */
+
+                        await linkModelYearVariant(
+                            modelYear,
+                            variant,
+                        );
                     }
                 }
             }
         }
     }
 
-    console.log("\nKARMASS vehicle details seed completed.");
+    /**
+     * 3. Print results.
+     */
+
+    console.log(
+        "\nKARMASS vehicle details seed completed successfully.\n",
+    );
 
     console.table({
-        generations: generationsCount,
-        engines: enginesCount,
-        modelYears: yearsCount,
-        variants: variantsCount,
-        yearVariantAssociations: linksCount,
+        marketsProcessed: counters.markets,
+        generationsProcessed: counters.generations,
+        enginesProcessed: counters.engines,
+        modelYearsProcessed: counters.modelYears,
+        variantsProcessed: counters.variants,
+        newYearVariantAssociations:
+            counters.yearVariantAssociations,
+        newMarketAssociations:
+            counters.marketAssociations,
     });
+
+    console.log(
+        "\nNote: Processed counts include records updated through upserts.",
+    );
+
+    console.log(
+        "Existing records and IDs have been preserved.",
+    );
 }
+
+/**
+ * EXECUTION
+ */
 
 seedVehicleDetails()
     .catch((error: unknown) => {
         console.error(
-            "Vehicle details seeding failed:",
+            "\nVehicle details seeding failed:",
             error,
         );
 

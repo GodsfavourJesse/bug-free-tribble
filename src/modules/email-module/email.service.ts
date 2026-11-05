@@ -545,6 +545,194 @@ export async function sendEmailVerificationEmail(
 }
 
 /**
+ * New user registration notification for administrators.
+ *
+ * Sent directly to active administrators whenever a new
+ * customer successfully registers on KARMASS.
+ */
+export async function sendNewUserRegistrationEmail(
+    input: {
+        email: string;
+        firstName: string;
+
+        registeredUser: {
+            id: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+            registeredAt: Date;
+        };
+    },
+): Promise<void> {
+    const fullName = [
+        input.registeredUser.firstName,
+        input.registeredUser.lastName,
+    ]
+        .filter(Boolean)
+        .join(" ");
+
+    const registeredAt = formatEmailDate(
+        input.registeredUser.registeredAt,
+    );
+
+    const adminUsersUrl =
+        `${CLIENT_URL}/admin/users?search=${encodeURIComponent(
+            input.registeredUser.email,
+        )}`;
+
+    const html = buildEmailLayout({
+        title: "A new user has joined KARMASS",
+
+        preheader:
+            `${fullName} has successfully registered on KARMASS.`,
+
+        content: `
+            <div style="
+                display:inline-block;
+                padding:7px 13px;
+                background:#EAF5FF;
+                color:#0877D9;
+                border-radius:30px;
+                font-size:11px;
+                font-weight:700;
+                letter-spacing:.6px;
+                margin-bottom:20px;
+            ">
+                NEW USER REGISTRATION
+            </div>
+
+            <p style="
+                margin:0 0 14px;
+                font-size:15px;
+                line-height:1.8;
+                color:#334155;
+            ">
+                Hello ${escapeHtml(input.firstName)},
+            </p>
+
+            <p style="
+                margin:0 0 24px;
+                font-size:15px;
+                line-height:1.8;
+                color:#475569;
+            ">
+                A new user has successfully created an account
+                on KARMASS. Here are the registration details
+                for your review.
+            </p>
+
+            <div style="
+                padding:23px;
+                background:#F4F9FF;
+                border:1px solid #DCEEFF;
+                border-radius:12px;
+                margin:20px 0 25px;
+            ">
+
+                <p style="
+                    margin:0 0 19px;
+                    font-size:11px;
+                    font-weight:700;
+                    color:#0877D9;
+                    letter-spacing:1px;
+                    text-transform:uppercase;
+                ">
+                    REGISTERED USER DETAILS
+                </p>
+
+                <table
+                    role="presentation"
+                    width="100%"
+                    cellspacing="0"
+                    cellpadding="0"
+                    border="0"
+                >
+                    ${buildEmailDetailRow(
+                        "Full name",
+                        fullName,
+                    )}
+
+                    ${buildEmailDetailRow(
+                        "Email address",
+                        input.registeredUser.email,
+                    )}
+
+                    ${buildEmailDetailRow(
+                        "Registration date",
+                        registeredAt,
+                    )}
+
+                    ${buildEmailDetailRow(
+                        "Account ID",
+                        input.registeredUser.id,
+                    )}
+                </table>
+            </div>
+
+            <p style="
+                margin:0 0 8px;
+                font-size:14px;
+                line-height:1.8;
+                color:#475569;
+            ">
+                You can view this account, review its information
+                and manage the user from your KARMASS administration
+                dashboard.
+            </p>
+
+            ${buildEmailButton(
+                adminUsersUrl,
+                "View User in Admin Dashboard",
+            )}
+
+            <p style="
+                margin:23px 0 0;
+                font-size:12px;
+                line-height:1.8;
+                color:#94A3B8;
+            ">
+                This is an automated administrative notification.
+                No action is required if you have already reviewed
+                this registration.
+            </p>
+        `,
+    });
+
+    const text = [
+        `Hello ${input.firstName},`,
+        "",
+        "A new user has successfully registered on KARMASS.",
+        "",
+        "NEW USER REGISTRATION",
+        "",
+        `Full name: ${fullName}`,
+        `Email address: ${input.registeredUser.email}`,
+        `Registration date: ${registeredAt}`,
+        `Account ID: ${input.registeredUser.id}`,
+        "",
+        "View this user in your administration dashboard:",
+        adminUsersUrl,
+        "",
+        "KARMASS Administration",
+    ].join("\n");
+
+    await sendMailAndConfirm(
+        "admin-new-user-registration",
+        input.email,
+        {
+            from: getSender(),
+            to: input.email,
+
+            subject:
+                `New User Registration: ${fullName} | KARMASS`,
+
+            text,
+            html,
+        },
+    );
+}
+
+/**
  * General notification email.
  */
 export async function sendNotificationEmail(

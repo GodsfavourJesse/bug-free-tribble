@@ -88,7 +88,12 @@ interface CreateListingInput {
     price: number;
     currency: string;
     mileage?: number;
-    condition: "NEW" | "USED";
+
+    condition:
+        | "BRAND_NEW"
+        | "FOREIGN_USED"
+        | "NIGERIAN_USED";
+
     country: string;
     state?: string;
     city?: string;

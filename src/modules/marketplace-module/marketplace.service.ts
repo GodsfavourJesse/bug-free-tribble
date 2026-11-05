@@ -40,6 +40,23 @@ import {
 function validateFilters(
     filters: MarketplaceFilters,
 ): void {
+    const supportedConditions = [
+        "BRAND_NEW",
+        "FOREIGN_USED",
+        "NIGERIAN_USED",
+    ] as const;
+
+    if (
+        filters.condition !== undefined
+        && !supportedConditions.some(
+            (condition) => condition === filters.condition,
+        )
+    ) {
+        throw new Error(
+            "Invalid vehicle condition. Use BRAND_NEW, FOREIGN_USED, or NIGERIAN_USED.",
+        );
+    }
+    
     if (
         filters.minPrice !== undefined
         && filters.maxPrice !== undefined
@@ -260,8 +277,8 @@ implements MarketplaceSearchProvider {
         }
 
         /*
-        * Ordinary homepage listings must not have a currently
-        * active boost.
+        * This exclusion is opt-in only. Normal marketplace searches
+        * include active boosted listings as part of the full inventory.
         */
         if (filters.excludeBoosted) {
             conditions.push(
@@ -281,6 +298,12 @@ implements MarketplaceSearchProvider {
             );
         }
 
+        if (filters.generationId) {
+            conditions.push(
+                eq(vehicleGenerations.id, filters.generationId),
+            );
+        }
+
         if (filters.variantId) {
             conditions.push(
                 eq(vehicleVariants.id, filters.variantId),
@@ -295,13 +318,13 @@ implements MarketplaceSearchProvider {
 
         if (filters.state) {
             conditions.push(
-                ilike(listings.state, filters.state),
+                ilike(listings.state, `%${filters.state.trim()}%`),
             );
         }
 
         if (filters.city) {
             conditions.push(
-                ilike(listings.city, filters.city),
+                ilike(listings.city, `%${filters.city.trim()}%`),
             );
         }
 
@@ -399,19 +422,31 @@ implements MarketplaceSearchProvider {
             );
         }
 
-        if (filters.q) {
-            const pattern = `%${filters.q}%`;
+        if (filters.q?.trim()) {
+            // Match every search term while allowing terms to occur in
+            // different vehicle fields (e.g. "Toyota Camry" => make + model).
+            // This behaves much closer to a marketplace-wide keyword search
+            // than requiring the entire phrase in a single column.
+            const searchTerms = filters.q
+                .trim()
+                .split(/\\s+/)
+                .filter(Boolean)
+                .slice(0, 8);
 
-            conditions.push(
-                or(
-                    ilike(listings.title, pattern),
-                    ilike(listings.description, pattern),
-                    ilike(vehicleMakes.name, pattern),
-                    ilike(vehicleModels.name, pattern),
-                    ilike(vehicleGenerations.name, pattern),
-                    ilike(vehicleVariants.name, pattern),
-                )!,
-            );
+            for (const term of searchTerms) {
+                const pattern = `%${term}%`;
+
+                conditions.push(
+                    or(
+                        ilike(listings.title, pattern),
+                        ilike(listings.description, pattern),
+                        ilike(vehicleMakes.name, pattern),
+                        ilike(vehicleModels.name, pattern),
+                        ilike(vehicleGenerations.name, pattern),
+                        ilike(vehicleVariants.name, pattern),
+                    )!,
+                );
+            }
         }
 
         const whereCondition = and(...conditions);

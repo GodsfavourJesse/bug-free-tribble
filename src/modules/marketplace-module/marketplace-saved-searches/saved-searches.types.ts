@@ -1,4 +1,11 @@
-import { MarketplaceBodyStyle, MarketplaceFuelType, MarketplaceSort, MarketplaceTransmission } from "../marketplace.types.ts";
+import type {
+    MarketplaceBodyStyle,
+    MarketplaceCondition,
+    MarketplaceFuelType,
+    MarketplaceSort,
+    MarketplaceTransmission,
+} from "../marketplace.types.ts";
+
 
 export interface SavedSearchFilters {
     q?: string;
@@ -20,7 +27,7 @@ export interface SavedSearchFilters {
     transmission?: MarketplaceTransmission;
     bodyStyle?: MarketplaceBodyStyle;
 
-    condition?: "NEW" | "USED";
+    condition?: MarketplaceCondition;
 
     state?: string;
     city?: string;
@@ -29,13 +36,14 @@ export interface SavedSearchFilters {
     verifiedDealerOnly?: boolean;
 
     sort?: MarketplaceSort;
-
 }
+
 
 export interface CreateSavedSearchInput {
     name: string;
     filters: SavedSearchFilters;
 }
+
 
 export interface UpdateSavedSearchInput {
     name?: string;
@@ -64,12 +72,21 @@ export const allowedFilterKeys = new Set([
     "sort",
 ]);
 
+
+export const supportedConditions = [
+    "BRAND_NEW",
+    "FOREIGN_USED",
+    "NIGERIAN_USED",
+] as const satisfies readonly MarketplaceCondition[];
+
+
 export const supportedSorts = [
     "newest",
     "price_asc",
     "price_desc",
     "relevance",
 ] as const satisfies readonly MarketplaceSort[];
+
 
 export const supportedFuelTypes = [
     "PETROL",
@@ -81,6 +98,7 @@ export const supportedFuelTypes = [
     "LPG",
 ] as const satisfies readonly MarketplaceFuelType[];
 
+
 export const supportedTransmissions = [
     "MANUAL",
     "AUTOMATIC",
@@ -88,6 +106,7 @@ export const supportedTransmissions = [
     "DCT",
     "AMT",
 ] as const satisfies readonly MarketplaceTransmission[];
+
 
 export const supportedBodyStyles = [
     "SEDAN",
@@ -102,6 +121,7 @@ export const supportedBodyStyles = [
     "TRUCK",
     "BUS",
 ] as const satisfies readonly MarketplaceBodyStyle[];
+
 
 export interface SavedSearchRecord {
     id: string;

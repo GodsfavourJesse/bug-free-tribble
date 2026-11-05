@@ -294,6 +294,7 @@ export async function registerUser(
             firstName: createdUser.firstName,
             lastName: createdUser.lastName,
             email: createdUser.email,
+            registeredAt: createdUser.createdAt,
         });
     } catch (error) {
         // Registration must remain successful if admin notification delivery fails.

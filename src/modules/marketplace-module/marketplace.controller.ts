@@ -4,7 +4,7 @@ import type {
 } from "express";
 
 import { getFeaturedMarketplaceListings, searchMarketplace } from "./marketplace.service.ts";
-import { MarketplaceBodyStyle, MarketplaceFilters, MarketplaceFuelType, MarketplaceSort, MarketplaceTransmission } from "./marketplace.types.ts";
+import { MarketplaceBodyStyle, MarketplaceCondition, MarketplaceFilters, MarketplaceFuelType, MarketplaceSort, MarketplaceTransmission } from "./marketplace.types.ts";
 
 function optionalString(
     value: unknown,
@@ -16,7 +16,7 @@ function optionalString(
         return undefined;
     }
 
-    return value.trim();
+    return value.trim().slice(0, 160);
 }
 
 function optionalNumber(
@@ -124,6 +124,12 @@ const supportedBodyStyles = [
     "TRUCK",
     "BUS",
 ] as const satisfies readonly MarketplaceBodyStyle[];
+
+const supportedConditions = [
+    "BRAND_NEW",
+    "FOREIGN_USED",
+    "NIGERIAN_USED",
+] as const satisfies readonly MarketplaceCondition[];
 
 export async function search(
     request: Request,
@@ -242,20 +248,22 @@ export async function search(
             return;
         }
 
-        // Validate condition.
+        // Validate vehicle condition.
         const condition = optionalString(
             request.query.condition,
         );
 
         if (
             condition !== undefined
-            && condition !== "NEW"
-            && condition !== "USED"
+            && !isOneOf(
+                condition,
+                supportedConditions,
+            )
         ) {
             response.status(400).json({
                 success: false,
                 message:
-                    "condition must be NEW or USED.",
+                    "condition must be BRAND_NEW, FOREIGN_USED, or NIGERIAN_USED.",
             });
             return;
         }
@@ -401,6 +409,7 @@ export async function search(
             q: optionalString(request.query.q),
             makeId: optionalString(request.query.makeId),
             modelId: optionalString(request.query.modelId),
+            generationId: optionalString(request.query.generationId),
             variantId: optionalString(request.query.variantId),
             state: optionalString(request.query.state),
             city: optionalString(request.query.city),
@@ -441,8 +450,14 @@ export async function search(
             filters.maxYear = maxYear;
         }
 
-        // Condition.
-        if (condition === "NEW" || condition === "USED") {
+        // Vehicle condition.
+        if (
+            condition !== undefined
+            && isOneOf(
+                condition,
+                supportedConditions,
+            )
+        ) {
             filters.condition = condition;
         }
 

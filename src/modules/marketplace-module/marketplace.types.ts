@@ -9,11 +9,19 @@ import {
     vehicleVariants,
 } from "../../database/schema/index.ts";
 
+
 export type MarketplaceSort =
     | "newest"
     | "price_asc"
     | "price_desc"
     | "relevance";
+
+
+export type MarketplaceCondition =
+    | "BRAND_NEW"
+    | "FOREIGN_USED"
+    | "NIGERIAN_USED";
+
 
 export type MarketplaceFuelType =
     | "PETROL"
@@ -24,12 +32,14 @@ export type MarketplaceFuelType =
     | "CNG"
     | "LPG";
 
+
 export type MarketplaceTransmission =
     | "MANUAL"
     | "AUTOMATIC"
     | "CVT"
     | "DCT"
     | "AMT";
+
 
 export type MarketplaceBodyStyle =
     | "SEDAN"
@@ -44,11 +54,13 @@ export type MarketplaceBodyStyle =
     | "TRUCK"
     | "BUS";
 
+
 export interface MarketplaceFilters {
     q?: string;
 
     makeId?: string;
     modelId?: string;
+    generationId?: string;
     variantId?: string;
 
     minPrice?: number;
@@ -64,7 +76,7 @@ export interface MarketplaceFilters {
     transmission?: MarketplaceTransmission;
     bodyStyle?: MarketplaceBodyStyle;
 
-    condition?: "NEW" | "USED";
+    condition?: MarketplaceCondition;
 
     state?: string;
     city?: string;
@@ -79,6 +91,12 @@ export interface MarketplaceFilters {
 
     /**
      * Exclude listings with an active boost.
+     *
+     * This should only be used when a dedicated
+     * business operation explicitly requires it.
+     *
+     * Normal marketplace searches must include
+     * boosted and non-boosted listings.
      */
     excludeBoosted?: boolean;
 
@@ -88,6 +106,7 @@ export interface MarketplaceFilters {
     sort?: MarketplaceSort;
 }
 
+
 export interface MarketplacePagination {
     page: number;
     limit: number;
@@ -96,6 +115,7 @@ export interface MarketplacePagination {
     hasNextPage: boolean;
     hasPreviousPage: boolean;
 }
+
 
 export interface MarketplaceImage {
     id: string;
@@ -109,6 +129,7 @@ export interface MarketplaceImage {
     detailUrl: string;
 }
 
+
 export interface MarketplaceSeller {
     id: string;
     firstName: string;
@@ -119,11 +140,13 @@ export interface MarketplaceSeller {
     createdAt: Date;
 }
 
+
 export interface MarketplaceDealer {
     companyName: string | null;
     verified: boolean | null;
     verifiedAt: Date | null;
 }
+
 
 export interface MarketplaceSearchItem {
     listing: typeof listings.$inferSelect;
@@ -145,11 +168,13 @@ export interface MarketplaceSearchItem {
     boostPriority: number;
 }
 
+
 export interface MarketplaceSearchResult {
     listings: MarketplaceSearchItem[];
 
     pagination: MarketplacePagination;
 }
+
 
 export interface MarketplaceSearchProvider {
     search(

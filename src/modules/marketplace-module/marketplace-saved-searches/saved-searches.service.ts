@@ -32,6 +32,53 @@ function toJsonFilters(
     return { ...filters };
 }
 
+/**
+ * Normalize saved-search filters.
+ *
+ * Handles legacy condition values created before
+ * KARMASS introduced the three vehicle categories.
+ */
+function normalizeSavedSearchFilters(
+    filters: unknown,
+): SavedSearchFilters {
+    if (
+        typeof filters !== "object"
+        || filters === null
+        || Array.isArray(filters)
+    ) {
+        return {};
+    }
+
+    const normalized = {
+        ...(filters as Record<string, unknown>),
+    };
+
+    if (normalized.condition === "NEW") {
+        normalized.condition = "BRAND_NEW";
+    }
+
+    if (normalized.condition === "USED") {
+        normalized.condition = "NIGERIAN_USED";
+    }
+
+    const allowedConditions = [
+        "BRAND_NEW",
+        "FOREIGN_USED",
+        "NIGERIAN_USED",
+    ];
+
+    if (
+        normalized.condition !== undefined
+        && !allowedConditions.includes(
+            normalized.condition as string,
+        )
+    ) {
+        delete normalized.condition;
+    }
+
+    return normalized as SavedSearchFilters;
+}
+
 function toSavedSearchRecord(
     record: typeof savedSearches.$inferSelect,
 ): SavedSearchRecord {
@@ -39,7 +86,9 @@ function toSavedSearchRecord(
         id: record.id,
         userId: record.userId,
         name: record.name,
-        filters: record.filters as SavedSearchFilters,
+        filters: normalizeSavedSearchFilters(
+            record.filters
+        ),
         createdAt: record.createdAt,
         updatedAt: record.updatedAt,
     };
@@ -195,7 +244,10 @@ export async function executeSavedSearch(
     );
 
     const filters: MarketplaceFilters = {
-        ...savedSearch.filters,
+        ...normalizeSavedSearchFilters(
+            savedSearch.filters,
+        ),
+
         page: pagination.page,
         limit: pagination.limit,
     };

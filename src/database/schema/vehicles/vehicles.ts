@@ -237,6 +237,18 @@ export const vehicleGenerations = pgTable(
                 table.slug,
             ),
 
+        /**
+         * Required for composite foreign keys.
+         *
+         * Ensures that a generation ID is always
+         * associated with its correct model ID.
+         */
+        unique("vehicle_generations_id_model_unique")
+            .on(
+                table.id,
+                table.modelId,
+            ),
+
         index("vehicle_generations_model_id_idx")
             .on(table.modelId),
 

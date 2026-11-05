@@ -4,8 +4,29 @@ import type {
     MarketplaceFuelType,
     MarketplaceTransmission,
     MarketplaceBodyStyle,
+    MarketplaceCondition,
 } from "../marketplace.types.ts";
-import { allowedFilterKeys, CreateSavedSearchInput, SavedSearchFilters, supportedBodyStyles, supportedFuelTypes, supportedSorts, supportedTransmissions, UpdateSavedSearchInput } from "./saved-searches.types.ts";
+
+import {
+    allowedFilterKeys,
+    supportedBodyStyles,
+    supportedFuelTypes,
+    supportedSorts,
+    supportedTransmissions,
+} from "./saved-searches.types.ts";
+
+import type {
+    CreateSavedSearchInput,
+    SavedSearchFilters,
+    UpdateSavedSearchInput,
+} from "./saved-searches.types.ts";
+
+export const supportedConditions = [
+    "BRAND_NEW",
+    "FOREIGN_USED",
+    "NIGERIAN_USED",
+] as const satisfies readonly MarketplaceCondition[];
+
 
 export class SavedSearchValidationError extends Error {
     constructor(message: string) {
@@ -13,6 +34,7 @@ export class SavedSearchValidationError extends Error {
         this.name = "SavedSearchValidationError";
     }
 }
+
 
 function isRecord(
     value: unknown,
@@ -24,12 +46,13 @@ function isRecord(
     );
 }
 
+
 function parseName(
     value: unknown,
 ): string {
     if (typeof value !== "string") {
         throw new SavedSearchValidationError(
-        "Search name is required.",
+            "Search name is required.",
         );
     }
 
@@ -50,6 +73,7 @@ function parseName(
     return name;
 }
 
+
 function parseFilters(
     value: unknown,
 ): SavedSearchFilters {
@@ -68,6 +92,10 @@ function parseFilters(
     }
 
     const filters: SavedSearchFilters = {};
+
+    // --------------------------------------------------
+    // STRING FILTERS
+    // --------------------------------------------------
 
     const stringKeys = [
         "q",
@@ -93,7 +121,7 @@ function parseFilters(
 
         const normalized = item.trim();
 
-        if (normalized.length === 0) {
+        if (!normalized) {
             continue;
         }
 
@@ -103,8 +131,24 @@ function parseFilters(
             );
         }
 
-        filters[key] = normalized;
+        if (key === "q") {
+            filters.q = normalized;
+        } else if (key === "makeId") {
+            filters.makeId = normalized;
+        } else if (key === "modelId") {
+            filters.modelId = normalized;
+        } else if (key === "variantId") {
+            filters.variantId = normalized;
+        } else if (key === "state") {
+            filters.state = normalized;
+        } else if (key === "city") {
+            filters.city = normalized;
+        }
     }
+
+    // --------------------------------------------------
+    // NUMERIC FILTERS
+    // --------------------------------------------------
 
     const numberKeys = [
         "minPrice",
@@ -145,8 +189,36 @@ function parseFilters(
             );
         }
 
-        filters[key] = item;
+        switch (key) {
+            case "minPrice":
+                filters.minPrice = item;
+                break;
+
+            case "maxPrice":
+                filters.maxPrice = item;
+                break;
+
+            case "minMileage":
+                filters.minMileage = item;
+                break;
+
+            case "maxMileage":
+                filters.maxMileage = item;
+                break;
+
+            case "minYear":
+                filters.minYear = item;
+                break;
+
+            case "maxYear":
+                filters.maxYear = item;
+                break;
+        }
     }
+
+    // --------------------------------------------------
+    // RANGE VALIDATION
+    // --------------------------------------------------
 
     if (
         filters.minPrice !== undefined
@@ -178,84 +250,134 @@ function parseFilters(
         );
     }
 
-    const enumFilters = [
-        {
-            key: "fuelType",
-            allowed: supportedFuelTypes,
-        },
-        {
-            key: "transmission",
-            allowed: supportedTransmissions,
-        },
-        {
-            key: "bodyStyle",
-            allowed: supportedBodyStyles,
-        },
-        {
-            key: "sort",
-            allowed: supportedSorts,
-        },
-    ] as const;
+    // --------------------------------------------------
+    // ENUM FILTERS
+    // --------------------------------------------------
 
-    for (const { key, allowed } of enumFilters) {
-        const item = value[key];
+    const fuelType = value.fuelType;
 
-        if (item === undefined) {
-            continue;
-        }
-
+    if (fuelType !== undefined) {
         if (
-            typeof item !== "string"
-            || !allowed.some((candidate) => candidate === item)
+            typeof fuelType !== "string"
+            || !supportedFuelTypes.some(
+                (item) => item === fuelType,
+            )
         ) {
             throw new SavedSearchValidationError(
-                `Unsupported value for ${key}.`,
+                "Unsupported fuelType value.",
             );
         }
 
-        if (key === "fuelType") {
-            filters.fuelType = item as MarketplaceFuelType;
-        } else if (key === "transmission") {
-            filters.transmission =
-                item as MarketplaceTransmission;
-        } else if (key === "bodyStyle") {
-            filters.bodyStyle = item as MarketplaceBodyStyle;
-        } else {
-            filters.sort = item as MarketplaceSort;
-        }
+        filters.fuelType = fuelType as MarketplaceFuelType;
     }
 
-    if (value.condition !== undefined) {
+    const transmission = value.transmission;
+
+    if (transmission !== undefined) {
         if (
-            value.condition !== "NEW"
-            && value.condition !== "USED"
+            typeof transmission !== "string"
+            || !supportedTransmissions.some(
+                (item) => item === transmission,
+            )
         ) {
             throw new SavedSearchValidationError(
-                "condition must be NEW or USED.",
+                "Unsupported transmission value.",
             );
         }
 
-        filters.condition = value.condition;
+        filters.transmission =
+            transmission as MarketplaceTransmission;
     }
 
-    for (const key of [
-        "dealerOnly",
-        "verifiedDealerOnly",
-    ] as const) {
-        const item = value[key];
+    const bodyStyle = value.bodyStyle;
 
-        if (item === undefined) {
-            continue;
-        }
-
-        if (typeof item !== "boolean") {
+    if (bodyStyle !== undefined) {
+        if (
+            typeof bodyStyle !== "string"
+            || !supportedBodyStyles.some(
+                (item) => item === bodyStyle,
+            )
+        ) {
             throw new SavedSearchValidationError(
-                `${key} must be a boolean.`,
+                "Unsupported bodyStyle value.",
             );
         }
 
-        filters[key] = item;
+        filters.bodyStyle =
+            bodyStyle as MarketplaceBodyStyle;
     }
+
+    const sort = value.sort;
+
+    if (sort !== undefined) {
+        if (
+            typeof sort !== "string"
+            || !supportedSorts.some(
+                (item) => item === sort,
+            )
+        ) {
+            throw new SavedSearchValidationError(
+                "Unsupported sort value.",
+            );
+        }
+
+        filters.sort = sort as MarketplaceSort;
+    }
+
+    // --------------------------------------------------
+    // VEHICLE CONDITION
+    // --------------------------------------------------
+
+    const condition = value.condition;
+
+    if (condition !== undefined) {
+        if (
+            typeof condition !== "string"
+            || !supportedConditions.some(
+                (item) => item === condition,
+            )
+        ) {
+            throw new SavedSearchValidationError(
+                "condition must be BRAND_NEW, FOREIGN_USED, or NIGERIAN_USED.",
+            );
+        }
+
+        filters.condition =
+            condition as MarketplaceCondition;
+    }
+
+    // --------------------------------------------------
+    // BOOLEAN FILTERS
+    // --------------------------------------------------
+
+    const dealerOnly = value.dealerOnly;
+
+    if (dealerOnly !== undefined) {
+        if (typeof dealerOnly !== "boolean") {
+            throw new SavedSearchValidationError(
+                "dealerOnly must be a boolean.",
+            );
+        }
+
+        filters.dealerOnly = dealerOnly;
+    }
+
+    const verifiedDealerOnly = value.verifiedDealerOnly;
+
+    if (verifiedDealerOnly !== undefined) {
+        if (typeof verifiedDealerOnly !== "boolean") {
+            throw new SavedSearchValidationError(
+                "verifiedDealerOnly must be a boolean.",
+            );
+        }
+
+        filters.verifiedDealerOnly =
+            verifiedDealerOnly;
+    }
+
+    // --------------------------------------------------
+    // DEALER FILTER CONSISTENCY
+    // --------------------------------------------------
 
     if (
         filters.verifiedDealerOnly === true
@@ -267,8 +389,8 @@ function parseFilters(
     }
 
     return filters;
-
 }
+
 
 export function parseCreateSavedSearch(
     value: unknown,
@@ -294,13 +416,14 @@ export function parseCreateSavedSearch(
 
     return {
         name: parseName(value.name),
+
         filters:
             value.filters === undefined
                 ? {}
                 : parseFilters(value.filters),
     };
-
 }
+
 
 export function parseUpdateSavedSearch(
     value: unknown,
@@ -344,13 +467,15 @@ export function parseUpdateSavedSearch(
     }
 
     return result;
-
 }
+
 
 // Converts saved criteria into marketplace filters.
 // Pagination is deliberately assigned by the caller.
 export function toMarketplaceFilters(
-  filters: SavedSearchFilters,
+    filters: SavedSearchFilters,
 ): Omit<MarketplaceFilters, "page" | "limit"> {
-  return { ...filters };
+    return {
+        ...filters,
+    };
 }

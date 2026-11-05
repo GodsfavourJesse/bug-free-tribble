@@ -16,7 +16,10 @@ import { sql } from "drizzle-orm";
 import {
     users,
 } from "../users/users.ts";
-import { vehicleVariants } from "../vehicles/vehicle-variants.ts";
+
+import {
+    vehicleVariants,
+} from "../vehicles/vehicle-variants.ts";
 
 
 export const listingStatusEnum =
@@ -34,14 +37,33 @@ export const listingStatusEnum =
         ],
     );
 
+
+/**
+ * Vehicle condition categories used throughout KARMASS.
+ *
+ * BRAND_NEW:
+ * Vehicle has never been used.
+ *
+ * FOREIGN_USED:
+ * Previously owned or used outside Nigeria.
+ *
+ * NIGERIAN_USED:
+ * Previously owned or used within Nigeria.
+ *
+ * Legacy database values are migrated separately:
+ * NEW  -> BRAND_NEW
+ * USED -> NIGERIAN_USED
+ */
 export const listingConditionEnum =
     pgEnum(
         "listing_condition",
         [
-            "NEW",
-            "USED",
+            "BRAND_NEW",
+            "FOREIGN_USED",
+            "NIGERIAN_USED",
         ],
     );
+
 
 export const listings = pgTable(
     "listings",
@@ -107,7 +129,7 @@ export const listings = pgTable(
                 "condition",
             )
                 .notNull()
-                .default("USED"),
+                .default("NIGERIAN_USED"),
 
         country: varchar(
             "country",
@@ -139,8 +161,10 @@ export const listings = pgTable(
             .default("DRAFT"),
 
         viewCount: integer(
-            "view_count"
-        ).notNull().default(0),
+            "view_count",
+        )
+            .notNull()
+            .default(0),
 
         rejectionReason: text(
             "rejection_reason",
@@ -178,6 +202,7 @@ export const listings = pgTable(
             .notNull()
             .defaultNow(),
     },
+
     (table) => ({
         sellerStatusIdx: index(
             "listings_seller_status_idx",

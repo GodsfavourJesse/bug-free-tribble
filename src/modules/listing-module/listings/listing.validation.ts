@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+
 export const createListingSchema =
     z.object({
         vehicleVariantId: z
@@ -39,10 +40,11 @@ export const createListingSchema =
 
         condition: z
             .enum([
-                "NEW",
-                "USED",
+                "BRAND_NEW",
+                "FOREIGN_USED",
+                "NIGERIAN_USED",
             ])
-            .default("USED"),
+            .default("NIGERIAN_USED"),
 
         country: z
             .string()
@@ -63,13 +65,17 @@ export const createListingSchema =
             .optional(),
     });
 
-export const updateListingSchema = createListingSchema.partial();
 
-export const listingImageSchema = z.object({
-    sortOrder: z
-        .coerce
-        .number()
-        .int()
-        .nonnegative()
-        .default(0),
-});
+export const updateListingSchema =
+    createListingSchema.partial();
+
+
+export const listingImageSchema =
+    z.object({
+        sortOrder: z
+            .coerce
+            .number()
+            .int()
+            .nonnegative()
+            .default(0),
+    });

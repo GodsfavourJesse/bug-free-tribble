@@ -114,6 +114,21 @@ export const vehicleModelYears = pgTable(
         ),
 
         /**
+         * Required for composite foreign keys.
+         *
+         * Ensures that a model-year ID is always
+         * associated with its correct generation
+         * and model year.
+         */
+        unique(
+            "vehicle_model_years_id_generation_year_unique",
+        ).on(
+            table.id,
+            table.generationId,
+            table.year,
+        ),
+
+        /**
          * Efficient retrieval of model years
          * belonging to a generation.
          */
