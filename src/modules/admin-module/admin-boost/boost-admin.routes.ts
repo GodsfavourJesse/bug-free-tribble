@@ -10,9 +10,13 @@ import {
 
 import {
     adminApproveBoost,
+    adminCreateBoostPlan,
+    adminDeleteBoostPlan,
     adminGetBoostDetails,
+    adminListBoostPlans,
     adminListBoosts,
     adminRejectBoost,
+    adminUpdateBoostPlan,
 } from "./boost-admin.controller.ts";
 
 const router = Router();
@@ -29,6 +33,46 @@ router.get(
     "/",
     requirePermission("boost:manage"),
     adminListBoosts,
+);
+
+/*
+ * BOOST PLAN MANAGEMENT
+ */
+
+/*
+ * GET /admin/boosts/plans
+ */
+router.get(
+    "/plans",
+    requirePermission("boost:manage"),
+    adminListBoostPlans,
+);
+
+/*
+ * POST /admin/boosts/plans
+ */
+router.post(
+    "/plans",
+    requirePermission("boost:manage"),
+    adminCreateBoostPlan,
+);
+
+/*
+ * PATCH /admin/boosts/plans/:planId
+ */
+router.patch(
+    "/plans/:planId",
+    requirePermission("boost:manage"),
+    adminUpdateBoostPlan,
+);
+
+/*
+ * DELETE /admin/boosts/plans/:planId
+ */
+router.delete(
+    "/plans/:planId",
+    requirePermission("boost:manage"),
+    adminDeleteBoostPlan,
 );
 
 /*

@@ -30,7 +30,9 @@ export const notificationTypeEnum = pgEnum(
 
         "BOOST_PAYMENT_PENDING",
         "BOOST_PAYMENT_SUCCESSFUL",
+        "BOOST_PAYMENT_RECEIVED",
         "BOOST_ACTIVATED",
+        "BOOST_EXPIRY_REMINDER",
         "BOOST_EXPIRED",
 
         "MESSAGE_RECEIVED",

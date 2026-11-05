@@ -1160,3 +1160,398 @@ export async function sendDealerDecisionEmail(
         },
     );
 }
+
+/**
+ * Admin notification email for a successful listing boost payment.
+ */
+export async function sendAdminBoostPaymentReceivedEmail(
+    input: {
+        email: string;
+        firstName: string;
+        buyerName: string;
+        buyerEmail: string;
+        listingTitle: string;
+        listingId: string;
+        boostId: string;
+        durationDays: number;
+        planName: string;
+        amount: string | number;
+        currency: string;
+        paymentDate: Date;
+        paymentId: string;
+    },
+): Promise<void> {
+    const amount = formatEmailMoney(
+        input.amount,
+        input.currency,
+    );
+
+    const paymentDate = formatEmailDate(
+        input.paymentDate,
+    );
+
+    const adminUrl = `${CLIENT_URL}/admin`;
+
+    const html = buildEmailLayout({
+        title: "New Listing Boost Payment Received",
+        preheader: `${input.buyerName} has successfully paid for a listing boost.`,
+        content: `
+            <div style="
+                display:inline-block;
+                padding:7px 13px;
+                background:#EAF5FF;
+                color:${BRAND_DARK};
+                border-radius:30px;
+                font-size:12px;
+                font-weight:700;
+                margin-bottom:18px;
+            ">
+                BOOST PAYMENT RECEIVED
+            </div>
+
+            <p>Hello ${escapeHtml(input.firstName)},</p>
+
+            <p style="
+                font-size:15px;
+                line-height:1.8;
+                color:#475569;
+            ">
+                A customer has successfully completed payment
+                for a listing boost on KARMASS.
+            </p>
+
+            <div style="
+                margin:24px 0;
+                padding:22px;
+                background:${BRAND_SOFT};
+                border:1px solid #DCEEFF;
+                border-radius:12px;
+            ">
+                <p style="
+                    margin:0 0 7px;
+                    font-size:12px;
+                    color:#64748B;
+                    text-transform:uppercase;
+                    letter-spacing:1px;
+                ">
+                    Payment received
+                </p>
+
+                <h2 style="
+                    margin:0;
+                    font-size:27px;
+                    color:${BRAND_DARK};
+                ">
+                    ${escapeHtml(amount)}
+                </h2>
+
+                <p style="
+                    margin:9px 0 0;
+                    font-size:13px;
+                    color:#64748B;
+                ">
+                    Successful listing boost payment
+                </p>
+            </div>
+
+            <h3 style="
+                margin:26px 0 12px;
+                font-size:16px;
+                color:#172033;
+            ">
+                Customer details
+            </h3>
+
+            <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="
+                    border:1px solid #E8EDF4;
+                    border-radius:9px;
+                    overflow:hidden;
+                "
+            >
+                ${buildEmailDetailRow(
+                    "Customer",
+                    input.buyerName,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Email address",
+                    input.buyerEmail,
+                )}
+            </table>
+
+            <h3 style="
+                margin:26px 0 12px;
+                font-size:16px;
+                color:#172033;
+            ">
+                Boost details
+            </h3>
+
+            <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="
+                    border:1px solid #E8EDF4;
+                    border-radius:9px;
+                    overflow:hidden;
+                "
+            >
+                ${buildEmailDetailRow(
+                    "Listing",
+                    input.listingTitle,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Boost plan",
+                    input.planName,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Amount paid",
+                    amount,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Payment date",
+                    paymentDate,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Payment ID",
+                    input.paymentId,
+                )}
+
+                ${buildEmailDetailRow(
+                    "Boost ID",
+                    input.boostId,
+                )}
+            </table>
+
+            <div style="
+                margin-top:22px;
+                padding:16px;
+                background:#F0FDF4;
+                border:1px solid #BBF7D0;
+                border-radius:9px;
+            ">
+                <p style="
+                    margin:0;
+                    font-size:14px;
+                    line-height:1.7;
+                    color:#166534;
+                ">
+                    The payment has been successfully recorded.
+                    You can review the transaction and manage
+                    the boost from your admin dashboard.
+                </p>
+            </div>
+
+            ${buildEmailButton(
+                adminUrl,
+                "Open Admin Dashboard",
+            )}
+        `,
+    });
+
+    const text = [
+        `Hello ${input.firstName},`,
+        "",
+        "A customer has successfully paid for a KARMASS listing boost.",
+        "",
+        "PAYMENT DETAILS",
+        `Customer: ${input.buyerName}`,
+        `Customer email: ${input.buyerEmail}`,
+        `Listing: ${input.listingTitle}`,
+        `Boost plan: ${input.planName}`,
+        `Amount: ${amount}`,
+        `Payment date: ${paymentDate}`,
+        `Payment ID: ${input.paymentId}`,
+        `Boost ID: ${input.boostId}`,
+        "",
+        `Admin dashboard: ${adminUrl}`,
+        "",
+        "KARMASS Team",
+    ].join("\n");
+
+    await sendMailAndConfirm(
+        "admin-boost-payment-received",
+        input.email,
+        {
+            from: getSender(),
+            to: input.email,
+            subject: `New Listing Boost Payment Received | KARMASS`,
+            text,
+            html,
+        },
+    );
+}
+
+/**
+ * Listing boost expiry reminder email.
+ *
+ * Sent 24 hours before an active listing boost expires.
+ */
+export async function sendBoostExpiryReminderEmail(
+    input: {
+        email: string;
+        firstName: string;
+        listingTitle: string;
+        expiryDate: Date;
+        listingId: string;
+    },
+): Promise<void> {
+    const expiryDate = formatEmailDate(
+        input.expiryDate,
+    );
+
+    /**
+     * IMPORTANT:
+     * This assumes the frontend reboost page uses this route.
+     * Change it if your actual KARMASS reboost route differs.
+     */
+    const reboostUrl =
+        `${CLIENT_URL}/dashboard/listings/${encodeURIComponent(input.listingId)}/boost`;
+
+    const html = buildEmailLayout({
+        title: "Your listing boost expires tomorrow",
+        preheader: `Your boost for ${input.listingTitle} expires in approximately 24 hours.`,
+        content: `
+            <div style="
+                display:inline-block;
+                padding:7px 13px;
+                background:#FFF7ED;
+                color:#C2410C;
+                border-radius:30px;
+                font-size:12px;
+                font-weight:700;
+                margin-bottom:18px;
+            ">
+                BOOST EXPIRY REMINDER
+            </div>
+
+            <p>Hello ${escapeHtml(input.firstName)},</p>
+
+            <p style="
+                font-size:15px;
+                line-height:1.8;
+                color:#475569;
+            ">
+                Your KARMASS listing boost is scheduled to expire
+                in approximately 24 hours.
+            </p>
+
+            <div style="
+                margin:24px 0;
+                padding:22px;
+                background:${BRAND_SOFT};
+                border:1px solid #DCEEFF;
+                border-radius:12px;
+            ">
+                <p style="
+                    margin:0 0 8px;
+                    font-size:12px;
+                    color:#64748B;
+                    text-transform:uppercase;
+                    letter-spacing:1px;
+                ">
+                    Boosted listing
+                </p>
+
+                <h2 style="
+                    margin:0;
+                    font-size:21px;
+                    line-height:1.5;
+                    color:${BRAND_DARK};
+                ">
+                    ${escapeHtml(input.listingTitle)}
+                </h2>
+
+                <div style="
+                    margin-top:18px;
+                    padding-top:17px;
+                    border-top:1px solid #DCEEFF;
+                ">
+                    <p style="
+                        margin:0 0 6px;
+                        font-size:12px;
+                        color:#64748B;
+                    ">
+                        BOOST EXPIRY DATE
+                    </p>
+
+                    <p style="
+                        margin:0;
+                        font-size:17px;
+                        font-weight:700;
+                        color:#172033;
+                    ">
+                        ${escapeHtml(expiryDate)}
+                    </p>
+                </div>
+            </div>
+
+            <p style="
+                font-size:15px;
+                line-height:1.8;
+                color:#475569;
+            ">
+                Don't lose the additional visibility your listing
+                currently receives. You can purchase another boost
+                before the current one expires.
+            </p>
+
+            ${buildEmailButton(
+                reboostUrl,
+                "Reboost My Listing",
+            )}
+
+            <p style="
+                margin-top:22px;
+                font-size:13px;
+                line-height:1.7;
+                color:#64748B;
+            ">
+                If you have already purchased another boost,
+                you can disregard this reminder.
+            </p>
+        `,
+    });
+
+    const text = [
+        `Hello ${input.firstName},`,
+        "",
+        "Your KARMASS listing boost is scheduled to expire in approximately 24 hours.",
+        "",
+        `Listing: ${input.listingTitle}`,
+        `Expiry date: ${expiryDate}`,
+        "",
+        "You can purchase another boost before the current one expires.",
+        "",
+        `Reboost your listing: ${reboostUrl}`,
+        "",
+        "If you have already purchased another boost, you can disregard this reminder.",
+        "",
+        "KARMASS Team",
+    ].join("\n");
+
+    await sendMailAndConfirm(
+        "boost-expiry-reminder",
+        input.email,
+        {
+            from: getSender(),
+            to: input.email,
+            subject: "Your KARMASS Listing Boost Expires Tomorrow",
+            text,
+            html,
+        },
+    );
+}

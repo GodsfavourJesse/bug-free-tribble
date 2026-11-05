@@ -37,6 +37,28 @@ export interface ReviewBoostInput {
     reviewNote?: string;
 }
 
+export interface CreateAdminBoostPlanInput {
+    durationDays: number;
+    price: number;
+    currency: string;
+    active: number;
+    adminUserId: string;
+}
+
+export interface UpdateAdminBoostPlanInput {
+    planId: string;
+    adminUserId: string;
+    durationDays?: number;
+    price?: number;
+    currency?: string;
+    active?: number;
+}
+
+export interface DeleteAdminBoostPlanInput {
+    planId: string;
+    adminUserId: string;
+}
+
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
@@ -594,5 +616,217 @@ export async function rejectBoostRequest(
         });
 
         return updatedBoost;
+    });
+}
+
+/**
+ * List all boost plans for administrators.
+ *
+ * Unlike the public boost plan service, this includes
+ * inactive plans.
+ */
+export async function listAdminBoostPlans() {
+    return db
+        .select({
+            id: boostPlans.id,
+            durationDays: boostPlans.durationDays,
+            price: boostPlans.price,
+            currency: boostPlans.currency,
+            active: boostPlans.active,
+            createdAt: boostPlans.createdAt,
+
+            totalBoosts: sql<number>`
+                (
+                    SELECT COUNT(*)::int
+                    FROM listing_boosts
+                    WHERE listing_boosts.boost_plan_id = ${boostPlans.id}
+                )
+            `,
+        })
+        .from(boostPlans)
+        .orderBy(
+            desc(boostPlans.createdAt),
+        );
+}
+
+/**
+ * Create a new boost plan.
+ */
+export async function createAdminBoostPlan(
+    input: CreateAdminBoostPlanInput,
+) {
+    return db.transaction(async (tx) => {
+        const [plan] = await tx
+            .insert(boostPlans)
+            .values({
+                durationDays: input.durationDays,
+                price: input.price.toFixed(2),
+                currency: input.currency.toUpperCase(),
+                active: input.active,
+            })
+            .returning();
+
+        if (!plan) {
+            throw new Error(
+                "Unable to create boost plan.",
+            );
+        }
+
+        await writeAuditRecord(tx, {
+            actorUserId: input.adminUserId,
+            action: "BOOST_PLAN_CREATED",
+            entityType: "BOOST_PLAN",
+            entityId: plan.id,
+            metadata: {
+                durationDays: plan.durationDays,
+                price: plan.price,
+                currency: plan.currency,
+                active: plan.active,
+            },
+        });
+
+        return plan;
+    });
+}
+
+/**
+ * Update an existing boost plan.
+ */
+export async function updateAdminBoostPlan(
+    input: UpdateAdminBoostPlanInput,
+) {
+    return db.transaction(async (tx) => {
+        const [existingPlan] = await tx
+            .select()
+            .from(boostPlans)
+            .where(
+                eq(boostPlans.id, input.planId),
+            )
+            .limit(1)
+            .for("update");
+
+        if (!existingPlan) {
+            throw new Error(
+                "Boost plan not found.",
+            );
+        }
+
+        const updates: Partial<typeof boostPlans.$inferInsert> = {};
+
+        if (input.durationDays !== undefined) {
+            updates.durationDays = input.durationDays;
+        }
+
+        if (input.price !== undefined) {
+            updates.price = input.price.toFixed(2);
+        }
+
+        if (input.currency !== undefined) {
+            updates.currency = input.currency.toUpperCase();
+        }
+
+        if (input.active !== undefined) {
+            updates.active = input.active;
+        }
+
+        const [updatedPlan] = await tx
+            .update(boostPlans)
+            .set(updates)
+            .where(
+                eq(boostPlans.id, input.planId),
+            )
+            .returning();
+
+        if (!updatedPlan) {
+            throw new Error(
+                "Boost plan not found.",
+            );
+        }
+
+        await writeAuditRecord(tx, {
+            actorUserId: input.adminUserId,
+            action: "BOOST_PLAN_UPDATED",
+            entityType: "BOOST_PLAN",
+            entityId: updatedPlan.id,
+            metadata: {
+                previous: {
+                    durationDays: existingPlan.durationDays,
+                    price: existingPlan.price,
+                    currency: existingPlan.currency,
+                    active: existingPlan.active,
+                },
+                updated: {
+                    durationDays: updatedPlan.durationDays,
+                    price: updatedPlan.price,
+                    currency: updatedPlan.currency,
+                    active: updatedPlan.active,
+                },
+            },
+        });
+
+        return updatedPlan;
+    });
+}
+
+/**
+ * Deactivate an existing boost plan.
+ *
+ * We intentionally do not physically delete the record
+ * because existing listing boosts may reference it.
+ */
+export async function deactivateAdminBoostPlan(
+    input: DeleteAdminBoostPlanInput,
+) {
+    return db.transaction(async (tx) => {
+        const [existingPlan] = await tx
+            .select()
+            .from(boostPlans)
+            .where(
+                eq(boostPlans.id, input.planId),
+            )
+            .limit(1)
+            .for("update");
+
+        if (!existingPlan) {
+            throw new Error(
+                "Boost plan not found.",
+            );
+        }
+
+        if (existingPlan.active === 0) {
+            return existingPlan;
+        }
+
+        const [updatedPlan] = await tx
+            .update(boostPlans)
+            .set({
+                active: 0,
+            })
+            .where(
+                eq(boostPlans.id, input.planId),
+            )
+            .returning();
+
+        if (!updatedPlan) {
+            throw new Error(
+                "Boost plan not found.",
+            );
+        }
+
+        await writeAuditRecord(tx, {
+            actorUserId: input.adminUserId,
+            action: "BOOST_PLAN_DEACTIVATED",
+            entityType: "BOOST_PLAN",
+            entityId: updatedPlan.id,
+            metadata: {
+                durationDays: updatedPlan.durationDays,
+                price: updatedPlan.price,
+                currency: updatedPlan.currency,
+                previousActive: existingPlan.active,
+                newActive: 0,
+            },
+        });
+
+        return updatedPlan;
     });
 }

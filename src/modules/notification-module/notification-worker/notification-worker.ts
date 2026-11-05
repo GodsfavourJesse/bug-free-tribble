@@ -4,6 +4,7 @@ import {
     eq,
     inArray,
     lt,
+    lte,
     sql,
 } from "drizzle-orm";
 
@@ -20,6 +21,9 @@ import {
     subscriptionPlans,
     subscriptionPlanVersions,
     payments,
+    listingBoosts,
+    listings,
+    boostPlans,
 } from "../../../database/schema/index.ts";
 
 import { getSocketIO } from "../../../realtime/socket.ts";
@@ -28,9 +32,12 @@ import {
     sendNotificationEmail,
     sendSubscriptionActivatedEmail,
     sendSubscriptionExpiryReminderEmail,
+    sendAdminBoostPaymentReceivedEmail,
+    sendBoostExpiryReminderEmail,
 } from "../../email-module/email.service.ts";
 
 import { sendWebPushToUser } from "../web-push/web-push.service.ts";
+import { alias } from "drizzle-orm/pg-core";
 
 const DEFAULT_BATCH_SIZE = 10;
 const DEFAULT_POLL_INTERVAL_MS = 2_000;
@@ -43,6 +50,12 @@ export interface NotificationWorkerOptions {
     workerId?: string;
 }
 
+/*
+|--------------------------------------------------------------------------
+| TYPES
+|--------------------------------------------------------------------------
+*/
+
 interface NotificationPayload {
     eventId: string;
     userId: string;
@@ -51,6 +64,25 @@ interface NotificationPayload {
     message: string;
     data?: Record<string, unknown>;
 }
+
+interface AdminBoostPaymentEmailPayload {
+    kind: "ADMIN_BOOST_PAYMENT_RECEIVED";
+    userId: string;
+    listingBoostId: string;
+    paymentId: string;
+}
+
+interface BoostExpiryReminderEmailPayload {
+    kind: "BOOST_EXPIRY_REMINDER";
+    userId: string;
+    listingBoostId: string;
+    listingId: string;
+    expiresAt: string;
+}
+
+type BoostEmailPayload =
+    | AdminBoostPaymentEmailPayload
+    | BoostExpiryReminderEmailPayload;
 
 interface SubscriptionActivatedEmailPayload {
     kind: "SUBSCRIPTION_ACTIVATED";
@@ -79,9 +111,12 @@ interface ClaimedJob {
     maxAttempts: number;
 }
 
-/**
- * Validate a generic notification payload.
- */
+/*
+|--------------------------------------------------------------------------
+| GENERIC NOTIFICATION PAYLOAD VALIDATION
+|--------------------------------------------------------------------------
+*/
+
 function getPayload(
     value: Record<string, unknown>,
 ): NotificationPayload {
@@ -133,9 +168,12 @@ function getPayload(
     };
 }
 
-/**
- * Validate dedicated subscription email payloads.
- */
+/*
+|--------------------------------------------------------------------------
+| SUBSCRIPTION EMAIL PAYLOAD VALIDATION
+|--------------------------------------------------------------------------
+*/
+
 function getSubscriptionEmailPayload(
     value: Record<string, unknown>,
 ): SubscriptionEmailPayload {
@@ -190,12 +228,316 @@ function getSubscriptionEmailPayload(
     );
 }
 
-/**
- * Claim a batch of available jobs.
- *
- * SKIP LOCKED allows multiple workers to process jobs
- * without claiming the same row simultaneously.
- */
+/*
+|--------------------------------------------------------------------------
+| BOOST EMAIL PAYLOAD VALIDATION
+|--------------------------------------------------------------------------
+*/
+
+function getBoostEmailPayload(
+    value: Record<string, unknown>,
+): BoostEmailPayload {
+    if (value.kind === "ADMIN_BOOST_PAYMENT_RECEIVED") {
+        if (
+            typeof value.userId !== "string" ||
+            typeof value.listingBoostId !== "string" ||
+            typeof value.paymentId !== "string"
+        ) {
+            throw new Error(
+                "Admin boost payment email payload is invalid.",
+            );
+        }
+
+        return {
+            kind: "ADMIN_BOOST_PAYMENT_RECEIVED",
+            userId: value.userId,
+            listingBoostId: value.listingBoostId,
+            paymentId: value.paymentId,
+        };
+    }
+
+    if (value.kind === "BOOST_EXPIRY_REMINDER") {
+        if (
+            typeof value.userId !== "string" ||
+            typeof value.listingBoostId !== "string" ||
+            typeof value.listingId !== "string" ||
+            typeof value.expiresAt !== "string"
+        ) {
+            throw new Error(
+                "Boost expiry reminder payload is invalid.",
+            );
+        }
+
+        const expiry = new Date(value.expiresAt);
+
+        if (Number.isNaN(expiry.getTime())) {
+            throw new Error(
+                "Boost expiry reminder contains an invalid expiry date.",
+            );
+        }
+
+        return {
+            kind: "BOOST_EXPIRY_REMINDER",
+            userId: value.userId,
+            listingBoostId: value.listingBoostId,
+            listingId: value.listingId,
+            expiresAt: value.expiresAt,
+        };
+    }
+
+    throw new Error(
+        "Unsupported boost email payload.",
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN BOOST PAYMENT EMAIL
+|--------------------------------------------------------------------------
+|
+| Revalidate the payment and boost before sending.
+|
+| The recipient is the administrator identified by the
+| notification delivery job, not an arbitrary email address
+| supplied through the payload.
+*/
+
+async function deliverAdminBoostPaymentEmail(
+    payload: AdminBoostPaymentEmailPayload,
+): Promise<void> {
+    const buyer = alias(users, "buyer");
+
+    const [result] = await db
+        .select({
+            adminId: users.id,
+            adminEmail: users.email,
+            adminFirstName: users.firstName,
+            adminStatus: users.status,
+
+            paymentId: payments.id,
+            paymentUserId: payments.userId,
+            paymentStatus: payments.status,
+            paymentAmount: payments.amount,
+            paymentCurrency: payments.currency,
+            paymentPaidAt: payments.paidAt,
+            paymentBoostId: payments.listingBoostId,
+
+            boostId: listingBoosts.id,
+            boostStatus: listingBoosts.status,
+
+            listingId: listings.id,
+            listingTitle: listings.title,
+            listingSellerId: listings.sellerId,
+
+            buyerEmail: buyer.email,
+            buyerFirstName: buyer.firstName,
+            buyerLastName: buyer.lastName,
+
+            planDurationDays: boostPlans.durationDays,
+        })
+        .from(users)
+        .innerJoin(
+            payments,
+            eq(payments.id, payload.paymentId),
+        )
+        .innerJoin(
+            listingBoosts,
+            eq(listingBoosts.id, payload.listingBoostId),
+        )
+        .innerJoin(
+            listings,
+            eq(listings.id, listingBoosts.listingId),
+        )
+        .innerJoin(
+            boostPlans,
+            eq(boostPlans.id, listingBoosts.boostPlanId),
+        )
+        .innerJoin(
+            buyer,
+            eq(buyer.id, payments.userId),
+        )
+        .where(
+            and(
+                eq(users.id, payload.userId),
+                eq(payments.id, payload.paymentId),
+                eq(payments.listingBoostId, payload.listingBoostId),
+            ),
+        )
+        .limit(1);
+
+    if (!result) {
+        throw new Error(
+            "Administrator boost payment email records could not be found.",
+        );
+    }
+
+    if (result.adminStatus !== "ACTIVE") {
+        return;
+    }
+
+    if (
+        !result.adminEmail ||
+        !result.buyerEmail
+    ) {
+        throw new Error(
+            "Administrator or buyer email address is unavailable.",
+        );
+    }
+
+    if (
+        result.paymentStatus !== "SUCCESS" ||
+        result.paymentUserId !== result.listingSellerId ||
+        result.paymentBoostId !== result.boostId
+    ) {
+        throw new Error(
+            "Administrator boost email requires a successfully verified payment.",
+        );
+    }
+
+    if (!result.paymentPaidAt) {
+        throw new Error(
+            "Boost payment confirmation date is unavailable.",
+        );
+    }
+
+    await sendAdminBoostPaymentReceivedEmail({
+        email: result.adminEmail,
+        firstName: result.adminFirstName,
+
+        buyerName: [
+            result.buyerFirstName,
+            result.buyerLastName,
+        ].filter(Boolean).join(" "),
+
+        buyerEmail: result.buyerEmail,
+
+        listingTitle: result.listingTitle,
+        listingId: result.listingId,
+
+        boostId: result.boostId,
+        durationDays: result.planDurationDays,
+        planName: `${result.planDurationDays}-Day Boost`,
+
+        amount: result.paymentAmount,
+        currency: result.paymentCurrency,
+
+        paymentDate: result.paymentPaidAt,
+        paymentId: result.paymentId,
+    });
+}
+
+/*
+|--------------------------------------------------------------------------
+| BOOST EXPIRY REMINDER EMAIL
+|--------------------------------------------------------------------------
+|
+| Only send when:
+|
+| 1. The boost still exists.
+| 2. It is ACTIVE.
+| 3. Its expiry date has not changed.
+| 4. The owner is still active.
+| 5. The boost has not expired.
+*/
+
+async function deliverBoostExpiryReminderEmail(
+    payload: BoostExpiryReminderEmailPayload,
+): Promise<void> {
+    const [result] = await db
+        .select({
+            boostId: listingBoosts.id,
+            boostStatus: listingBoosts.status,
+            boostExpiresAt: listingBoosts.expiresAt,
+
+            listingId: listings.id,
+            listingTitle: listings.title,
+
+            email: users.email,
+            firstName: users.firstName,
+            userStatus: users.status,
+        })
+        .from(listingBoosts)
+        .innerJoin(
+            listings,
+            eq(
+                listingBoosts.listingId,
+                listings.id,
+            ),
+        )
+        .innerJoin(
+            users,
+            eq(
+                listings.sellerId,
+                users.id,
+            ),
+        )
+        .where(
+            and(
+                eq(
+                    listingBoosts.id,
+                    payload.listingBoostId,
+                ),
+                eq(
+                    listingBoosts.listingId,
+                    payload.listingId,
+                ),
+                eq(
+                    listings.sellerId,
+                    payload.userId,
+                ),
+            ),
+        )
+        .limit(1);
+
+    if (!result) {
+        return;
+    }
+
+    if (
+        result.boostStatus !== "ACTIVE" ||
+        !result.boostExpiresAt
+    ) {
+        return;
+    }
+
+    if (result.userStatus !== "ACTIVE") {
+        return;
+    }
+
+    const queuedExpiry = new Date(
+        payload.expiresAt,
+    );
+
+    if (
+        result.boostExpiresAt.getTime() !==
+        queuedExpiry.getTime()
+    ) {
+        return;
+    }
+
+    if (
+        result.boostExpiresAt.getTime() <= Date.now()
+    ) {
+        return;
+    }
+
+    await sendBoostExpiryReminderEmail({
+        email: result.email,
+        firstName: result.firstName,
+        listingTitle: result.listingTitle,
+        expiryDate: result.boostExpiresAt,
+        listingId: result.listingId,
+    });
+}
+
+/*
+|--------------------------------------------------------------------------
+| CLAIM AVAILABLE JOBS
+|--------------------------------------------------------------------------
+|
+| SKIP LOCKED allows multiple workers to process jobs safely.
+*/
+
 async function claimJobs(
     batchSize: number,
     workerId: string,
@@ -217,7 +559,7 @@ async function claimJobs(
                         notificationDeliveryJobs.status,
                         "PENDING",
                     ),
-                    lt(
+                    lte(
                         notificationDeliveryJobs.availableAt,
                         sql`NOW()`,
                     ),
@@ -240,16 +582,20 @@ async function claimJobs(
             return [];
         }
 
-        const jobIds = jobs.map((job) => job.id);
+        const jobIds = jobs.map(
+            (job) => job.id,
+        );
+
+        const now = new Date();
 
         await tx
             .update(notificationDeliveryJobs)
             .set({
                 status: "PROCESSING",
                 workerId,
-                lockedAt: new Date(),
+                lockedAt: now,
                 attempts: sql`${notificationDeliveryJobs.attempts} + 1`,
-                updatedAt: new Date(),
+                updatedAt: now,
             })
             .where(
                 and(
@@ -271,9 +617,12 @@ async function claimJobs(
     });
 }
 
-/**
- * Persist an in-app notification idempotently.
- */
+/*
+|--------------------------------------------------------------------------
+| IN-APP NOTIFICATION DELIVERY
+|--------------------------------------------------------------------------
+*/
+
 async function deliverInApp(
     payload: NotificationPayload,
 ): Promise<void> {
@@ -302,9 +651,12 @@ async function deliverInApp(
         });
 }
 
-/**
- * Deliver a realtime notification to connected clients.
- */
+/*
+|--------------------------------------------------------------------------
+| SOCKET NOTIFICATION DELIVERY
+|--------------------------------------------------------------------------
+*/
+
 async function deliverSocket(
     payload: NotificationPayload,
 ): Promise<void> {
@@ -322,9 +674,12 @@ async function deliverSocket(
         });
 }
 
-/**
- * Deliver a generic email notification.
- */
+/*
+|--------------------------------------------------------------------------
+| GENERIC EMAIL DELIVERY
+|--------------------------------------------------------------------------
+*/
+
 async function deliverEmail(
     payload: NotificationPayload,
 ): Promise<void> {
@@ -335,7 +690,12 @@ async function deliverEmail(
             status: users.status,
         })
         .from(users)
-        .where(eq(users.id, payload.userId))
+        .where(
+            eq(
+                users.id,
+                payload.userId,
+            ),
+        )
         .limit(1);
 
     if (!user || user.status !== "ACTIVE") {
@@ -352,12 +712,12 @@ async function deliverEmail(
     });
 }
 
-/**
- * Send a subscription activation confirmation.
- *
- * Payment and subscription records are re-read from the database.
- * The email never trusts dates or prices supplied by the job payload.
- */
+/*
+|--------------------------------------------------------------------------
+| SUBSCRIPTION ACTIVATION EMAIL
+|--------------------------------------------------------------------------
+*/
+
 async function deliverSubscriptionActivatedEmail(
     payload: SubscriptionActivatedEmailPayload,
 ): Promise<void> {
@@ -447,7 +807,10 @@ async function deliverSubscriptionActivatedEmail(
         );
     }
 
-    if (!result.startsAt || !result.expiresAt) {
+    if (
+        !result.startsAt ||
+        !result.expiresAt
+    ) {
         throw new Error(
             "Subscription activation dates are unavailable.",
         );
@@ -475,12 +838,12 @@ async function deliverSubscriptionActivatedEmail(
     });
 }
 
-/**
- * Deliver a three-day subscription expiry reminder.
- *
- * A reminder is discarded if the subscription has been renewed,
- * replaced, expired, or its expiry date has changed.
- */
+/*
+|--------------------------------------------------------------------------
+| SUBSCRIPTION EXPIRY REMINDER EMAIL
+|--------------------------------------------------------------------------
+*/
+
 async function deliverSubscriptionExpiryReminderEmail(
     payload: SubscriptionExpiryReminderEmailPayload,
 ): Promise<void> {
@@ -535,7 +898,6 @@ async function deliverSubscriptionExpiryReminderEmail(
         )
         .limit(1);
 
-    // Missing subscription means this reminder is no longer relevant.
     if (!result) {
         return;
     }
@@ -547,7 +909,6 @@ async function deliverSubscriptionExpiryReminderEmail(
         return;
     }
 
-    // Both ACTIVE and CANCELLED retain access until expiry.
     if (
         result.subscriptionStatus !== "ACTIVE" &&
         result.subscriptionStatus !== "CANCELLED"
@@ -556,21 +917,24 @@ async function deliverSubscriptionExpiryReminderEmail(
     }
 
     const currentExpiry = result.expiresAt;
-    const queuedExpiry = new Date(payload.expiresAt);
 
-    // Do not send reminders for an outdated expiry date.
+    const queuedExpiry = new Date(
+        payload.expiresAt,
+    );
+
     if (
-        currentExpiry.getTime() !== queuedExpiry.getTime()
+        currentExpiry.getTime() !==
+        queuedExpiry.getTime()
     ) {
         return;
     }
 
-    // Do not send reminders for subscriptions that have expired.
-    if (currentExpiry.getTime() <= Date.now()) {
+    if (
+        currentExpiry.getTime() <= Date.now()
+    ) {
         return;
     }
 
-    // A newer active subscription supersedes this reminder.
     const [newerSubscription] = await db
         .select({
             id: subscriptions.id,
@@ -608,9 +972,12 @@ async function deliverSubscriptionExpiryReminderEmail(
     });
 }
 
-/**
- * Route dedicated subscription emails separately from generic emails.
- */
+/*
+|--------------------------------------------------------------------------
+| SUBSCRIPTION EMAIL ROUTER
+|--------------------------------------------------------------------------
+*/
+
 async function deliverSubscriptionEmail(
     value: Record<string, unknown>,
     jobUserId: string,
@@ -625,15 +992,20 @@ async function deliverSubscriptionEmail(
 
     switch (payload.kind) {
         case "SUBSCRIPTION_ACTIVATED":
-            await deliverSubscriptionActivatedEmail(payload);
+            await deliverSubscriptionActivatedEmail(
+                payload,
+            );
             return;
 
         case "SUBSCRIPTION_EXPIRY_REMINDER":
-            await deliverSubscriptionExpiryReminderEmail(payload);
+            await deliverSubscriptionExpiryReminderEmail(
+                payload,
+            );
             return;
 
         default: {
             const unsupportedKind: never = payload;
+
             throw new Error(
                 `Unsupported subscription email: ${unsupportedKind}`,
             );
@@ -641,9 +1013,53 @@ async function deliverSubscriptionEmail(
     }
 }
 
-/**
- * Web Push delivery.
- */
+/*
+|--------------------------------------------------------------------------
+| BOOST EMAIL ROUTER
+|--------------------------------------------------------------------------
+*/
+
+async function deliverBoostEmail(
+    value: Record<string, unknown>,
+    jobUserId: string,
+): Promise<void> {
+    const payload = getBoostEmailPayload(value);
+
+    if (payload.userId !== jobUserId) {
+        throw new Error(
+            "Boost email recipient does not match the delivery job.",
+        );
+    }
+
+    switch (payload.kind) {
+        case "ADMIN_BOOST_PAYMENT_RECEIVED":
+            await deliverAdminBoostPaymentEmail(
+                payload,
+            );
+            return;
+
+        case "BOOST_EXPIRY_REMINDER":
+            await deliverBoostExpiryReminderEmail(
+                payload,
+            );
+            return;
+
+        default: {
+            const unsupportedKind: never = payload;
+
+            throw new Error(
+                `Unsupported boost email: ${unsupportedKind}`,
+            );
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| WEB PUSH DELIVERY
+|--------------------------------------------------------------------------
+*/
+
 async function deliverPush(
     payload: NotificationPayload,
 ): Promise<void> {
@@ -683,27 +1099,42 @@ async function deliverPush(
     }
 }
 
-/**
- * Deliver one notification job.
- */
+/*
+|--------------------------------------------------------------------------
+| JOB DELIVERY ROUTER
+|--------------------------------------------------------------------------
+|
+| Dedicated email payloads must be routed before the generic
+| notification payload validator.
+*/
+
 async function deliverJob(
     job: ClaimedJob,
 ): Promise<void> {
-    // Subscription emails have their own payload format.
-    // Do not pass them through the generic notification parser.
-    if (
-        job.channel === "EMAIL" &&
-        (
+    if (job.channel === "EMAIL") {
+        if (
             job.payload.kind === "SUBSCRIPTION_ACTIVATED" ||
             job.payload.kind === "SUBSCRIPTION_EXPIRY_REMINDER"
-        )
-    ) {
-        await deliverSubscriptionEmail(
-            job.payload,
-            job.userId,
-        );
+        ) {
+            await deliverSubscriptionEmail(
+                job.payload,
+                job.userId,
+            );
 
-        return;
+            return;
+        }
+
+        if (
+            job.payload.kind === "ADMIN_BOOST_PAYMENT_RECEIVED" ||
+            job.payload.kind === "BOOST_EXPIRY_REMINDER"
+        ) {
+            await deliverBoostEmail(
+                job.payload,
+                job.userId,
+            );
+
+            return;
+        }
     }
 
     const payload = getPayload(job.payload);
@@ -741,9 +1172,12 @@ async function deliverJob(
     }
 }
 
-/**
- * Complete a successfully processed job.
- */
+/*
+|--------------------------------------------------------------------------
+| COMPLETE JOB
+|--------------------------------------------------------------------------
+*/
+
 async function completeJob(
     jobId: string,
     workerId: string,
@@ -760,7 +1194,10 @@ async function completeJob(
         })
         .where(
             and(
-                eq(notificationDeliveryJobs.id, jobId),
+                eq(
+                    notificationDeliveryJobs.id,
+                    jobId,
+                ),
                 eq(
                     notificationDeliveryJobs.status,
                     "PROCESSING",
@@ -782,9 +1219,12 @@ async function completeJob(
     }
 }
 
-/**
- * Retry a failed job with exponential backoff.
- */
+/*
+|--------------------------------------------------------------------------
+| FAILED JOB / RETRY
+|--------------------------------------------------------------------------
+*/
+
 async function failJob(
     job: ClaimedJob,
     workerId: string,
@@ -800,7 +1240,10 @@ async function failJob(
         job.attempts >= job.maxAttempts;
 
     const delayMs = Math.min(
-        1_000 * 2 ** Math.max(job.attempts - 1, 0),
+        1_000 * 2 ** Math.max(
+            job.attempts - 1,
+            0,
+        ),
         5 * 60 * 1000,
     );
 
@@ -813,7 +1256,9 @@ async function failJob(
 
             availableAt: permanentlyFailed
                 ? new Date()
-                : new Date(Date.now() + delayMs),
+                : new Date(
+                    Date.now() + delayMs,
+                ),
 
             lockedAt: null,
             workerId: null,
@@ -828,7 +1273,10 @@ async function failJob(
         })
         .where(
             and(
-                eq(notificationDeliveryJobs.id, job.id),
+                eq(
+                    notificationDeliveryJobs.id,
+                    job.id,
+                ),
                 eq(
                     notificationDeliveryJobs.status,
                     "PROCESSING",
@@ -841,9 +1289,12 @@ async function failJob(
         );
 }
 
-/**
- * Recover jobs abandoned by workers that crashed or stopped.
- */
+/*
+|--------------------------------------------------------------------------
+| STALE JOB RECOVERY
+|--------------------------------------------------------------------------
+*/
+
 async function recoverStaleJobs(
     lockTimeoutMs: number,
 ): Promise<void> {
@@ -898,14 +1349,21 @@ async function recoverStaleJobs(
                     notificationDeliveryJobs.lockedAt,
                     staleBefore,
                 ),
-                sql`${notificationDeliveryJobs.attempts} >= ${notificationDeliveryJobs.maxAttempts}`,
+                sql`
+                    ${notificationDeliveryJobs.attempts}
+                    >=
+                    ${notificationDeliveryJobs.maxAttempts}
+                `,
             ),
         );
 }
 
-/**
- * Process one batch of durable notification jobs.
- */
+/*
+|--------------------------------------------------------------------------
+| PROCESS NOTIFICATION BATCH
+|--------------------------------------------------------------------------
+*/
+
 export async function processNotificationBatch(
     options: {
         batchSize?: number;
@@ -945,7 +1403,9 @@ export async function processNotificationBatch(
         );
     }
 
-    await recoverStaleJobs(lockTimeoutMs);
+    await recoverStaleJobs(
+        lockTimeoutMs,
+    );
 
     const jobs = await claimJobs(
         batchSize,
@@ -1003,11 +1463,14 @@ export async function processNotificationBatch(
     };
 }
 
-/**
- * Start polling for notification delivery jobs.
- *
- * Call this once during application startup.
- */
+/*
+|--------------------------------------------------------------------------
+| START NOTIFICATION WORKER
+|--------------------------------------------------------------------------
+|
+| Call once during application startup.
+*/
+
 export function startNotificationWorker(
     options: NotificationWorkerOptions = {},
 ): {
@@ -1063,7 +1526,10 @@ export function startNotificationWorker(
     }
 
     let stopped = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    let timer:
+        | ReturnType<typeof setTimeout>
+        | undefined;
 
     async function poll(): Promise<void> {
         if (stopped) {
@@ -1084,9 +1550,12 @@ export function startNotificationWorker(
         }
 
         if (!stopped) {
-            timer = setTimeout(() => {
-                void poll();
-            }, pollIntervalMs);
+            timer = setTimeout(
+                () => {
+                    void poll();
+                },
+                pollIntervalMs,
+            );
         }
     }
 

@@ -156,34 +156,32 @@ async function claimReconciliationRecords(
                         ],
                     ),
                     or(
+                        eq(
+                            paymentReconciliations.status,
+                            "PENDING",
+                        ),
                         and(
                             eq(
                                 paymentReconciliations.status,
-                                "PENDING",
+                                "RETRY",
                             ),
-                            and(
-                                eq(
-                                    paymentReconciliations.status,
-                                    "RETRY",
+                            lte(
+                                paymentReconciliations.nextAttemptAt,
+                                now,
+                            ),
+                        ),
+                        and(
+                            eq(
+                                paymentReconciliations.status,
+                                "PROCESSING",
+                            ),
+                            or(
+                                isNull(
+                                    paymentReconciliations.lockedUntil,
                                 ),
                                 lte(
-                                    paymentReconciliations.nextAttemptAt,
+                                    paymentReconciliations.lockedUntil,
                                     now,
-                                ),
-                            ),
-                            and(
-                                eq(
-                                    paymentReconciliations.status,
-                                    "PROCESSING",
-                                ),
-                                or(
-                                    isNull(
-                                        paymentReconciliations.lockedUntil,
-                                    ),
-                                    lte(
-                                        paymentReconciliations.lockedUntil,
-                                        now,
-                                    ),
                                 ),
                             ),
                         ),

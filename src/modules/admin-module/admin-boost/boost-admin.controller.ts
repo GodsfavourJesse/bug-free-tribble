@@ -10,9 +10,13 @@ import {
 
 import {
     approveBoostRequest,
+    createAdminBoostPlan,
+    deactivateAdminBoostPlan,
     getAdminBoostDetails,
+    listAdminBoostPlans,
     listAdminBoosts,
     rejectBoostRequest,
+    updateAdminBoostPlan,
 } from "./boost-admin.service.ts";
 
 import type {
@@ -66,6 +70,45 @@ const rejectBoostSchema = z.object({
         .min(1, "A rejection reason is required.")
         .max(2000),
 });
+
+const planIdSchema = z.object({
+    planId: z.string().uuid(),
+});
+
+const createBoostPlanSchema = z.object({
+    durationDays: z.coerce
+        .number()
+        .int()
+        .positive(),
+
+    price: z.coerce
+        .number()
+        .finite()
+        .min(0)
+        .max(999999999999.99),
+
+    currency: z.string()
+        .trim()
+        .min(3)
+        .max(10)
+        .default("NGN"),
+
+    active: z.coerce
+        .number()
+        .int()
+        .min(0)
+        .max(1)
+        .default(1),
+});
+
+const updateBoostPlanSchema = createBoostPlanSchema
+    .partial()
+    .refine(
+        (data) => Object.keys(data).length > 0,
+        {
+            message: "At least one field must be provided.",
+        },
+    );
 
 function getErrorMessage(
     error: unknown,
@@ -330,6 +373,220 @@ export async function adminRejectBoost(
         response.status(500).json({
             success: false,
             message: "Unable to reject boost request.",
+        });
+    }
+}
+
+/**
+ * GET /admin/boosts/plans
+ */
+export async function adminListBoostPlans(
+    request: Request,
+    response: Response,
+): Promise<void> {
+    try {
+        const result = await listAdminBoostPlans();
+
+        response.status(200).json({
+            success: true,
+            message: "Boost plans retrieved successfully.",
+            data: result,
+        });
+    } catch (error: unknown) {
+        console.error("Admin list boost plans error:", error);
+
+        response.status(500).json({
+            success: false,
+            message: "Unable to retrieve boost plans.",
+        });
+    }
+}
+
+/**
+ * POST /admin/boosts/plans
+ */
+export async function adminCreateBoostPlan(
+    request: AuthenticatedAdminRequest,
+    response: Response,
+): Promise<void> {
+    try {
+        if (!request.admin?.id) {
+            response.status(401).json({
+                success: false,
+                message: "Authentication required.",
+            });
+            return;
+        }
+
+        const body = createBoostPlanSchema.parse(
+            request.body ?? {},
+        );
+
+        const result = await createAdminBoostPlan({
+            ...body,
+            adminUserId: request.admin.id,
+        });
+
+        response.status(201).json({
+            success: true,
+            message: "Boost plan created successfully.",
+            data: result,
+        });
+    } catch (error: unknown) {
+        if (error instanceof ZodError) {
+            response.status(400).json({
+                success: false,
+                message: "Invalid boost plan details.",
+                errors: error.issues,
+            });
+            return;
+        }
+
+        console.error("Admin create boost plan error:", error);
+
+        response.status(500).json({
+            success: false,
+            message: "Unable to create boost plan.",
+        });
+    }
+}
+
+/**
+ * PATCH /admin/boosts/plans/:planId
+ */
+export async function adminUpdateBoostPlan(
+    request: AuthenticatedAdminRequest,
+    response: Response,
+): Promise<void> {
+    try {
+        if (!request.admin?.id) {
+            response.status(401).json({
+                success: false,
+                message: "Authentication required.",
+            });
+            return;
+        }
+
+        const { planId } = planIdSchema.parse(
+            request.params,
+        );
+
+        const body = updateBoostPlanSchema.parse(
+            request.body ?? {},
+        );
+
+        const result = await updateAdminBoostPlan({
+            planId,
+            adminUserId: request.admin.id,
+
+            ...(body.durationDays !== undefined && {
+                durationDays: body.durationDays,
+            }),
+
+            ...(body.price !== undefined && {
+                price: body.price,
+            }),
+
+            ...(body.currency !== undefined && {
+                currency: body.currency,
+            }),
+
+            ...(body.active !== undefined && {
+                active: body.active,
+            }),
+        });
+
+        response.status(200).json({
+            success: true,
+            message: "Boost plan updated successfully.",
+            data: result,
+        });
+    } catch (error: unknown) {
+        if (error instanceof ZodError) {
+            response.status(400).json({
+                success: false,
+                message: "Invalid boost plan update.",
+                errors: error.issues,
+            });
+            return;
+        }
+
+        const message = getErrorMessage(error);
+
+        if (message === "Boost plan not found.") {
+            response.status(404).json({
+                success: false,
+                message,
+            });
+            return;
+        }
+
+        console.error("Admin update boost plan error:", error);
+
+        response.status(500).json({
+            success: false,
+            message: "Unable to update boost plan.",
+        });
+    }
+}
+
+/**
+ * DELETE /admin/boosts/plans/:planId
+ *
+ * Soft-deletes a boost plan by setting active = 0.
+ */
+export async function adminDeleteBoostPlan(
+    request: AuthenticatedAdminRequest,
+    response: Response,
+): Promise<void> {
+    try {
+        if (!request.admin?.id) {
+            response.status(401).json({
+                success: false,
+                message: "Authentication required.",
+            });
+            return;
+        }
+
+        const { planId } = planIdSchema.parse(
+            request.params,
+        );
+
+        const result = await deactivateAdminBoostPlan({
+            planId,
+            adminUserId: request.admin.id,
+        });
+
+        response.status(200).json({
+            success: true,
+            message: "Boost plan deactivated successfully.",
+            data: result,
+        });
+    } catch (error: unknown) {
+        if (error instanceof ZodError) {
+            response.status(400).json({
+                success: false,
+                message: "Invalid boost plan ID.",
+                errors: error.issues,
+            });
+            return;
+        }
+
+        const message = getErrorMessage(error);
+
+        if (message === "Boost plan not found.") {
+            response.status(404).json({
+                success: false,
+                message,
+            });
+            return;
+        }
+
+        console.error("Admin delete boost plan error:", error);
+
+        response.status(500).json({
+            success: false,
+            message: "Unable to deactivate boost plan.",
         });
     }
 }
