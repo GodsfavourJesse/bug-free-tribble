@@ -1,10 +1,3 @@
-import nodemailer from "nodemailer";
-
-import type {
-    SendMailOptions,
-    Transporter,
-} from "nodemailer";
-
 import {
     env,
     isEmailConfigured,
@@ -20,53 +13,36 @@ const BRAND_SOFT = "#F4F9FF";
 
 const CLIENT_URL = env.CLIENT_URL.replace(/\/+$/, "");
 
-let transporter: Transporter | null = null;
+const BREVO_API_URL = "https://api.brevo.com/v3";
+
+const EMAIL_REQUEST_TIMEOUT_MS = 15_000;
+
+type EmailMessageOptions = {
+    from: {
+        name: string;
+        address: string;
+    };
+    to: string;
+    subject: string;
+    text?: string;
+    html?: string;
+};
 
 /**
- * Returns the configured Nodemailer transporter.
+ * Returns the configured Brevo API key.
  */
-function getTransporter(): Transporter {
-    const {
-        EMAIL_FROM,
-        SMTP_HOST,
-        SMTP_USER,
-        SMTP_PASSWORD,
-    } = env;
-
+function getBrevoApiKey(): string {
     if (
         !isEmailConfigured() ||
-        !EMAIL_FROM ||
-        !SMTP_HOST ||
-        !SMTP_USER ||
-        !SMTP_PASSWORD
+        !env.EMAIL_FROM ||
+        !env.BREVO_API_KEY
     ) {
         throw new Error(
-            "Email service is not configured. Set EMAIL_FROM, SMTP_HOST, SMTP_USER and SMTP_PASSWORD.",
+            "Email service is not configured. Set EMAIL_FROM and BREVO_API_KEY.",
         );
     }
 
-    if (!transporter) {
-        transporter = nodemailer.createTransport({
-            host: SMTP_HOST,
-            port: env.SMTP_PORT,
-            secure: env.SMTP_PORT === 465,
-
-            auth: {
-                user: SMTP_USER,
-                pass: SMTP_PASSWORD,
-            },
-
-            connectionTimeout: 8_000,
-            greetingTimeout: 8_000,
-            socketTimeout: 12_000,
-
-            pool: false,
-            logger: false,
-            debug: false,
-        });
-    }
-
-    return transporter;
+    return env.BREVO_API_KEY;
 }
 
 /**
@@ -371,50 +347,117 @@ function buildEmailButton(
 }
 
 /**
- * Shared email delivery function.
+ * Shared Brevo email delivery function.
  *
- * SMTP acceptance does not guarantee final inbox delivery.
+ * Sends transactional emails through Brevo's HTTPS API.
+ *
+ * A successful API response confirms that Brevo accepted
+ * the email submission. It does not guarantee final inbox delivery.
  */
 async function sendMailAndConfirm(
     type: string,
     recipient: string,
-    options: SendMailOptions,
+    options: EmailMessageOptions,
 ): Promise<void> {
     const startedAt = Date.now();
 
+    const controller = new AbortController();
+
+    const timeout = setTimeout(
+        () => controller.abort(),
+        EMAIL_REQUEST_TIMEOUT_MS,
+    );
+
     try {
-        const info = await getTransporter().sendMail(options);
+        const apiKey = getBrevoApiKey();
 
-        const accepted = info.accepted ?? [];
-        const rejected = info.rejected ?? [];
+        const response = await fetch(
+            `${BREVO_API_URL}/smtp/email`,
+            {
+                method: "POST",
 
-        const recipientAccepted = accepted.some(
-            (address) =>
-                String(address).toLowerCase() ===
-                recipient.toLowerCase(),
+                headers: {
+                    "accept": "application/json",
+                    "api-key": apiKey,
+                    "content-type": "application/json",
+                },
+
+                body: JSON.stringify({
+                    sender: {
+                        name: options.from.name,
+                        email: options.from.address,
+                    },
+
+                    to: [
+                        {
+                            email: recipient,
+                        },
+                    ],
+
+                    subject: options.subject,
+
+                    ...(options.html
+                        ? {
+                            htmlContent: options.html,
+                        }
+                        : {}),
+
+                    ...(options.text
+                        ? {
+                            textContent: options.text,
+                        }
+                        : {}),
+
+                    tags: [
+                        "karmass",
+                        type,
+                    ],
+                }),
+
+                signal: controller.signal,
+            },
         );
 
-        const recipientRejected = rejected.some(
-            (address) =>
-                String(address).toLowerCase() ===
-                recipient.toLowerCase(),
-        );
+        const responseText = await response.text();
 
-        if (
-            !recipientAccepted ||
-            recipientRejected
-        ) {
+        let responseData: {
+            messageId?: string;
+            code?: string;
+            message?: string;
+        } = {};
+
+        try {
+            responseData = responseText
+                ? JSON.parse(responseText)
+                : {};
+        } catch {
+            responseData = {};
+        }
+
+        if (!response.ok) {
+            const errorMessage =
+                responseData.message ??
+                responseData.code ??
+                responseText ??
+                `Brevo returned HTTP ${response.status}.`;
+
             throw new Error(
-                `SMTP did not confirm acceptance of recipient ${recipient}.`,
+                `Brevo email API error (${response.status}): ${errorMessage}`,
+            );
+        }
+
+        if (!responseData.messageId) {
+            throw new Error(
+                "Brevo accepted the request without returning a message ID.",
             );
         }
 
         console.info(
-            "[EMAIL] SMTP submission successful",
+            "[EMAIL] Brevo submission successful",
             {
                 type,
                 recipient,
-                messageId: info.messageId,
+                messageId: responseData.messageId,
                 durationMs: Date.now() - startedAt,
             },
         );
@@ -425,6 +468,7 @@ async function sendMailAndConfirm(
                 type,
                 recipient,
                 durationMs: Date.now() - startedAt,
+
                 error:
                     error instanceof Error
                         ? {
@@ -436,16 +480,55 @@ async function sendMailAndConfirm(
         );
 
         throw error;
+    } finally {
+        clearTimeout(timeout);
     }
 }
 
 /**
- * Verifies SMTP connectivity and authentication.
+ * Verifies Brevo API credentials and account access.
+ *
+ * Requires Account: Read permission on the Brevo API key.
  */
 export async function verifyEmailTransport(): Promise<void> {
-    const mailTransporter = getTransporter();
+    const controller = new AbortController();
 
-    await mailTransporter.verify();
+    const timeout = setTimeout(
+        () => controller.abort(),
+        EMAIL_REQUEST_TIMEOUT_MS,
+    );
+
+    try {
+        const apiKey = getBrevoApiKey();
+
+        const response = await fetch(
+            `${BREVO_API_URL}/account`,
+            {
+                method: "GET",
+
+                headers: {
+                    "accept": "application/json",
+                    "api-key": apiKey,
+                },
+
+                signal: controller.signal,
+            },
+        );
+
+        if (!response.ok) {
+            const responseText = await response.text();
+
+            throw new Error(
+                `Brevo API verification failed (${response.status}): ${responseText}`,
+            );
+        }
+
+        console.info(
+            "[EMAIL] Brevo API credentials verified successfully.",
+        );
+    } finally {
+        clearTimeout(timeout);
+    }
 }
 
 /**

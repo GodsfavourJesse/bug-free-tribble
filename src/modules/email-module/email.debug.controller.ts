@@ -12,7 +12,7 @@ export async function testEmailTransport(
 
         res.status(200).json({
             success: true,
-            message: "SMTP connection verified successfully.",
+            message: "Brevo email API credentials verified successfully.",
         });
     } catch (error) {
         next(error);

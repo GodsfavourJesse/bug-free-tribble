@@ -13,7 +13,9 @@ const csv = z
     );
 
 const envSchema = z.object({
+    // ==========================================
     // APPLICATION
+    // ==========================================
     NODE_ENV: z
         .enum(["development", "test", "production"])
         .default("development"),
@@ -51,7 +53,9 @@ const envSchema = z.object({
         .max(120_000)
         .default(15_000),
 
+    // ==========================================
     // DATABASE
+    // ==========================================
     DATABASE_URL: z
         .string()
         .min(1, "DATABASE_URL is required.")
@@ -99,7 +103,9 @@ const envSchema = z.object({
         .enum(["disable", "verify", "no-verify"])
         .default("verify"),
 
+    // ==========================================
     // SESSION
+    // ==========================================
     SESSION_COOKIE_NAME: z
         .string()
         .min(1)
@@ -128,9 +134,12 @@ const envSchema = z.object({
         .enum(["strict", "lax", "none"])
         .default("lax"),
 
+    // ==========================================
     // INITIAL SUPER ADMIN BOOTSTRAP
+    // ==========================================
     // Optional during normal startup.
     // The explicit seed command requires all four values.
+
     BOOTSTRAP_SUPER_ADMIN_EMAIL: z.preprocess(
         (value) =>
             typeof value === "string" && value.trim() === ""
@@ -184,7 +193,9 @@ const envSchema = z.object({
             .optional(),
     ),
 
+    // ==========================================
     // HTTP
+    // ==========================================
     JSON_BODY_LIMIT: z
         .string()
         .default("1mb"),
@@ -193,7 +204,9 @@ const envSchema = z.object({
         .string()
         .default("1mb"),
 
+    // ==========================================
     // RATE LIMITING
+    // ==========================================
     RATE_LIMIT_WINDOW_MS: z.coerce
         .number()
         .int()
@@ -218,7 +231,10 @@ const envSchema = z.object({
         .positive()
         .default(20),
 
-    // EMAIL
+    // ==========================================
+    // EMAIL — BREVO HTTPS API
+    // ==========================================
+
     // Store only the verified sender email address here.
     EMAIL_FROM: z
         .string()
@@ -233,27 +249,10 @@ const envSchema = z.object({
         .min(1)
         .default("KARMASS"),
 
-    SMTP_HOST: z
+    // Brevo API key used for transactional email delivery.
+    BREVO_API_KEY: z
         .string()
         .trim()
-        .min(1)
-        .optional(),
-
-    SMTP_PORT: z.coerce
-        .number()
-        .int()
-        .min(1)
-        .max(65535)
-        .default(587),
-
-    SMTP_USER: z
-        .string()
-        .trim()
-        .min(1)
-        .optional(),
-
-    SMTP_PASSWORD: z
-        .string()
         .min(1)
         .optional(),
 
@@ -263,7 +262,9 @@ const envSchema = z.object({
         .positive()
         .default(30),
 
+    // ==========================================
     // PAYMENTS
+    // ==========================================
     PAYSTACK_SECRET_KEY: z
         .string()
         .min(1)
@@ -274,7 +275,9 @@ const envSchema = z.object({
         .min(1)
         .optional(),
 
+    // ==========================================
     // CLOUDINARY
+    // ==========================================
     CLOUDINARY_CLOUD_NAME: z
         .string()
         .min(1, "CLOUDINARY_CLOUD_NAME is required."),
@@ -292,7 +295,9 @@ const envSchema = z.object({
         .min(1)
         .default("karmass"),
 
+    // ==========================================
     // LOGGING
+    // ==========================================
     LOG_LEVEL: z
         .enum([
             "fatal",
@@ -305,7 +310,9 @@ const envSchema = z.object({
         ])
         .default("info"),
 
+    // ==========================================
     // FILE UPLOADS
+    // ==========================================
     MAX_IMAGE_SIZE_MB: z.coerce
         .number()
         .positive()
@@ -379,7 +386,9 @@ const envSchema = z.object({
         .max(1000)
         .default(50),
 
+    // ==========================================
     // WORKER
+    // ==========================================
     WORKER_POLL_MS: z.coerce
         .number()
         .int()
@@ -388,7 +397,9 @@ const envSchema = z.object({
         .max(60_000)
         .default(1_000),
 
+    // ==========================================
     // AUTHENTICATION SECURITY
+    // ==========================================
     AUTH_LOGIN_MAX_ATTEMPTS: z.coerce
         .number()
         .int()
@@ -445,7 +456,9 @@ const envSchema = z.object({
         .max(3600)
         .default(60),
 
+    // ==========================================
     // STORAGE
+    // ==========================================
     STORAGE_ORPHAN_GRACE_PERIOD_HOURS: z.coerce
         .number()
         .int()
@@ -460,12 +473,17 @@ const envSchema = z.object({
         .max(500)
         .default(500),
 
+    // ==========================================
+    // REDIS
+    // ==========================================
     REDIS_URL: z
         .string()
         .url()
         .default("redis://localhost:6379"),
 
+    // ==========================================
     // WEB PUSH / PWA NOTIFICATIONS
+    // ==========================================
     VAPID_SUBJECT: z
         .string()
         .min(1)
@@ -481,7 +499,9 @@ const envSchema = z.object({
         .min(1)
         .optional(),
 
+    // ==========================================
     // CSRF
+    // ==========================================
     CSRF_SECRET: z
         .string()
         .min(
@@ -579,7 +599,9 @@ function validateProductionEnvironment(): void {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    // Session & cookies
+    // ==========================================
+    // SESSION & COOKIES
+    // ==========================================
     if (!env.SESSION_COOKIE_SECURE) {
         errors.push(
             "SESSION_COOKIE_SECURE must be true in production.",
@@ -631,7 +653,9 @@ function validateProductionEnvironment(): void {
         );
     }
 
-    // Public URLs
+    // ==========================================
+    // PUBLIC URLS
+    // ==========================================
     for (const [name, value] of [
         ["CLIENT_URL", env.CLIENT_URL],
         ["API_URL", env.API_URL],
@@ -663,7 +687,9 @@ function validateProductionEnvironment(): void {
         }
     }
 
-    // Database
+    // ==========================================
+    // DATABASE
+    // ==========================================
     if (databaseSslMode === "disable") {
         errors.push(
             'DATABASE_SSL must not be "disable" in production.',
@@ -683,19 +709,24 @@ function validateProductionEnvironment(): void {
         );
     }
 
-    // Email
-    if (
-        !env.EMAIL_FROM ||
-        !env.SMTP_HOST ||
-        !env.SMTP_USER ||
-        !env.SMTP_PASSWORD
-    ) {
+    // ==========================================
+    // EMAIL — BREVO HTTPS API
+    // ==========================================
+    if (!env.EMAIL_FROM) {
         errors.push(
-            "EMAIL_FROM, SMTP_HOST, SMTP_USER and SMTP_PASSWORD are required in production (email verification depends on them).",
+            "EMAIL_FROM is required in production (use a verified Brevo sender email address).",
         );
     }
 
-    // Payments
+    if (!env.BREVO_API_KEY) {
+        errors.push(
+            "BREVO_API_KEY is required in production (transactional email delivery depends on it).",
+        );
+    }
+
+    // ==========================================
+    // PAYMENTS
+    // ==========================================
     if (!env.PAYSTACK_SECRET_KEY) {
         errors.push(
             "PAYSTACK_SECRET_KEY is required in production (payments and webhook verification).",
@@ -708,7 +739,9 @@ function validateProductionEnvironment(): void {
         );
     }
 
-    // Operational warnings
+    // ==========================================
+    // OPERATIONAL WARNINGS
+    // ==========================================
     if (env.TRUST_PROXY === 0) {
         warnings.push(
             "TRUST_PROXY is 0. Behind a load balancer every client will share the proxy IP for rate limiting; set TRUST_PROXY=1 (or the real hop count).",
@@ -730,12 +763,18 @@ function validateProductionEnvironment(): void {
         );
     }
 
+    // ==========================================
+    // REPORT WARNINGS
+    // ==========================================
     for (const warning of warnings) {
         process.stderr.write(
             `[config warning] ${warning}\n`,
         );
     }
 
+    // ==========================================
+    // REPORT ERRORS
+    // ==========================================
     if (errors.length > 0) {
         throw new Error(
             [
@@ -754,9 +793,7 @@ validateProductionEnvironment();
 export function isEmailConfigured(): boolean {
     return Boolean(
         env.EMAIL_FROM &&
-        env.SMTP_HOST &&
-        env.SMTP_USER &&
-        env.SMTP_PASSWORD,
+        env.BREVO_API_KEY,
     );
 }
 
