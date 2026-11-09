@@ -6,6 +6,7 @@ import {
     gt,
     isNull,
     or,
+    sql,
 } from "drizzle-orm";
 
 import { db } from "../../../database/index.ts";
@@ -260,47 +261,66 @@ export async function getPublicDealerListings(
 
             vehicleVariant: {
                 id: vehicleVariants.id,
-                name: vehicleVariants.name,
+                name: sql<string | null>`COALESCE(${vehicleVariants.name}, ${listings.variantName})`,
             },
 
             vehicleGeneration: {
                 id: vehicleGenerations.id,
-                name: vehicleGenerations.name,
+                name: sql<string | null>`COALESCE(${vehicleGenerations.name}, ${listings.generationName})`,
             },
 
             vehicleModel: {
                 id: vehicleModels.id,
-                name: vehicleModels.name,
+                name: sql<string | null>`COALESCE(${vehicleModels.name}, ${listings.modelName})`,
             },
 
             vehicleMake: {
                 id: vehicleMakes.id,
-                name: vehicleMakes.name,
+                name: sql<string | null>`COALESCE(${vehicleMakes.name}, ${listings.makeName})`,
             },
+
+            // Snapshot fields remain available for manual listings and
+            // preserve the seller-entered vehicle details.
+            makeName: listings.makeName,
+            modelName: listings.modelName,
+            year: listings.year,
+            generationName: listings.generationName,
+            variantName: listings.variantName,
+            bodyStyle: listings.bodyStyle,
+            fuelType: listings.fuelType,
+            transmission: listings.transmission,
+            driveType: listings.driveType,
+            engineCapacity: listings.engineCapacity,
+            horsepower: listings.horsepower,
+            exteriorColor: listings.exteriorColor,
+            interiorColor: listings.interiorColor,
+            seats: listings.seats,
+            doors: listings.doors,
+            specifications: listings.specifications,
         })
         .from(listings)
-        .innerJoin(
+        .leftJoin(
             vehicleVariants,
             eq(
                 listings.vehicleVariantId,
                 vehicleVariants.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
                 vehicleGenerations.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleModels,
             eq(
                 vehicleGenerations.modelId,
                 vehicleModels.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleMakes,
             eq(
                 vehicleModels.makeId,

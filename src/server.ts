@@ -11,7 +11,7 @@ import {
 } from "./realtime/socket.ts";
 
 import {
-    startPaymentReconcilationScheduler,
+    startPaymentReconciliationScheduler,
     stopPaymentReconciliationScheduler,
 } from "./modules/payment-module/payment-reconcilation/payment-reconciliation.scheduler.ts";
 
@@ -221,7 +221,7 @@ async function start(): Promise<void> {
 
         logger.info("Notification delivery worker started");
 
-        startPaymentReconcilationScheduler();
+        startPaymentReconciliationScheduler();
         startPaymentEventScheduler();
         startBoostExpiryScheduler();
 

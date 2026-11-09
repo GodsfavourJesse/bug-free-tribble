@@ -1,0 +1,1463 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Subaru",
+    "slug": "subaru",
+    "models": [
+      {
+        "name": "Forester",
+        "slug": "forester",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "SJ",
+            "slug": "sj",
+            "startYear": 2014,
+            "endYear": 2018,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.5L FB25",
+                "slug": "2-5l-fb25",
+                "displacementCc": 2498,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2014,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2014,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2015,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2015,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2016,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2016,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2017,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2017,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2018,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2018,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "SK",
+            "slug": "sk",
+            "startYear": 2019,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.5L FB25",
+                "slug": "2-5l-fb25",
+                "displacementCc": 2498,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2019,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2019,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2020,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2020,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2021,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2021,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2022,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2022,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2023,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2023,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2024,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2024,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Outback",
+        "slug": "outback",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "BS",
+            "slug": "bs",
+            "startYear": 2015,
+            "endYear": 2019,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.5L FB25",
+                "slug": "2-5l-fb25",
+                "displacementCc": 2498,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2015,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2015,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2016,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2016,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2017,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2017,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2018,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2018,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2019,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2019,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "BT",
+            "slug": "bt",
+            "startYear": 2020,
+            "endYear": 2025,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.5L FB25",
+                "slug": "2-5l-fb25",
+                "displacementCc": 2498,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2020,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2020,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2021,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2021,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2022,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2022,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2023,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2023,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2024,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2024,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Premium",
+                "slug": "2-5i-premium",
+                "year": 2025,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5i Limited",
+                "slug": "2-5i-limited",
+                "year": 2025,
+                "engineSlug": "2-5l-fb25",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Impreza",
+        "slug": "impreza",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "GP",
+            "slug": "gp",
+            "startYear": 2012,
+            "endYear": 2016,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.0L FB20",
+                "slug": "2-0l-fb20",
+                "displacementCc": 1995,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2012,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2012,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2013,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2013,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2014,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2014,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2015,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2015,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2016,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2016,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "GK",
+            "slug": "gk",
+            "startYear": 2017,
+            "endYear": 2023,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.0L FB20",
+                "slug": "2-0l-fb20",
+                "displacementCc": 1995,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2017,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2017,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2018,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2018,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2019,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2019,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2020,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2020,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2021,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2021,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2022,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2022,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i",
+                "slug": "2-0i",
+                "year": 2023,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.0i Premium",
+                "slug": "2-0i-premium",
+                "year": 2023,
+                "engineSlug": "2-0l-fb20",
+                "fuelType": "PETROL",
+                "transmission": "CVT",
+                "driveType": "AWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

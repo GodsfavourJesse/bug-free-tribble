@@ -1,6 +1,12 @@
 import { env, isPaystackConfigured } from "../../../config/env.ts";
 
-interface PaystackInitializeResponse {
+/*
+ * ============================================================
+ * PAYSTACK TYPES
+ * ============================================================
+ */
+
+export interface PaystackInitializeResponse {
     status: boolean;
     message: string;
     data?: {
@@ -8,6 +14,24 @@ interface PaystackInitializeResponse {
         access_code: string;
         reference: string;
     };
+}
+
+export interface PaystackTransactionData {
+    id: number;
+    status: string;
+    reference: string;
+    amount: number;
+    currency: string;
+    paid_at?: string | null;
+    metadata?: unknown;
+    gateway_response?: string | null;
+    channel?: string | null;
+}
+
+export interface PaystackVerifyResponse {
+    status: boolean;
+    message: string;
+    data?: PaystackTransactionData;
 }
 
 export interface PaystackRefundResponse {
@@ -67,7 +91,6 @@ export interface PaystackRefundListItem {
     created_at?: string;
     updated_at?: string;
 
-    // Some individual refund responses use camelCase.
     createdAt?: string;
     updatedAt?: string;
 }
@@ -85,23 +108,11 @@ export interface PaystackRefundListResponse {
     };
 }
 
-export interface PaystackTransactionData {
-    id: number;
-    status: string;
-    reference: string;
-    amount: number;
-    currency: string;
-    paid_at?: string | null;
-    metadata?: unknown;
-    gateway_response?: string | null;
-    channel?: string | null;
-}
-
-interface PaystackVerifyResponse {
-    status: boolean;
-    message: string;
-    data?: PaystackTransactionData;
-}
+/*
+ * ============================================================
+ * CONFIGURATION
+ * ============================================================
+ */
 
 function requirePaystack(): void {
     if (!isPaystackConfigured()) {
@@ -110,6 +121,12 @@ function requirePaystack(): void {
         );
     }
 }
+
+/*
+ * ============================================================
+ * GENERIC PAYSTACK REQUEST
+ * ============================================================
+ */
 
 async function paystackRequest<T>(
     path: string,
@@ -129,9 +146,21 @@ async function paystackRequest<T>(
         },
     );
 
-    const body = (await response.json()) as T & {
+    let body: T & {
+        status?: boolean;
         message?: string;
     };
+
+    try {
+        body = await response.json() as T & {
+            status?: boolean;
+            message?: string;
+        };
+    } catch {
+        throw new Error(
+            "Paystack returned an invalid response.",
+        );
+    }
 
     if (!response.ok) {
         throw new Error(
@@ -140,8 +169,27 @@ async function paystackRequest<T>(
         );
     }
 
+    /*
+     * Paystack can return HTTP 200 while its own
+     * response status is false.
+     *
+     * Such a response must not be treated as success.
+     */
+    if (body.status === false) {
+        throw new Error(
+            body.message ??
+                "Paystack could not complete the request.",
+        );
+    }
+
     return body;
 }
+
+/*
+ * ============================================================
+ * INITIALIZE TRANSACTION
+ * ============================================================
+ */
 
 export async function initializePaystackTransaction(input: {
     email: string;
@@ -150,33 +198,128 @@ export async function initializePaystackTransaction(input: {
     reference: string;
     metadata: Record<string, unknown>;
 }): Promise<PaystackInitializeResponse> {
-    // Paystack expects monetary amounts in the currency's subunit, such as kobo for NGN.
-    return paystackRequest<PaystackInitializeResponse>(
-        "/transaction/initialize",
-        {
-            method: "POST",
-            body: JSON.stringify({
-                email: input.email,
-                amount: input.amountSubunit,
-                currency: input.currency,
-                reference: input.reference,
-                callback_url: `${env.CLIENT_URL}/payments/callback`,
-                metadata: JSON.stringify(input.metadata),
-            }),
-        },
-    );
+    if (
+        !Number.isSafeInteger(input.amountSubunit) ||
+        input.amountSubunit <= 0
+    ) {
+        throw new Error(
+            "Invalid Paystack transaction amount.",
+        );
+    }
+
+    if (!input.email.trim()) {
+        throw new Error(
+            "A valid customer email is required.",
+        );
+    }
+
+    if (!input.reference.trim()) {
+        throw new Error(
+            "A payment reference is required.",
+        );
+    }
+
+    const response =
+        await paystackRequest<PaystackInitializeResponse>(
+            "/transaction/initialize",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    email: input.email,
+                    amount: input.amountSubunit,
+                    currency: input.currency,
+                    reference: input.reference,
+                    callback_url:
+                        `${env.CLIENT_URL}/payments/callback`,
+                    metadata: JSON.stringify(input.metadata),
+                }),
+            },
+        );
+
+    if (!response.data) {
+        throw new Error(
+            "Paystack did not return initialization data.",
+        );
+    }
+
+    if (
+        !response.data.authorization_url ||
+        !response.data.access_code ||
+        !response.data.reference
+    ) {
+        throw new Error(
+            "Paystack returned incomplete checkout information.",
+        );
+    }
+
+    if (response.data.reference !== input.reference) {
+        throw new Error(
+            "Paystack initialization reference mismatch.",
+        );
+    }
+
+    return response;
 }
+
+/*
+ * ============================================================
+ * VERIFY TRANSACTION
+ * ============================================================
+ */
 
 export async function verifyPaystackTransaction(
     reference: string,
 ): Promise<PaystackVerifyResponse> {
-    return paystackRequest<PaystackVerifyResponse>(
-        `/transaction/verify/${encodeURIComponent(reference)}`,
-        {
-            method: "GET",
-        },
-    );
+    const normalizedReference = reference.trim();
+
+    if (!normalizedReference) {
+        throw new Error(
+            "A payment reference is required for verification.",
+        );
+    }
+
+    const response =
+        await paystackRequest<PaystackVerifyResponse>(
+            `/transaction/verify/${encodeURIComponent(normalizedReference)}`,
+            {
+                method: "GET",
+            },
+        );
+
+    if (!response.data) {
+        throw new Error(
+            "Paystack returned no transaction data.",
+        );
+    }
+
+    const transaction = response.data;
+
+    if (
+        !Number.isSafeInteger(transaction.id) ||
+        typeof transaction.reference !== "string" ||
+        typeof transaction.status !== "string" ||
+        !Number.isSafeInteger(transaction.amount) ||
+        typeof transaction.currency !== "string"
+    ) {
+        throw new Error(
+            "Paystack returned incomplete transaction verification data.",
+        );
+    }
+
+    if (transaction.reference !== normalizedReference) {
+        throw new Error(
+            "Paystack verification reference mismatch.",
+        );
+    }
+
+    return response;
 }
+
+/*
+ * ============================================================
+ * CREATE REFUND
+ * ============================================================
+ */
 
 export async function createPaystackRefund(input: {
     transactionReference: string;
@@ -201,7 +344,7 @@ export async function createPaystackRefund(input: {
         )
     ) {
         throw new Error(
-            "Refund amount must be a positive safe integer in the currency's subunit.",
+            "Refund amount must be a positive safe integer.",
         );
     }
 
@@ -235,21 +378,36 @@ export async function createPaystackRefund(input: {
     );
 }
 
+/*
+ * ============================================================
+ * FETCH REFUND
+ * ============================================================
+ */
+
 export async function fetchPaystackRefund(
     refundId: string | number,
 ): Promise<PaystackRefundStatusResponse> {
     const normalizedId = String(refundId).trim();
 
     if (!normalizedId || !/^\d+$/.test(normalizedId)) {
-        throw new Error("A valid Paystack refund ID is required.");
+        throw new Error(
+            "A valid Paystack refund ID is required.",
+        );
     }
 
     return paystackRequest<PaystackRefundStatusResponse>(
         `/refund/${encodeURIComponent(normalizedId)}`,
-        { method: "GET" },
+        {
+            method: "GET",
+        },
     );
-
 }
+
+/*
+ * ============================================================
+ * LIST REFUNDS
+ * ============================================================
+ */
 
 export async function listPaystackRefunds(input: {
     transactionId: string | number;
@@ -287,6 +445,8 @@ export async function listPaystackRefunds(input: {
 
     return paystackRequest<PaystackRefundListResponse>(
         `/refund?${query.toString()}`,
-        { method: "GET" },
+        {
+            method: "GET",
+        },
     );
 }

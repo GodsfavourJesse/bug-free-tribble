@@ -1,0 +1,766 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Maserati",
+    "slug": "maserati",
+    "sources": [],
+    "models": [
+      {
+        "name": "Ghibli",
+        "slug": "ghibli",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "Third Generation",
+            "slug": "third-generation",
+            "startYear": 2014,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.0L Twin-Turbo V6",
+                "slug": "3-0l-twin-turbo-v6",
+                "displacementCc": 2979,
+                "cylinders": 6,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2014,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2015,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trofeo",
+                "slug": "trofeo",
+                "year": 2016,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2017,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2018,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trofeo",
+                "slug": "trofeo",
+                "year": 2019,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2020,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2021,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trofeo",
+                "slug": "trofeo",
+                "year": 2022,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2023,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2024,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Levante",
+        "slug": "levante",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2017,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.0L Twin-Turbo V6",
+                "slug": "3-0l-twin-turbo-v6",
+                "displacementCc": 2979,
+                "cylinders": 6,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2017,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2018,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trofeo",
+                "slug": "trofeo",
+                "year": 2019,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2020,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2021,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trofeo",
+                "slug": "trofeo",
+                "year": 2022,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2023,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2024,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Quattroporte",
+        "slug": "quattroporte",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "Sixth Generation",
+            "slug": "sixth-generation",
+            "startYear": 2014,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.0L Twin-Turbo V6",
+                "slug": "3-0l-twin-turbo-v6",
+                "displacementCc": 2979,
+                "cylinders": 6,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2014,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2015,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trofeo",
+                "slug": "trofeo",
+                "year": 2016,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2017,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2018,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trofeo",
+                "slug": "trofeo",
+                "year": 2019,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2020,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2021,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trofeo",
+                "slug": "trofeo",
+                "year": 2022,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT",
+                "slug": "gt",
+                "year": 2023,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Modena",
+                "slug": "modena",
+                "year": 2024,
+                "engineSlug": "3-0l-twin-turbo-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -147,3 +147,27 @@ export interface GetListingViewer {
     userId?: string;
     visitorId?: string;
 }
+/**
+ * Vehicle information persisted directly on a listing. Catalogue IDs are
+ * optional; these values are the seller-confirmed snapshot used for display
+ * and marketplace search.
+ */
+export interface ListingVehicleDetails {
+    vehicleVariantId?: string | null;
+    makeName?: string;
+    modelName?: string;
+    year?: number;
+    generationName?: string | null;
+    variantName?: string | null;
+    bodyStyle?: string | null;
+    fuelType?: string | null;
+    transmission?: string | null;
+    driveType?: string | null;
+    engineCapacity?: string | null;
+    horsepower?: number | null;
+    exteriorColor?: string | null;
+    interiorColor?: string | null;
+    seats?: number | null;
+    doors?: number | null;
+    specifications?: Record<string, string | number | boolean | null>;
+}

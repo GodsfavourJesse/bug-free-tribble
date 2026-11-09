@@ -58,8 +58,9 @@ export async function cancelPendingBoost(
          */
         await tx.execute(sql`
             SELECT pg_advisory_xact_lock(
-                hashtext(
-                    ${`karmass:listing-boost:${boost.listingId}`}
+                hashtextextended(
+                    ${`karmass:listing-boost:${boost.listingId}`},
+                    0
                 )
             )
         `);
@@ -107,10 +108,8 @@ export async function cancelPendingBoost(
 
         const unresolvedPayments = associatedPayments.filter(
             (payment) =>
-                payment.status === "PENDING" ||
-                payment.status === "PROCESSING" ||
-                payment.status === "SUCCESS" ||
-                payment.status === "REVERSED",
+                payment.status === "STARTED" ||
+                payment.status === "SUCCESS",
         );
 
         if (unresolvedPayments.length > 0) {

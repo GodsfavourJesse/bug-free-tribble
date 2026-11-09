@@ -11,6 +11,7 @@ import {
     lte,
     or,
     sql,
+    type SQL,
 } from "drizzle-orm";
 
 import { db } from "../../database/index.ts";
@@ -26,7 +27,7 @@ import {
     vehicleVariants,
 } from "../../database/schema/index.ts";
 
-import {
+import type {
     MarketplaceFilters,
     MarketplaceImage,
     MarketplaceSearchProvider,
@@ -36,6 +37,7 @@ import {
 import {
     getObjectStorage,
 } from "../../infrastructure/storage/object-storage.ts";
+
 
 function validateFilters(
     filters: MarketplaceFilters,
@@ -56,7 +58,7 @@ function validateFilters(
             "Invalid vehicle condition. Use BRAND_NEW, FOREIGN_USED, or NIGERIAN_USED.",
         );
     }
-    
+
     if (
         filters.minPrice !== undefined
         && filters.maxPrice !== undefined
@@ -133,6 +135,7 @@ function validateFilters(
         );
     }
 }
+
 
 /**
  * Fetches listing images separately to avoid
@@ -222,14 +225,23 @@ async function getMarketplaceImages(
     return imageMap;
 }
 
+
 /**
  * PostgreSQL-backed marketplace search provider.
+ *
+ * Supports:
+ * - Catalogue-linked listings.
+ * - Manually entered vehicle listings.
+ * - Optional vehicle catalogue relationships.
+ * - Boosted and non-boosted listings.
  */
 class PostgresMarketplaceSearchProvider
 implements MarketplaceSearchProvider {
+
     async search(
         filters: MarketplaceFilters,
     ): Promise<MarketplaceSearchResult> {
+
         validateFilters(filters);
 
         const now = new Date();
@@ -247,6 +259,9 @@ implements MarketplaceSearchProvider {
                 ? filters.limit
                 : 20;
 
+        /*
+         * Active boost detection.
+         */
         const activeBoostExists = sql<boolean>`
             EXISTS (
                 SELECT 1
@@ -260,74 +275,129 @@ implements MarketplaceSearchProvider {
             )
         `;
 
-        const conditions = [
-            eq(listings.status, "APPROVED"),
+        /*
+         * Base marketplace conditions.
+         */
+        const conditions: SQL[] = [
+            eq(
+                listings.status,
+                "APPROVED",
+            ),
 
             or(
                 isNull(listings.expiresAt),
-                gt(listings.expiresAt, now),
+                gt(
+                    listings.expiresAt,
+                    now,
+                ),
             )!,
+
+            eq(
+                users.status,
+                "ACTIVE",
+            ),
         ];
 
         /*
-        * Featured listings must have a currently active boost.
-        */
+         * Featured listings must have an active boost.
+         */
         if (filters.boostedOnly) {
             conditions.push(activeBoostExists);
         }
 
         /*
-        * This exclusion is opt-in only. Normal marketplace searches
-        * include active boosted listings as part of the full inventory.
-        */
+         * Exclusion is opt-in only.
+         *
+         * Normal marketplace searches include both
+         * boosted and non-boosted listings.
+         */
         if (filters.excludeBoosted) {
             conditions.push(
-                sql<boolean>`NOT (${activeBoostExists})`,
+                sql<boolean>`
+                    NOT (${activeBoostExists})
+                `,
             );
         }
 
+        /*
+         * Catalogue-specific filters.
+         *
+         * Manual listings do not have catalogue IDs,
+         * so these filters intentionally target
+         * catalogue-linked vehicles.
+         */
         if (filters.makeId) {
             conditions.push(
-                eq(vehicleMakes.id, filters.makeId),
+                eq(
+                    vehicleMakes.id,
+                    filters.makeId,
+                ),
             );
         }
 
         if (filters.modelId) {
             conditions.push(
-                eq(vehicleModels.id, filters.modelId),
+                eq(
+                    vehicleModels.id,
+                    filters.modelId,
+                ),
             );
         }
 
         if (filters.generationId) {
             conditions.push(
-                eq(vehicleGenerations.id, filters.generationId),
+                eq(
+                    vehicleGenerations.id,
+                    filters.generationId,
+                ),
             );
         }
 
         if (filters.variantId) {
             conditions.push(
-                eq(vehicleVariants.id, filters.variantId),
+                eq(
+                    vehicleVariants.id,
+                    filters.variantId,
+                ),
             );
         }
 
+        /*
+         * Vehicle condition.
+         */
         if (filters.condition) {
             conditions.push(
-                eq(listings.condition, filters.condition),
+                eq(
+                    listings.condition,
+                    filters.condition,
+                ),
             );
         }
 
-        if (filters.state) {
+        /*
+         * Location filters.
+         */
+        if (filters.state?.trim()) {
             conditions.push(
-                ilike(listings.state, `%${filters.state.trim()}%`),
+                ilike(
+                    listings.state,
+                    `%${filters.state.trim()}%`,
+                ),
             );
         }
 
-        if (filters.city) {
+        if (filters.city?.trim()) {
             conditions.push(
-                ilike(listings.city, `%${filters.city.trim()}%`),
+                ilike(
+                    listings.city,
+                    `%${filters.city.trim()}%`,
+                ),
             );
         }
 
+        /*
+         * Price filters.
+         */
         if (filters.minPrice !== undefined) {
             conditions.push(
                 gte(
@@ -346,6 +416,9 @@ implements MarketplaceSearchProvider {
             );
         }
 
+        /*
+         * Mileage filters.
+         */
         if (filters.minMileage !== undefined) {
             conditions.push(
                 gte(
@@ -364,72 +437,127 @@ implements MarketplaceSearchProvider {
             );
         }
 
+        /*
+         * Year filters.
+         *
+         * Prefer the seller-editable listing snapshot.
+         * Fall back to the catalogue variant year.
+         */
         if (filters.minYear !== undefined) {
             conditions.push(
-                gte(
-                    vehicleVariants.year,
-                    filters.minYear,
-                ),
+                sql<boolean>`
+                    COALESCE(
+                        ${listings.year},
+                        ${vehicleVariants.year}
+                    ) >= ${filters.minYear}
+                `,
             );
         }
 
         if (filters.maxYear !== undefined) {
             conditions.push(
-                lte(
-                    vehicleVariants.year,
-                    filters.maxYear,
-                ),
+                sql<boolean>`
+                    COALESCE(
+                        ${listings.year},
+                        ${vehicleVariants.year}
+                    ) <= ${filters.maxYear}
+                `,
             );
         }
 
+        /*
+         * Fuel type filter.
+         *
+         * Catalogue enum values are converted to text
+         * so they can be compared with listing snapshots.
+         */
         if (filters.fuelType) {
             conditions.push(
-                eq(
-                    vehicleVariants.fuelType,
-                    filters.fuelType,
-                ),
+                sql<boolean>`
+                    UPPER(
+                        COALESCE(
+                            ${listings.fuelType},
+                            ${vehicleVariants.fuelType}::text
+                        )
+                    ) = ${filters.fuelType}
+                `,
             );
         }
 
+        /*
+         * Transmission filter.
+         */
         if (filters.transmission) {
             conditions.push(
-                eq(
-                    vehicleVariants.transmission,
-                    filters.transmission,
-                ),
+                sql<boolean>`
+                    UPPER(
+                        COALESCE(
+                            ${listings.transmission},
+                            ${vehicleVariants.transmission}::text
+                        )
+                    ) = ${filters.transmission}
+                `,
             );
         }
 
+        /*
+         * Body style filter.
+         */
         if (filters.bodyStyle) {
             conditions.push(
-                eq(
-                    vehicleVariants.bodyStyle,
-                    filters.bodyStyle,
-                ),
+                sql<boolean>`
+                    UPPER(
+                        COALESCE(
+                            ${listings.bodyStyle},
+                            ${vehicleVariants.bodyStyle}::text
+                        )
+                    ) = ${filters.bodyStyle}
+                `,
             );
         }
 
+        /*
+         * Dealer filters.
+         */
         if (filters.dealerOnly) {
             conditions.push(
-                eq(users.accountType, "DEALER"),
+                eq(
+                    users.accountType,
+                    "DEALER",
+                ),
             );
         }
 
         if (filters.verifiedDealerOnly) {
             conditions.push(
-                eq(users.accountType, "DEALER"),
-                eq(dealerProfiles.verified, true),
+                eq(
+                    users.accountType,
+                    "DEALER",
+                ),
+
+                eq(
+                    dealerProfiles.verified,
+                    true,
+                ),
             );
         }
 
+        /*
+         * Keyword search.
+         *
+         * Every search term must match at least one
+         * searchable field.
+         *
+         * This allows searches such as:
+         * Toyota Camry
+         * Mercedes Benz
+         * Honda Accord
+         * Toyota 2022
+         */
         if (filters.q?.trim()) {
-            // Match every search term while allowing terms to occur in
-            // different vehicle fields (e.g. "Toyota Camry" => make + model).
-            // This behaves much closer to a marketplace-wide keyword search
-            // than requiring the entire phrase in a single column.
             const searchTerms = filters.q
                 .trim()
-                .split(/\\s+/)
+                .split(/\s+/)
                 .filter(Boolean)
                 .slice(0, 8);
 
@@ -438,12 +566,62 @@ implements MarketplaceSearchProvider {
 
                 conditions.push(
                     or(
-                        ilike(listings.title, pattern),
-                        ilike(listings.description, pattern),
-                        ilike(vehicleMakes.name, pattern),
-                        ilike(vehicleModels.name, pattern),
-                        ilike(vehicleGenerations.name, pattern),
-                        ilike(vehicleVariants.name, pattern),
+                        ilike(
+                            listings.title,
+                            pattern,
+                        ),
+
+                        ilike(
+                            listings.description,
+                            pattern,
+                        ),
+
+                        ilike(
+                            listings.makeName,
+                            pattern,
+                        ),
+
+                        ilike(
+                            listings.modelName,
+                            pattern,
+                        ),
+
+                        ilike(
+                            listings.generationName,
+                            pattern,
+                        ),
+
+                        ilike(
+                            listings.variantName,
+                            pattern,
+                        ),
+
+                        ilike(
+                            vehicleMakes.name,
+                            pattern,
+                        ),
+
+                        ilike(
+                            vehicleModels.name,
+                            pattern,
+                        ),
+
+                        ilike(
+                            vehicleGenerations.name,
+                            pattern,
+                        ),
+
+                        ilike(
+                            vehicleVariants.name,
+                            pattern,
+                        ),
+
+                        sql<boolean>`
+                            CAST(
+                                ${listings.specifications}
+                                AS TEXT
+                            ) ILIKE ${pattern}
+                        `,
                     )!,
                 );
             }
@@ -463,6 +641,13 @@ implements MarketplaceSearchProvider {
         `;
 
         /*
+         * Shared optional catalogue joins.
+         *
+         * These are LEFT JOINs because a manual listing
+         * may not have any catalogue relationship.
+         */
+
+        /*
          * Count matching listings.
          */
         const [countResult] = await db
@@ -470,52 +655,74 @@ implements MarketplaceSearchProvider {
                 total: sql<number>`count(*)::int`,
             })
             .from(listings)
-            .innerJoin(
+
+            .leftJoin(
                 vehicleVariants,
                 eq(
                     listings.vehicleVariantId,
                     vehicleVariants.id,
                 ),
             )
-            .innerJoin(
+
+            .leftJoin(
                 vehicleGenerations,
                 eq(
                     vehicleVariants.generationId,
                     vehicleGenerations.id,
                 ),
             )
-            .innerJoin(
+
+            .leftJoin(
                 vehicleModels,
                 eq(
                     vehicleGenerations.modelId,
                     vehicleModels.id,
                 ),
             )
-            .innerJoin(
+
+            .leftJoin(
                 vehicleMakes,
                 eq(
                     vehicleModels.makeId,
                     vehicleMakes.id,
                 ),
             )
+
             .innerJoin(
                 users,
-                eq(listings.sellerId, users.id),
+                eq(
+                    listings.sellerId,
+                    users.id,
+                ),
             )
+
             .leftJoin(
                 dealerProfiles,
-                eq(dealerProfiles.userId, users.id),
+                eq(
+                    dealerProfiles.userId,
+                    users.id,
+                ),
             )
+
             .where(whereCondition);
 
         const total = countResult?.total ?? 0;
+
         const offset = (page - 1) * limit;
 
-        const sort = filters.sort
-            ?? (filters.q ? "relevance" : "newest");
+        const sort =
+            filters.sort
+            ?? (filters.q?.trim()
+                ? "relevance"
+                : "newest");
 
-        const orderBy = [];
+        const orderBy: SQL[] = [];
 
+        /*
+         * Boosted listings receive priority.
+         *
+         * This does not remove ordinary listings.
+         */
         orderBy.push(
             desc(activeBoostPriority),
         );
@@ -532,23 +739,44 @@ implements MarketplaceSearchProvider {
                 desc(listings.createdAt),
                 asc(listings.id),
             );
-        } else if (sort === "relevance" && filters.q) {
-            const pattern = `%${filters.q}%`;
+        } else if (
+            sort === "relevance"
+            && filters.q?.trim()
+        ) {
+            const pattern = `%${filters.q.trim()}%`;
 
             const relevanceScore = sql<number>`
                 CASE
                     WHEN ${listings.title} ILIKE ${pattern}
-                        THEN 5
+                        THEN 10
+
+                    WHEN ${listings.makeName} ILIKE ${pattern}
+                        THEN 9
+
                     WHEN ${vehicleMakes.name} ILIKE ${pattern}
-                        THEN 4
+                        THEN 9
+
+                    WHEN ${listings.modelName} ILIKE ${pattern}
+                        THEN 8
+
                     WHEN ${vehicleModels.name} ILIKE ${pattern}
-                        THEN 4
+                        THEN 8
+
+                    WHEN ${listings.variantName} ILIKE ${pattern}
+                        THEN 7
+
                     WHEN ${vehicleVariants.name} ILIKE ${pattern}
-                        THEN 4
+                        THEN 7
+
+                    WHEN ${listings.generationName} ILIKE ${pattern}
+                        THEN 6
+
                     WHEN ${vehicleGenerations.name} ILIKE ${pattern}
-                        THEN 3
+                        THEN 6
+
                     WHEN ${listings.description} ILIKE ${pattern}
-                        THEN 1
+                        THEN 2
+
                     ELSE 0
                 END
             `;
@@ -566,21 +794,16 @@ implements MarketplaceSearchProvider {
         }
 
         /*
-         * Fetch listings, vehicles, sellers and dealers.
-         *
-         * Profile picture is fetched through users.avatarUrl.
-         * If the user has no profile picture, avatarUrl is null.
+         * Fetch listings, optional vehicles,
+         * sellers and dealers.
          */
         const results = await db
             .select({
                 listing: listings,
 
                 make: vehicleMakes,
-
                 model: vehicleModels,
-
                 generation: vehicleGenerations,
-
                 variant: vehicleVariants,
 
                 seller: {
@@ -601,49 +824,65 @@ implements MarketplaceSearchProvider {
                 boostPriority: activeBoostPriority,
             })
             .from(listings)
-            .innerJoin(
+
+            .leftJoin(
                 vehicleVariants,
                 eq(
                     listings.vehicleVariantId,
                     vehicleVariants.id,
                 ),
             )
-            .innerJoin(
+
+            .leftJoin(
                 vehicleGenerations,
                 eq(
                     vehicleVariants.generationId,
                     vehicleGenerations.id,
                 ),
             )
-            .innerJoin(
+
+            .leftJoin(
                 vehicleModels,
                 eq(
                     vehicleGenerations.modelId,
                     vehicleModels.id,
                 ),
             )
-            .innerJoin(
+
+            .leftJoin(
                 vehicleMakes,
                 eq(
                     vehicleModels.makeId,
                     vehicleMakes.id,
                 ),
             )
+
             .innerJoin(
                 users,
-                eq(listings.sellerId, users.id),
+                eq(
+                    listings.sellerId,
+                    users.id,
+                ),
             )
+
             .leftJoin(
                 dealerProfiles,
-                eq(dealerProfiles.userId, users.id),
+                eq(
+                    dealerProfiles.userId,
+                    users.id,
+                ),
             )
+
             .where(whereCondition)
+
             .orderBy(...orderBy)
+
             .limit(limit)
+
             .offset(offset);
 
         /*
-         * Fetch all images for the returned listings.
+         * Fetch images for returned listings.
          */
         const listingIds = results.map(
             (item) => item.listing.id,
@@ -653,18 +892,15 @@ implements MarketplaceSearchProvider {
             await getMarketplaceImages(listingIds);
 
         /*
-         * Normalize the marketplace response.
+         * Normalize marketplace response.
          */
         const marketplaceListings = results.map(
             (result) => ({
                 listing: result.listing,
 
                 make: result.make,
-
                 model: result.model,
-
                 generation: result.generation,
-
                 variant: result.variant,
 
                 seller: {
@@ -676,6 +912,8 @@ implements MarketplaceSearchProvider {
                     ]
                         .filter(Boolean)
                         .join(" "),
+
+                    avatarUrl: result.seller.avatarUrl || null,
                 },
 
                 dealer: result.dealer?.companyName
@@ -701,21 +939,27 @@ implements MarketplaceSearchProvider {
                 limit,
                 total,
                 totalPages,
+
                 hasNextPage: page < totalPages,
-                hasPreviousPage: page > 1 && total > 0,
+
+                hasPreviousPage:
+                    page > 1 && total > 0,
             },
         };
     }
 }
 
+
 const postgresMarketplaceSearchProvider =
     new PostgresMarketplaceSearchProvider();
+
 
 export async function searchMarketplace(
     filters: MarketplaceFilters,
 ): Promise<MarketplaceSearchResult> {
     return postgresMarketplaceSearchProvider.search(filters);
 }
+
 
 /**
  * Fetch exclusively currently boosted marketplace listings.

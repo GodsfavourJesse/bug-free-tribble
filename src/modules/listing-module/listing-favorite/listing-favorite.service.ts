@@ -192,28 +192,28 @@ export async function getUserFavorites(
                         listings.id,
                     ),
                 )
-                .innerJoin(
+                .leftJoin(
                     vehicleVariants,
                     eq(
                         listings.vehicleVariantId,
                         vehicleVariants.id,
                     ),
                 )
-                .innerJoin(
+                .leftJoin(
                     vehicleGenerations,
                     eq(
                         vehicleVariants.generationId,
                         vehicleGenerations.id,
                     ),
                 )
-                .innerJoin(
+                .leftJoin(
                     vehicleModels,
                     eq(
                         vehicleGenerations.modelId,
                         vehicleModels.id,
                     ),
                 )
-                .innerJoin(
+                .leftJoin(
                     vehicleMakes,
                     eq(
                         vehicleModels.makeId,

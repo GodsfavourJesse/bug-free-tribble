@@ -1,8 +1,6 @@
 import {
     listings,
-    listingImages,
     users,
-    dealerProfiles,
     vehicleGenerations,
     vehicleMakes,
     vehicleModels,
@@ -84,20 +82,7 @@ export interface MarketplaceFilters {
     dealerOnly?: boolean;
     verifiedDealerOnly?: boolean;
 
-    /**
-     * Return only listings with an active boost.
-     */
     boostedOnly?: boolean;
-
-    /**
-     * Exclude listings with an active boost.
-     *
-     * This should only be used when a dedicated
-     * business operation explicitly requires it.
-     *
-     * Normal marketplace searches must include
-     * boosted and non-boosted listings.
-     */
     excludeBoosted?: boolean;
 
     page: number;
@@ -151,13 +136,21 @@ export interface MarketplaceDealer {
 export interface MarketplaceSearchItem {
     listing: typeof listings.$inferSelect;
 
-    make: typeof vehicleMakes.$inferSelect;
+    /**
+     * Catalogue information is optional.
+     *
+     * Manual vehicle listings do not have to reference
+     * a vehicle make, model, generation or variant.
+     *
+     * The listing snapshot contains their vehicle details.
+     */
+    make: typeof vehicleMakes.$inferSelect | null;
 
-    model: typeof vehicleModels.$inferSelect;
+    model: typeof vehicleModels.$inferSelect | null;
 
-    generation: typeof vehicleGenerations.$inferSelect;
+    generation: typeof vehicleGenerations.$inferSelect | null;
 
-    variant: typeof vehicleVariants.$inferSelect;
+    variant: typeof vehicleVariants.$inferSelect | null;
 
     seller: MarketplaceSeller;
 

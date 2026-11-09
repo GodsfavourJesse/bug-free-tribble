@@ -1,0 +1,2034 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Porsche",
+    "slug": "porsche",
+    "models": [
+      {
+        "name": "Cayenne",
+        "slug": "cayenne",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "958",
+            "slug": "958",
+            "startYear": 2011,
+            "endYear": 2017,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.6L V6",
+                "slug": "3-6l-v6",
+                "displacementCc": 3598,
+                "cylinders": 6,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2011,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2011,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2012,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2012,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2013,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2013,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2014,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2014,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2015,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2015,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2016,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2016,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2017,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2017,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "9YA",
+            "slug": "9ya",
+            "startYear": 2018,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.0L V6 Turbo",
+                "slug": "3-0l-v6-turbo",
+                "displacementCc": 2995,
+                "cylinders": 6,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2018,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2018,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2019,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2019,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2020,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2020,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2021,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2021,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2022,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2022,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2023,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2023,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2024,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2024,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2025,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2025,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2026,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2026,
+                "engineSlug": "3-0l-v6-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Macan",
+        "slug": "macan",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "95B",
+            "slug": "95b",
+            "startYear": 2014,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.0L Turbo",
+                "slug": "2-0l-turbo",
+                "displacementCc": 1984,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2014,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2014,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2015,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2015,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2016,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2016,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2017,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2017,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2018,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2018,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2019,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2019,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2020,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2020,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2021,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2021,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2022,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2022,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2023,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2023,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Base",
+                "slug": "base",
+                "year": 2024,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2024,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "XAB",
+            "slug": "xab",
+            "startYear": 2024,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "Electric",
+                "slug": "electric",
+                "displacementCc": 0,
+                "cylinders": 0,
+                "sources": [],
+                "fuelType": "ELECTRIC"
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Macan Electric",
+                "slug": "macan-electric",
+                "year": 2024,
+                "engineSlug": "electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Macan 4",
+                "slug": "macan-4",
+                "year": 2024,
+                "engineSlug": "electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Macan Electric",
+                "slug": "macan-electric",
+                "year": 2025,
+                "engineSlug": "electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Macan 4",
+                "slug": "macan-4",
+                "year": 2025,
+                "engineSlug": "electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Macan Electric",
+                "slug": "macan-electric",
+                "year": 2026,
+                "engineSlug": "electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Macan 4",
+                "slug": "macan-4",
+                "year": 2026,
+                "engineSlug": "electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Panamera",
+        "slug": "panamera",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "970",
+            "slug": "970",
+            "startYear": 2009,
+            "endYear": 2016,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.6L V6",
+                "slug": "3-6l-v6",
+                "displacementCc": 3605,
+                "cylinders": 6,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2009,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2009,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2009,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2010,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2010,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2011,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2011,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2012,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2012,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2013,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2013,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2014,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2014,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2015,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2015,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V6",
+                "slug": "v6",
+                "year": 2016,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2016,
+                "engineSlug": "3-6l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "971",
+            "slug": "971",
+            "startYear": 2016,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.9L V6 Twin-Turbo",
+                "slug": "2-9l-v6-twin-turbo",
+                "displacementCc": 2894,
+                "cylinders": 6,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2016,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2016,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2017,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2017,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2018,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2018,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2019,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2019,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2020,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2020,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2021,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2021,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2022,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2022,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2023,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2023,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2024,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2024,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2025,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2025,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4",
+                "slug": "4",
+                "year": 2026,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "4S",
+                "slug": "4s",
+                "year": 2026,
+                "engineSlug": "2-9l-v6-twin-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

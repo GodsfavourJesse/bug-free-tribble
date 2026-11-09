@@ -1,0 +1,1552 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "UAZ",
+    "slug": "uaz",
+    "sources": [],
+    "models": [
+      {
+        "name": "Patriot",
+        "slug": "patriot",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2005,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.7L Petrol",
+                "slug": "2-7l-petrol",
+                "cylinders": 4,
+                "fuelType": "PETROL",
+                "sources": [],
+                "displacementCc": 2693
+              },
+              {
+                "name": "2.2L Diesel",
+                "slug": "2-2l-diesel",
+                "cylinders": 4,
+                "fuelType": "DIESEL",
+                "sources": [],
+                "displacementCc": 2235
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2005,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2006,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2007,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2008,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2009,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2005,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2006,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2007,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2008,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2009,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2010,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2011,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2012,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2013,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2014,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2015,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2016,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2017,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2018,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2019,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2020,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2021,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2022,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2023,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2024,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2025,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2026,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Hunter",
+        "slug": "hunter",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2003,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.7L Petrol",
+                "slug": "2-7l-petrol",
+                "cylinders": 4,
+                "fuelType": "PETROL",
+                "sources": [],
+                "displacementCc": 2693
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2003,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2004,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2005,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2006,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2007,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2008,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2009,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2003,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Expedition",
+                "slug": "expedition",
+                "year": 2004,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trophy",
+                "slug": "trophy",
+                "year": 2005,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2006,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Expedition",
+                "slug": "expedition",
+                "year": 2007,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trophy",
+                "slug": "trophy",
+                "year": 2008,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2009,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Expedition",
+                "slug": "expedition",
+                "year": 2010,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trophy",
+                "slug": "trophy",
+                "year": 2011,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2012,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Expedition",
+                "slug": "expedition",
+                "year": 2013,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trophy",
+                "slug": "trophy",
+                "year": 2014,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2015,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Expedition",
+                "slug": "expedition",
+                "year": 2016,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trophy",
+                "slug": "trophy",
+                "year": 2017,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2018,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Expedition",
+                "slug": "expedition",
+                "year": 2019,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trophy",
+                "slug": "trophy",
+                "year": 2020,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2021,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Expedition",
+                "slug": "expedition",
+                "year": 2022,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trophy",
+                "slug": "trophy",
+                "year": 2023,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2024,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Expedition",
+                "slug": "expedition",
+                "year": 2025,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Trophy",
+                "slug": "trophy",
+                "year": 2026,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Pickup",
+        "slug": "pickup",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2008,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.7L Petrol",
+                "slug": "2-7l-petrol",
+                "cylinders": 4,
+                "fuelType": "PETROL",
+                "sources": [],
+                "displacementCc": 2693
+              },
+              {
+                "name": "2.2L Diesel",
+                "slug": "2-2l-diesel",
+                "cylinders": 4,
+                "fuelType": "DIESEL",
+                "sources": [],
+                "displacementCc": 2235
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2008,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2009,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2008,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2009,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2010,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2011,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2012,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2013,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2014,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2015,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2016,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2017,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2018,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2019,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2020,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2021,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2022,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2023,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2024,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2025,
+                "engineSlug": "2-2l-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Classic",
+                "slug": "classic",
+                "year": 2026,
+                "engineSlug": "2-7l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "MANUAL",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,2010 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Jeep",
+    "slug": "jeep",
+    "models": [
+      {
+        "name": "Cherokee",
+        "slug": "cherokee",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "KL",
+            "slug": "kl",
+            "startYear": 2014,
+            "endYear": 2023,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.4L Tigershark",
+                "slug": "2-4l-tigershark",
+                "displacementCc": 2360,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2014,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2014,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2015,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2015,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2016,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2016,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2017,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2017,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2018,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2018,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2019,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2019,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2020,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2020,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2021,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2021,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2022,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2022,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Latitude",
+                "slug": "2-4-latitude",
+                "year": 2023,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.4 Limited",
+                "slug": "2-4-limited",
+                "year": 2023,
+                "engineSlug": "2-4l-tigershark",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Grand Cherokee",
+        "slug": "grand-cherokee",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "WK2",
+            "slug": "wk2",
+            "startYear": 2011,
+            "endYear": 2022,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.6L Pentastar V6",
+                "slug": "3-6l-pentastar-v6",
+                "displacementCc": 3604,
+                "cylinders": 6,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2011,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2011,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2012,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2012,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2013,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2013,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2014,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2014,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2015,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2015,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2016,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2016,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2017,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2017,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2018,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2018,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2019,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2019,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2020,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2020,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2021,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2021,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2022,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2022,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "WL",
+            "slug": "wl",
+            "startYear": 2021,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.6L Pentastar V6",
+                "slug": "3-6l-pentastar-v6",
+                "displacementCc": 3604,
+                "cylinders": 6,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2021,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2021,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2022,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2022,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2023,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2023,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2024,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2024,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2025,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2025,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Laredo",
+                "slug": "3-6-laredo",
+                "year": 2026,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "3.6 Limited",
+                "slug": "3-6-limited",
+                "year": 2026,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Wrangler",
+        "slug": "wrangler",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "JK",
+            "slug": "jk",
+            "startYear": 2007,
+            "endYear": 2018,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.6L Pentastar V6",
+                "slug": "3-6l-pentastar-v6",
+                "displacementCc": 3604,
+                "cylinders": 6,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2007,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2008,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2009,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2007,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2007,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2008,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2008,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2009,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2009,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2010,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2010,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2011,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2011,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2012,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2012,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2013,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2013,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2014,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2014,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2015,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2015,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2016,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2016,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2017,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2017,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2018,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2018,
+                "engineSlug": "3-6l-pentastar-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "JL",
+            "slug": "jl",
+            "startYear": 2018,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.0L Turbo",
+                "slug": "2-0l-turbo",
+                "displacementCc": 1995,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2018,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2018,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2019,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2019,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2020,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2020,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2021,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2021,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2022,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2022,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2023,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2023,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2024,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2024,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2025,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2025,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sport",
+                "slug": "sport",
+                "year": 2026,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Sahara",
+                "slug": "sahara",
+                "year": 2026,
+                "engineSlug": "2-0l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -58,7 +58,23 @@ export function getListingTransitionTarget(
  * updating an existing listing.
  */
 export interface ListingDetailsUpdate {
-    vehicleVariantId?: string;
+    vehicleVariantId?: string | null;
+    makeName?: string;
+    modelName?: string;
+    year?: number;
+    generationName?: string | null;
+    variantName?: string | null;
+    bodyStyle?: string | null;
+    fuelType?: string | null;
+    transmission?: string | null;
+    driveType?: string | null;
+    engineCapacity?: string | null;
+    horsepower?: number | null;
+    exteriorColor?: string | null;
+    interiorColor?: string | null;
+    seats?: number | null;
+    doors?: number | null;
+    specifications?: Record<string, string | number | boolean | null>;
     title?: string;
     description?: string;
     price?: number;
@@ -113,6 +129,51 @@ function applyListingDetails(
         values.vehicleVariantId =
             details.vehicleVariantId;
 
+        hasChanges = true;
+    }
+
+    const vehicleTextFields = [
+        "makeName",
+        "modelName",
+        "generationName",
+        "variantName",
+        "bodyStyle",
+        "fuelType",
+        "transmission",
+        "driveType",
+        "engineCapacity",
+        "exteriorColor",
+        "interiorColor",
+    ] as const;
+
+    for (const field of vehicleTextFields) {
+        const value = details[field];
+        if (value !== undefined) {
+            // Empty optional strings are normalized to NULL in storage.
+            Object.assign(values, {
+                [field]: value === "" ? null : value,
+            });
+            hasChanges = true;
+        }
+    }
+
+    const vehicleNumericFields = [
+        "year",
+        "horsepower",
+        "seats",
+        "doors",
+    ] as const;
+
+    for (const field of vehicleNumericFields) {
+        const value = details[field];
+        if (value !== undefined) {
+            Object.assign(values, { [field]: value });
+            hasChanges = true;
+        }
+    }
+
+    if (details.specifications !== undefined) {
+        values.specifications = details.specifications;
         hasChanges = true;
     }
 

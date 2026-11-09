@@ -135,28 +135,28 @@ export async function contactListingSeller(
             make: vehicleMakes,
         })
         .from(listings)
-        .innerJoin(
+        .leftJoin(
             vehicleVariants,
             eq(
                 listings.vehicleVariantId,
                 vehicleVariants.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
                 vehicleGenerations.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleModels,
             eq(
                 vehicleGenerations.modelId,
                 vehicleModels.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleMakes,
             eq(
                 vehicleModels.makeId,
@@ -236,12 +236,28 @@ export async function contactListingSeller(
         listingId: input.listingId,
         sellerId: record.listing.sellerId,
         vehicle: {
-            make: record.make,
-            model: record.model,
-            generation:
-                record.generation,
-            variant:
-                record.variant,
+            make: {
+                id: record.make?.id ?? null,
+                name: record.make?.name ?? record.listing.makeName,
+            },
+            model: {
+                id: record.model?.id ?? null,
+                name: record.model?.name ?? record.listing.modelName,
+            },
+            generation: {
+                id: record.generation?.id ?? null,
+                name: record.generation?.name ?? record.listing.generationName,
+            },
+            variant: {
+                id: record.variant?.id ?? null,
+                name: record.variant?.name ?? record.listing.variantName,
+            },
+            year: record.listing.year,
+            bodyStyle: record.listing.bodyStyle,
+            fuelType: record.listing.fuelType,
+            transmission: record.listing.transmission,
+            driveType: record.listing.driveType,
+            engineCapacity: record.listing.engineCapacity,
         },
         messageSent: Boolean(message),
     };

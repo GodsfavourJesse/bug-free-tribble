@@ -47,9 +47,9 @@ export const subscriptionStatusEnum =
  *
  * Historical lifecycle events belong in subscription_history.
  *
- * Price/configuration snapshots are stored here so historical
- * subscriptions remain financially accurate even when a plan
- * changes later.
+ * Price and discount configuration snapshots are stored here
+ * so historical subscriptions remain financially accurate
+ * even when an administrator changes a plan later.
  */
 
 export const subscriptions =
@@ -105,7 +105,7 @@ export const subscriptions =
 
             /*
              * ====================================================
-             * PRICE SNAPSHOT
+             * PRICE AND DISCOUNT SNAPSHOT
              * ====================================================
              */
 
@@ -117,6 +117,25 @@ export const subscriptions =
                 },
             ).notNull(),
 
+            /*
+             * Normal-user discount configured on the plan
+             * when this subscription was created.
+             */
+            normalUserDiscountPercent:
+                numeric(
+                    "normal_user_discount_percent",
+                    {
+                        precision: 5,
+                        scale: 2,
+                    },
+                )
+                    .notNull()
+                    .default("0.00"),
+
+            /*
+             * Dealer discount configured on the plan
+             * when this subscription was created.
+             */
             dealerDiscountPercent:
                 numeric(
                     "dealer_discount_percent",
@@ -128,6 +147,29 @@ export const subscriptions =
                     .notNull()
                     .default("0.00"),
 
+            /*
+             * The actual discount applied to this user.
+             *
+             * This can be:
+             * - Normal-user discount.
+             * - Verified-dealer discount.
+             * - 0.00 for an ineligible account.
+             */
+            appliedDiscountPercent:
+                numeric(
+                    "applied_discount_percent",
+                    {
+                        precision: 5,
+                        scale: 2,
+                    },
+                )
+                    .notNull()
+                    .default("0.00"),
+
+            /*
+             * Final amount payable after applying the
+             * applicable discount.
+             */
             effectivePrice: numeric(
                 "effective_price",
                 {
@@ -269,6 +311,12 @@ export const subscriptions =
                         sql`${table.status} = 'PENDING'`,
                     ),
 
+            /*
+             * ====================================================
+             * PRICE VALIDATION
+             * ====================================================
+             */
+
             originalPriceNonNegativeCheck:
                 check(
                     "subscriptions_original_price_non_negative",
@@ -281,15 +329,53 @@ export const subscriptions =
                     sql`${table.effectivePrice} >= 0`,
                 ),
 
-            discountValidCheck:
+            /*
+             * Normal-user discount must be between 0 and 100.
+             */
+
+            normalUserDiscountValidCheck:
                 check(
-                    "subscriptions_discount_valid",
+                    "subscriptions_normal_user_discount_valid",
+                    sql`
+                        ${table.normalUserDiscountPercent} >= 0
+                        AND
+                        ${table.normalUserDiscountPercent} <= 100
+                    `,
+                ),
+
+            /*
+             * Dealer discount must be between 0 and 100.
+             */
+
+            dealerDiscountValidCheck:
+                check(
+                    "subscriptions_dealer_discount_valid",
                     sql`
                         ${table.dealerDiscountPercent} >= 0
                         AND
                         ${table.dealerDiscountPercent} <= 100
                     `,
                 ),
+
+            /*
+             * Actual applied discount must be between 0 and 100.
+             */
+
+            appliedDiscountValidCheck:
+                check(
+                    "subscriptions_applied_discount_valid",
+                    sql`
+                        ${table.appliedDiscountPercent} >= 0
+                        AND
+                        ${table.appliedDiscountPercent} <= 100
+                    `,
+                ),
+
+            /*
+             * ====================================================
+             * SUBSCRIPTION VALIDATION
+             * ====================================================
+             */
 
             durationPositiveCheck:
                 check(

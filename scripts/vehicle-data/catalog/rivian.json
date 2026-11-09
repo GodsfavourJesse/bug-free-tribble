@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Rivian",
+    "slug": "rivian",
+    "sources": [],
+    "models": [
+      {
+        "name": "R1T",
+        "slug": "r1t",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2021,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "Dual Motor Electric",
+                "slug": "dual-motor-electric",
+                "cylinders": 0,
+                "fuelType": "ELECTRIC",
+                "sources": []
+              },
+              {
+                "name": "Quad Motor Electric",
+                "slug": "quad-motor-electric",
+                "cylinders": 0,
+                "fuelType": "ELECTRIC",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Adventure",
+                "slug": "adventure",
+                "year": 2021,
+                "engineSlug": "dual-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Explore",
+                "slug": "explore",
+                "year": 2022,
+                "engineSlug": "quad-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Ascend",
+                "slug": "ascend",
+                "year": 2023,
+                "engineSlug": "dual-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Adventure",
+                "slug": "adventure",
+                "year": 2024,
+                "engineSlug": "quad-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Explore",
+                "slug": "explore",
+                "year": 2025,
+                "engineSlug": "dual-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Ascend",
+                "slug": "ascend",
+                "year": 2026,
+                "engineSlug": "quad-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "PICKUP",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "R1S",
+        "slug": "r1s",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2022,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "Dual Motor Electric",
+                "slug": "dual-motor-electric",
+                "cylinders": 0,
+                "fuelType": "ELECTRIC",
+                "sources": []
+              },
+              {
+                "name": "Quad Motor Electric",
+                "slug": "quad-motor-electric",
+                "cylinders": 0,
+                "fuelType": "ELECTRIC",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Adventure",
+                "slug": "adventure",
+                "year": 2022,
+                "engineSlug": "dual-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Explore",
+                "slug": "explore",
+                "year": 2023,
+                "engineSlug": "quad-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Ascend",
+                "slug": "ascend",
+                "year": 2024,
+                "engineSlug": "dual-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Adventure",
+                "slug": "adventure",
+                "year": 2025,
+                "engineSlug": "quad-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Explore",
+                "slug": "explore",
+                "year": 2026,
+                "engineSlug": "dual-motor-electric",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "EDV",
+        "slug": "edv",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2022,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "Electric Motor",
+                "slug": "electric-motor",
+                "cylinders": 0,
+                "fuelType": "ELECTRIC",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "500",
+                "slug": "500",
+                "year": 2022,
+                "engineSlug": "electric-motor",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "VAN",
+                "seats": 7,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "700",
+                "slug": "700",
+                "year": 2023,
+                "engineSlug": "electric-motor",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "VAN",
+                "seats": 7,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "500",
+                "slug": "500",
+                "year": 2024,
+                "engineSlug": "electric-motor",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "VAN",
+                "seats": 7,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "700",
+                "slug": "700",
+                "year": 2025,
+                "engineSlug": "electric-motor",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "VAN",
+                "seats": 7,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "500",
+                "slug": "500",
+                "year": 2026,
+                "engineSlug": "electric-motor",
+                "fuelType": "ELECTRIC",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "VAN",
+                "seats": 7,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

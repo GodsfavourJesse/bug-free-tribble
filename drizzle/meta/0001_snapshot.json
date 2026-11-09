@@ -1,6 +1,6 @@
 {
-  "id": "5ca6b0c8-c6a8-4d7c-8670-6d9dc0edc235",
-  "prevId": "752eb095-d2e6-483b-8d2d-ef22240d2f8e",
+  "id": "58faf41c-9c43-42ae-815e-642e46ec72c3",
+  "prevId": "f504a6e7-2064-46ac-8eca-3709018b8f30",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -120,6 +120,88 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_privacy_settings": {
+      "name": "user_privacy_settings",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "show_phone": {
+          "name": "show_phone",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "show_email": {
+          "name": "show_email",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "allow_direct_messages": {
+          "name": "allow_direct_messages",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "show_online_status": {
+          "name": "show_online_status",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "allow_marketing_emails": {
+          "name": "allow_marketing_emails",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "allow_marketing_sms": {
+          "name": "allow_marketing_sms",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_privacy_settings_user_id_users_id_fk": {
+          "name": "user_privacy_settings_user_id_users_id_fk",
+          "tableFrom": "user_privacy_settings",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -615,6 +697,161 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.admin_sessions": {
+      "name": "admin_sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ip_address": {
+          "name": "ip_address",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_used_at": {
+          "name": "last_used_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "admin_sessions_user_idx": {
+          "name": "admin_sessions_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "admin_sessions_active_idx": {
+          "name": "admin_sessions_active_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "revoked_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "admin_sessions_expiry_idx": {
+          "name": "admin_sessions_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "admin_sessions_user_id_users_id_fk": {
+          "name": "admin_sessions_user_id_users_id_fk",
+          "tableFrom": "admin_sessions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "admin_sessions_token_hash_unique": {
+          "name": "admin_sessions_token_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token_hash"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.vehicle_generations": {
       "name": "vehicle_generations",
       "schema": "",
@@ -693,8 +930,8 @@
         }
       },
       "indexes": {
-        "vehicle_generations_model_idx": {
-          "name": "vehicle_generations_model_idx",
+        "vehicle_generations_model_id_idx": {
+          "name": "vehicle_generations_model_id_idx",
           "columns": [
             {
               "expression": "model_id",
@@ -712,12 +949,6 @@
           "name": "vehicle_generations_active_idx",
           "columns": [
             {
-              "expression": "model_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
               "expression": "active",
               "isExpression": false,
               "asc": true,
@@ -733,13 +964,28 @@
           "name": "vehicle_generations_nigeria_market_idx",
           "columns": [
             {
-              "expression": "model_id",
+              "expression": "nigeria_market",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_generations_year_range_idx": {
+          "name": "vehicle_generations_year_range_idx",
+          "columns": [
+            {
+              "expression": "start_year",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
             },
             {
-              "expression": "nigeria_market",
+              "expression": "end_year",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -763,7 +1009,7 @@
             "id"
           ],
           "onDelete": "restrict",
-          "onUpdate": "no action"
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -783,13 +1029,21 @@
             "model_id",
             "slug"
           ]
+        },
+        "vehicle_generations_id_model_unique": {
+          "name": "vehicle_generations_id_model_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "model_id"
+          ]
         }
       },
       "policies": {},
       "checkConstraints": {
         "vehicle_generations_year_range_check": {
           "name": "vehicle_generations_year_range_check",
-          "value": "\n                    start_year IS NULL\n                    OR end_year IS NULL\n                    OR end_year >= start_year\n                "
+          "value": "\n                (\n                    \"vehicle_generations\".\"start_year\" IS NULL\n                    OR \"vehicle_generations\".\"end_year\" IS NULL\n                    OR \"vehicle_generations\".\"start_year\" <= \"vehicle_generations\".\"end_year\"\n                )\n            "
         }
       },
       "isRLSEnabled": false
@@ -874,6 +1128,21 @@
           "columns": [
             {
               "expression": "nigeria_market",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_makes_name_idx": {
+          "name": "vehicle_makes_name_idx",
+          "columns": [
+            {
+              "expression": "name",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -973,8 +1242,8 @@
         }
       },
       "indexes": {
-        "vehicle_models_make_idx": {
-          "name": "vehicle_models_make_idx",
+        "vehicle_models_make_id_idx": {
+          "name": "vehicle_models_make_id_idx",
           "columns": [
             {
               "expression": "make_id",
@@ -992,12 +1261,6 @@
           "name": "vehicle_models_active_idx",
           "columns": [
             {
-              "expression": "make_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
               "expression": "active",
               "isExpression": false,
               "asc": true,
@@ -1013,13 +1276,22 @@
           "name": "vehicle_models_nigeria_market_idx",
           "columns": [
             {
-              "expression": "make_id",
+              "expression": "nigeria_market",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
-            },
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_models_name_idx": {
+          "name": "vehicle_models_name_idx",
+          "columns": [
             {
-              "expression": "nigeria_market",
+              "expression": "name",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1043,7 +1315,7 @@
             "id"
           ],
           "onDelete": "restrict",
-          "onUpdate": "no action"
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -1067,6 +1339,2430 @@
       },
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_variants": {
+      "name": "vehicle_variants",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "generation_id": {
+          "name": "generation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "engine_id": {
+          "name": "engine_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(220)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "engine_name": {
+          "name": "engine_name",
+          "type": "varchar(150)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "engine_displacement_cc": {
+          "name": "engine_displacement_cc",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cylinders": {
+          "name": "cylinders",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "horsepower": {
+          "name": "horsepower",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fuel_type": {
+          "name": "fuel_type",
+          "type": "vehicle_fuel_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transmission": {
+          "name": "transmission",
+          "type": "vehicle_transmission",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "drive_type": {
+          "name": "drive_type",
+          "type": "vehicle_drive_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "body_style": {
+          "name": "body_style",
+          "type": "vehicle_body_style",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "seats": {
+          "name": "seats",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "doors": {
+          "name": "doors",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aliases": {
+          "name": "aliases",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "nigeria_market": {
+          "name": "nigeria_market",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_variants_generation_idx": {
+          "name": "vehicle_variants_generation_idx",
+          "columns": [
+            {
+              "expression": "generation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_variants_engine_idx": {
+          "name": "vehicle_variants_engine_idx",
+          "columns": [
+            {
+              "expression": "engine_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_variants_year_idx": {
+          "name": "vehicle_variants_year_idx",
+          "columns": [
+            {
+              "expression": "year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_variants_active_idx": {
+          "name": "vehicle_variants_active_idx",
+          "columns": [
+            {
+              "expression": "generation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_variants_market_idx": {
+          "name": "vehicle_variants_market_idx",
+          "columns": [
+            {
+              "expression": "nigeria_market",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_variants_fuel_idx": {
+          "name": "vehicle_variants_fuel_idx",
+          "columns": [
+            {
+              "expression": "fuel_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_variants_transmission_idx": {
+          "name": "vehicle_variants_transmission_idx",
+          "columns": [
+            {
+              "expression": "transmission",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_variants_body_idx": {
+          "name": "vehicle_variants_body_idx",
+          "columns": [
+            {
+              "expression": "body_style",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_variants_generation_id_vehicle_generations_id_fk": {
+          "name": "vehicle_variants_generation_id_vehicle_generations_id_fk",
+          "tableFrom": "vehicle_variants",
+          "tableTo": "vehicle_generations",
+          "columnsFrom": [
+            "generation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_variants_model_id_vehicle_models_id_fk": {
+          "name": "vehicle_variants_model_id_vehicle_models_id_fk",
+          "tableFrom": "vehicle_variants",
+          "tableTo": "vehicle_models",
+          "columnsFrom": [
+            "model_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_variants_engine_id_vehicle_engines_id_fk": {
+          "name": "vehicle_variants_engine_id_vehicle_engines_id_fk",
+          "tableFrom": "vehicle_variants",
+          "tableTo": "vehicle_engines",
+          "columnsFrom": [
+            "engine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_variants_generation_model_fk": {
+          "name": "vehicle_variants_generation_model_fk",
+          "tableFrom": "vehicle_variants",
+          "tableTo": "vehicle_generations",
+          "columnsFrom": [
+            "generation_id",
+            "model_id"
+          ],
+          "columnsTo": [
+            "id",
+            "model_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_variants_engine_model_fk": {
+          "name": "vehicle_variants_engine_model_fk",
+          "tableFrom": "vehicle_variants",
+          "tableTo": "vehicle_engines",
+          "columnsFrom": [
+            "engine_id",
+            "model_id"
+          ],
+          "columnsTo": [
+            "id",
+            "model_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_variants_generation_year_slug_unique": {
+          "name": "vehicle_variants_generation_year_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "generation_id",
+            "year",
+            "slug"
+          ]
+        },
+        "vehicle_variants_generation_year_name_unique": {
+          "name": "vehicle_variants_generation_year_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "generation_id",
+            "year",
+            "name"
+          ]
+        },
+        "vehicle_variants_id_generation_year_unique": {
+          "name": "vehicle_variants_id_generation_year_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "generation_id",
+            "year"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "vehicle_variants_year_check": {
+          "name": "vehicle_variants_year_check",
+          "value": "\n                year >= 1886\n                AND year <= 2100\n            "
+        },
+        "vehicle_variants_engine_displacement_check": {
+          "name": "vehicle_variants_engine_displacement_check",
+          "value": "\n                engine_displacement_cc IS NULL\n                OR engine_displacement_cc > 0\n            "
+        },
+        "vehicle_variants_cylinders_check": {
+          "name": "vehicle_variants_cylinders_check",
+          "value": "\n                cylinders IS NULL\n                OR cylinders > 0\n            "
+        },
+        "vehicle_variants_horsepower_check": {
+          "name": "vehicle_variants_horsepower_check",
+          "value": "\n                horsepower IS NULL\n                OR horsepower > 0\n            "
+        },
+        "vehicle_variants_seats_check": {
+          "name": "vehicle_variants_seats_check",
+          "value": "\n                seats IS NULL\n                OR seats > 0\n            "
+        },
+        "vehicle_variants_doors_check": {
+          "name": "vehicle_variants_doors_check",
+          "value": "\n                doors IS NULL\n                OR doors > 0\n            "
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.vehicle_engines": {
+      "name": "vehicle_engines",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(150)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(180)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "displacement_cc": {
+          "name": "displacement_cc",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cylinders": {
+          "name": "cylinders",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "horsepower": {
+          "name": "horsepower",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aliases": {
+          "name": "aliases",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "nigeria_market": {
+          "name": "nigeria_market",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_engines_model_idx": {
+          "name": "vehicle_engines_model_idx",
+          "columns": [
+            {
+              "expression": "model_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_engines_active_idx": {
+          "name": "vehicle_engines_active_idx",
+          "columns": [
+            {
+              "expression": "model_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_engines_market_idx": {
+          "name": "vehicle_engines_market_idx",
+          "columns": [
+            {
+              "expression": "model_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "nigeria_market",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_engines_model_id_vehicle_models_id_fk": {
+          "name": "vehicle_engines_model_id_vehicle_models_id_fk",
+          "tableFrom": "vehicle_engines",
+          "tableTo": "vehicle_models",
+          "columnsFrom": [
+            "model_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_engines_model_name_unique": {
+          "name": "vehicle_engines_model_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "model_id",
+            "name"
+          ]
+        },
+        "vehicle_engines_model_slug_unique": {
+          "name": "vehicle_engines_model_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "model_id",
+            "slug"
+          ]
+        },
+        "vehicle_engines_id_model_unique": {
+          "name": "vehicle_engines_id_model_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "model_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "vehicle_engines_displacement_check": {
+          "name": "vehicle_engines_displacement_check",
+          "value": "\n                displacement_cc IS NULL\n                OR displacement_cc > 0\n            "
+        },
+        "vehicle_engines_cylinders_check": {
+          "name": "vehicle_engines_cylinders_check",
+          "value": "\n                cylinders IS NULL\n                OR cylinders > 0\n            "
+        },
+        "vehicle_engines_horsepower_check": {
+          "name": "vehicle_engines_horsepower_check",
+          "value": "\n                horsepower IS NULL\n                OR horsepower > 0\n            "
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.vehicle_model_years": {
+      "name": "vehicle_model_years",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "generation_id": {
+          "name": "generation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nigeria_market": {
+          "name": "nigeria_market",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_model_years_generation_idx": {
+          "name": "vehicle_model_years_generation_idx",
+          "columns": [
+            {
+              "expression": "generation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_model_years_lookup_idx": {
+          "name": "vehicle_model_years_lookup_idx",
+          "columns": [
+            {
+              "expression": "generation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_model_years_market_idx": {
+          "name": "vehicle_model_years_market_idx",
+          "columns": [
+            {
+              "expression": "nigeria_market",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_model_years_generation_id_vehicle_generations_id_fk": {
+          "name": "vehicle_model_years_generation_id_vehicle_generations_id_fk",
+          "tableFrom": "vehicle_model_years",
+          "tableTo": "vehicle_generations",
+          "columnsFrom": [
+            "generation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_model_years_generation_year_unique": {
+          "name": "vehicle_model_years_generation_year_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "generation_id",
+            "year"
+          ]
+        },
+        "vehicle_model_years_id_generation_year_unique": {
+          "name": "vehicle_model_years_id_generation_year_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "generation_id",
+            "year"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "vehicle_model_years_year_check": {
+          "name": "vehicle_model_years_year_check",
+          "value": "\n                year >= 1886\n                AND year <= 2100\n            "
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.vehicle_model_year_variants": {
+      "name": "vehicle_model_year_variants",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "model_year_id": {
+          "name": "model_year_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "variant_id": {
+          "name": "variant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "generation_id": {
+          "name": "generation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_model_year_variants_model_year_idx": {
+          "name": "vehicle_model_year_variants_model_year_idx",
+          "columns": [
+            {
+              "expression": "model_year_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_model_year_variants_variant_idx": {
+          "name": "vehicle_model_year_variants_variant_idx",
+          "columns": [
+            {
+              "expression": "variant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_model_year_variants_generation_year_idx": {
+          "name": "vehicle_model_year_variants_generation_year_idx",
+          "columns": [
+            {
+              "expression": "generation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_model_year_variants_model_year_id_vehicle_model_years_id_fk": {
+          "name": "vehicle_model_year_variants_model_year_id_vehicle_model_years_id_fk",
+          "tableFrom": "vehicle_model_year_variants",
+          "tableTo": "vehicle_model_years",
+          "columnsFrom": [
+            "model_year_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_model_year_variants_variant_id_vehicle_variants_id_fk": {
+          "name": "vehicle_model_year_variants_variant_id_vehicle_variants_id_fk",
+          "tableFrom": "vehicle_model_year_variants",
+          "tableTo": "vehicle_variants",
+          "columnsFrom": [
+            "variant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_model_year_variants_generation_id_vehicle_generations_id_fk": {
+          "name": "vehicle_model_year_variants_generation_id_vehicle_generations_id_fk",
+          "tableFrom": "vehicle_model_year_variants",
+          "tableTo": "vehicle_generations",
+          "columnsFrom": [
+            "generation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_model_year_variants_year_generation_fk": {
+          "name": "vehicle_model_year_variants_year_generation_fk",
+          "tableFrom": "vehicle_model_year_variants",
+          "tableTo": "vehicle_model_years",
+          "columnsFrom": [
+            "model_year_id",
+            "generation_id",
+            "year"
+          ],
+          "columnsTo": [
+            "id",
+            "generation_id",
+            "year"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_model_year_variants_variant_generation_year_fk": {
+          "name": "vehicle_model_year_variants_variant_generation_year_fk",
+          "tableFrom": "vehicle_model_year_variants",
+          "tableTo": "vehicle_variants",
+          "columnsFrom": [
+            "variant_id",
+            "generation_id",
+            "year"
+          ],
+          "columnsTo": [
+            "id",
+            "generation_id",
+            "year"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_model_year_variants_year_variant_unique": {
+          "name": "vehicle_model_year_variants_year_variant_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "model_year_id",
+            "variant_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_engine_markets": {
+      "name": "vehicle_engine_markets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "engine_id": {
+          "name": "engine_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_id": {
+          "name": "market_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_engine_markets_engine_idx": {
+          "name": "vehicle_engine_markets_engine_idx",
+          "columns": [
+            {
+              "expression": "engine_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_engine_markets_market_idx": {
+          "name": "vehicle_engine_markets_market_idx",
+          "columns": [
+            {
+              "expression": "market_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_engine_markets_engine_id_vehicle_engines_id_fk": {
+          "name": "vehicle_engine_markets_engine_id_vehicle_engines_id_fk",
+          "tableFrom": "vehicle_engine_markets",
+          "tableTo": "vehicle_engines",
+          "columnsFrom": [
+            "engine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_engine_markets_market_id_vehicle_markets_id_fk": {
+          "name": "vehicle_engine_markets_market_id_vehicle_markets_id_fk",
+          "tableFrom": "vehicle_engine_markets",
+          "tableTo": "vehicle_markets",
+          "columnsFrom": [
+            "market_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_engine_markets_unique": {
+          "name": "vehicle_engine_markets_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "engine_id",
+            "market_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_generation_markets": {
+      "name": "vehicle_generation_markets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "generation_id": {
+          "name": "generation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_id": {
+          "name": "market_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_generation_markets_generation_idx": {
+          "name": "vehicle_generation_markets_generation_idx",
+          "columns": [
+            {
+              "expression": "generation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_generation_markets_market_idx": {
+          "name": "vehicle_generation_markets_market_idx",
+          "columns": [
+            {
+              "expression": "market_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_generation_markets_generation_id_vehicle_generations_id_fk": {
+          "name": "vehicle_generation_markets_generation_id_vehicle_generations_id_fk",
+          "tableFrom": "vehicle_generation_markets",
+          "tableTo": "vehicle_generations",
+          "columnsFrom": [
+            "generation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_generation_markets_market_id_vehicle_markets_id_fk": {
+          "name": "vehicle_generation_markets_market_id_vehicle_markets_id_fk",
+          "tableFrom": "vehicle_generation_markets",
+          "tableTo": "vehicle_markets",
+          "columnsFrom": [
+            "market_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_generation_markets_unique": {
+          "name": "vehicle_generation_markets_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "generation_id",
+            "market_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_make_markets": {
+      "name": "vehicle_make_markets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "make_id": {
+          "name": "make_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_id": {
+          "name": "market_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_make_markets_make_idx": {
+          "name": "vehicle_make_markets_make_idx",
+          "columns": [
+            {
+              "expression": "make_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_make_markets_market_idx": {
+          "name": "vehicle_make_markets_market_idx",
+          "columns": [
+            {
+              "expression": "market_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_make_markets_make_id_vehicle_makes_id_fk": {
+          "name": "vehicle_make_markets_make_id_vehicle_makes_id_fk",
+          "tableFrom": "vehicle_make_markets",
+          "tableTo": "vehicle_makes",
+          "columnsFrom": [
+            "make_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_make_markets_market_id_vehicle_markets_id_fk": {
+          "name": "vehicle_make_markets_market_id_vehicle_markets_id_fk",
+          "tableFrom": "vehicle_make_markets",
+          "tableTo": "vehicle_markets",
+          "columnsFrom": [
+            "market_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_make_markets_unique": {
+          "name": "vehicle_make_markets_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "make_id",
+            "market_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_markets": {
+      "name": "vehicle_markets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "country_code": {
+          "name": "country_code",
+          "type": "varchar(2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency_code": {
+          "name": "currency_code",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_markets_active_idx": {
+          "name": "vehicle_markets_active_idx",
+          "columns": [
+            {
+              "expression": "active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_markets_country_code_idx": {
+          "name": "vehicle_markets_country_code_idx",
+          "columns": [
+            {
+              "expression": "country_code",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_markets_country_code_unique": {
+          "name": "vehicle_markets_country_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "country_code"
+          ]
+        },
+        "vehicle_markets_name_unique": {
+          "name": "vehicle_markets_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_model_markets": {
+      "name": "vehicle_model_markets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_id": {
+          "name": "market_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_model_markets_model_idx": {
+          "name": "vehicle_model_markets_model_idx",
+          "columns": [
+            {
+              "expression": "model_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_model_markets_market_idx": {
+          "name": "vehicle_model_markets_market_idx",
+          "columns": [
+            {
+              "expression": "market_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_model_markets_model_id_vehicle_models_id_fk": {
+          "name": "vehicle_model_markets_model_id_vehicle_models_id_fk",
+          "tableFrom": "vehicle_model_markets",
+          "tableTo": "vehicle_models",
+          "columnsFrom": [
+            "model_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_model_markets_market_id_vehicle_markets_id_fk": {
+          "name": "vehicle_model_markets_market_id_vehicle_markets_id_fk",
+          "tableFrom": "vehicle_model_markets",
+          "tableTo": "vehicle_markets",
+          "columnsFrom": [
+            "market_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_model_markets_unique": {
+          "name": "vehicle_model_markets_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "model_id",
+            "market_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_model_year_markets": {
+      "name": "vehicle_model_year_markets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "model_year_id": {
+          "name": "model_year_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_id": {
+          "name": "market_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_model_year_markets_model_year_idx": {
+          "name": "vehicle_model_year_markets_model_year_idx",
+          "columns": [
+            {
+              "expression": "model_year_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_model_year_markets_market_idx": {
+          "name": "vehicle_model_year_markets_market_idx",
+          "columns": [
+            {
+              "expression": "market_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_model_year_markets_model_year_id_vehicle_model_years_id_fk": {
+          "name": "vehicle_model_year_markets_model_year_id_vehicle_model_years_id_fk",
+          "tableFrom": "vehicle_model_year_markets",
+          "tableTo": "vehicle_model_years",
+          "columnsFrom": [
+            "model_year_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_model_year_markets_market_id_vehicle_markets_id_fk": {
+          "name": "vehicle_model_year_markets_market_id_vehicle_markets_id_fk",
+          "tableFrom": "vehicle_model_year_markets",
+          "tableTo": "vehicle_markets",
+          "columnsFrom": [
+            "market_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_model_year_markets_unique": {
+          "name": "vehicle_model_year_markets_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "model_year_id",
+            "market_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_variant_markets": {
+      "name": "vehicle_variant_markets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "variant_id": {
+          "name": "variant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_id": {
+          "name": "market_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_variant_markets_variant_idx": {
+          "name": "vehicle_variant_markets_variant_idx",
+          "columns": [
+            {
+              "expression": "variant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_variant_markets_market_idx": {
+          "name": "vehicle_variant_markets_market_idx",
+          "columns": [
+            {
+              "expression": "market_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_variant_markets_variant_id_vehicle_variants_id_fk": {
+          "name": "vehicle_variant_markets_variant_id_vehicle_variants_id_fk",
+          "tableFrom": "vehicle_variant_markets",
+          "tableTo": "vehicle_variants",
+          "columnsFrom": [
+            "variant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "vehicle_variant_markets_market_id_vehicle_markets_id_fk": {
+          "name": "vehicle_variant_markets_market_id_vehicle_markets_id_fk",
+          "tableFrom": "vehicle_variant_markets",
+          "tableTo": "vehicle_markets",
+          "columnsFrom": [
+            "market_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_variant_markets_unique": {
+          "name": "vehicle_variant_markets_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "variant_id",
+            "market_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_data_source_links": {
+      "name": "vehicle_data_source_links",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "source_id": {
+          "name": "source_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_type": {
+          "name": "entity_type",
+          "type": "vehicle_catalog_entity_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_id": {
+          "name": "entity_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "verification_status": {
+          "name": "verification_status",
+          "type": "vehicle_catalog_verification_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "accessed_at": {
+          "name": "accessed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verified_at": {
+          "name": "verified_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verification_notes": {
+          "name": "verification_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_data_source_entity_idx": {
+          "name": "vehicle_data_source_entity_idx",
+          "columns": [
+            {
+              "expression": "entity_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "entity_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_data_source_status_idx": {
+          "name": "vehicle_data_source_status_idx",
+          "columns": [
+            {
+              "expression": "verification_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_data_source_source_idx": {
+          "name": "vehicle_data_source_source_idx",
+          "columns": [
+            {
+              "expression": "source_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_data_source_links_source_id_vehicle_data_sources_id_fk": {
+          "name": "vehicle_data_source_links_source_id_vehicle_data_sources_id_fk",
+          "tableFrom": "vehicle_data_source_links",
+          "tableTo": "vehicle_data_sources",
+          "columnsFrom": [
+            "source_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_data_source_entity_unique": {
+          "name": "vehicle_data_source_entity_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "source_id",
+            "entity_type",
+            "entity_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_data_sources": {
+      "name": "vehicle_data_sources",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_type": {
+          "name": "source_type",
+          "type": "vehicle_catalog_source_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "license_name": {
+          "name": "license_name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "license_url": {
+          "name": "license_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attribution_required": {
+          "name": "attribution_required",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "attribution_text": {
+          "name": "attribution_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reuse_notes": {
+          "name": "reuse_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_data_sources_type_idx": {
+          "name": "vehicle_data_sources_type_idx",
+          "columns": [
+            {
+              "expression": "source_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vehicle_data_sources_active_idx": {
+          "name": "vehicle_data_sources_active_idx",
+          "columns": [
+            {
+              "expression": "active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_data_sources_name_url_unique": {
+          "name": "vehicle_data_sources_name_url_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name",
+            "url"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_engine_specifications": {
+      "name": "vehicle_engine_specifications",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "engine_id": {
+          "name": "engine_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "engine_code": {
+          "name": "engine_code",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "configuration": {
+          "name": "configuration",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cylinder_layout": {
+          "name": "cylinder_layout",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "valves": {
+          "name": "valves",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "valves_per_cylinder": {
+          "name": "valves_per_cylinder",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "valve_train": {
+          "name": "valve_train",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aspiration": {
+          "name": "aspiration",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fuel_system": {
+          "name": "fuel_system",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "power_kw": {
+          "name": "power_kw",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "power_rpm": {
+          "name": "power_rpm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "torque_nm": {
+          "name": "torque_nm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "torque_rpm": {
+          "name": "torque_rpm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "compression_ratio": {
+          "name": "compression_ratio",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bore_mm": {
+          "name": "bore_mm",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stroke_mm": {
+          "name": "stroke_mm",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hybrid_system": {
+          "name": "hybrid_system",
+          "type": "varchar(150)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "motor_power_kw": {
+          "name": "motor_power_kw",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "battery_capacity_kwh": {
+          "name": "battery_capacity_kwh",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "electric_range_km": {
+          "name": "electric_range_km",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "additional_specifications": {
+          "name": "additional_specifications",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_engine_specs_engine_idx": {
+          "name": "vehicle_engine_specs_engine_idx",
+          "columns": [
+            {
+              "expression": "engine_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_engine_specifications_engine_id_vehicle_engines_id_fk": {
+          "name": "vehicle_engine_specifications_engine_id_vehicle_engines_id_fk",
+          "tableFrom": "vehicle_engine_specifications",
+          "tableTo": "vehicle_engines",
+          "columnsFrom": [
+            "engine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_engine_specifications_engine_id_unique": {
+          "name": "vehicle_engine_specifications_engine_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "engine_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "vehicle_engine_specs_power_check": {
+          "name": "vehicle_engine_specs_power_check",
+          "value": "\n                power_kw IS NULL OR power_kw > 0\n            "
+        },
+        "vehicle_engine_specs_torque_check": {
+          "name": "vehicle_engine_specs_torque_check",
+          "value": "\n                torque_nm IS NULL OR torque_nm > 0\n            "
+        },
+        "vehicle_engine_specs_valves_check": {
+          "name": "vehicle_engine_specs_valves_check",
+          "value": "\n                valves IS NULL OR valves > 0\n            "
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.vehicle_variant_specifications": {
+      "name": "vehicle_variant_specifications",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "variant_id": {
+          "name": "variant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "top_speed_kph": {
+          "name": "top_speed_kph",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acceleration_0_to_100_seconds": {
+          "name": "acceleration_0_to_100_seconds",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fuel_consumption_city_l100km": {
+          "name": "fuel_consumption_city_l100km",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fuel_consumption_highway_l100km": {
+          "name": "fuel_consumption_highway_l100km",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fuel_consumption_combined_l100km": {
+          "name": "fuel_consumption_combined_l100km",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "battery_capacity_kwh": {
+          "name": "battery_capacity_kwh",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "electric_range_km": {
+          "name": "electric_range_km",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "charging_power_kw": {
+          "name": "charging_power_kw",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "curb_weight_kg": {
+          "name": "curb_weight_kg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gross_weight_kg": {
+          "name": "gross_weight_kg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "towing_capacity_kg": {
+          "name": "towing_capacity_kg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "length_mm": {
+          "name": "length_mm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "width_mm": {
+          "name": "width_mm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "height_mm": {
+          "name": "height_mm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wheelbase_mm": {
+          "name": "wheelbase_mm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ground_clearance_mm": {
+          "name": "ground_clearance_mm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fuel_tank_capacity_litres": {
+          "name": "fuel_tank_capacity_litres",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cargo_capacity_litres": {
+          "name": "cargo_capacity_litres",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tyre_sizes": {
+          "name": "tyre_sizes",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "equipment": {
+          "name": "equipment",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "additional_specifications": {
+          "name": "additional_specifications",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "vehicle_variant_specs_variant_idx": {
+          "name": "vehicle_variant_specs_variant_idx",
+          "columns": [
+            {
+              "expression": "variant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehicle_variant_specifications_variant_id_vehicle_variants_id_fk": {
+          "name": "vehicle_variant_specifications_variant_id_vehicle_variants_id_fk",
+          "tableFrom": "vehicle_variant_specifications",
+          "tableTo": "vehicle_variants",
+          "columnsFrom": [
+            "variant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_variant_specifications_variant_id_unique": {
+          "name": "vehicle_variant_specifications_variant_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "variant_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "vehicle_variant_specs_dimensions_check": {
+          "name": "vehicle_variant_specs_dimensions_check",
+          "value": "\n                (length_mm IS NULL OR length_mm > 0)\n                AND (width_mm IS NULL OR width_mm > 0)\n                AND (height_mm IS NULL OR height_mm > 0)\n                AND (wheelbase_mm IS NULL OR wheelbase_mm > 0)\n            "
+        },
+        "vehicle_variant_specs_weight_check": {
+          "name": "vehicle_variant_specs_weight_check",
+          "value": "\n                (curb_weight_kg IS NULL OR curb_weight_kg > 0)\n                AND (gross_weight_kg IS NULL OR gross_weight_kg > 0)\n            "
+        },
+        "vehicle_variant_specs_range_check": {
+          "name": "vehicle_variant_specs_range_check",
+          "value": "\n                electric_range_km IS NULL\n                OR electric_range_km >= 0\n            "
+        }
+      },
       "isRLSEnabled": false
     },
     "public.listings": {
@@ -1129,7 +3825,7 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'USED'"
+          "default": "'NIGERIAN_USED'"
         },
         "country": {
           "name": "country",
@@ -1436,6 +4132,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'PENDING'"
+        },
+        "image_check_source": {
+          "name": "image_check_source",
+          "type": "image_check_source",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
         },
         "similarity_score": {
           "name": "similarity_score",
@@ -3182,6 +5885,18 @@
           "primaryKey": false,
           "notNull": false
         },
+        "reviewed_by_user_id": {
+          "name": "reviewed_by_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_at": {
+          "name": "reviewed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -3228,6 +5943,19 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        },
+        "dealer_applications_reviewed_by_user_id_users_id_fk": {
+          "name": "dealer_applications_reviewed_by_user_id_users_id_fk",
+          "tableFrom": "dealer_applications",
+          "tableTo": "users",
+          "columnsFrom": [
+            "reviewed_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -3265,6 +5993,32 @@
           "primaryKey": false,
           "notNull": true
         },
+        "status": {
+          "name": "status",
+          "type": "dealer_document_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "rejection_reason": {
+          "name": "rejection_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_by_user_id": {
+          "name": "reviewed_by_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_at": {
+          "name": "reviewed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -3286,6 +6040,19 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "dealer_documents_reviewed_by_user_id_users_id_fk": {
+          "name": "dealer_documents_reviewed_by_user_id_users_id_fk",
+          "tableFrom": "dealer_documents",
+          "tableTo": "users",
+          "columnsFrom": [
+            "reviewed_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -3328,6 +6095,36 @@
         "verified_at": {
           "name": "verified_at",
           "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bio": {
+          "name": "bio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_picture_url": {
+          "name": "profile_picture_url",
+          "type": "varchar(2048)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_picture_public_id": {
+          "name": "profile_picture_public_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cover_photo_url": {
+          "name": "cover_photo_url",
+          "type": "varchar(2048)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cover_photo_public_id": {
+          "name": "cover_photo_public_id",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
         },
@@ -3735,6 +6532,44 @@
           "notNull": true,
           "default": "'BUYER_SELLER'"
         },
+        "subject": {
+          "name": "subject",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "requester_id": {
+          "name": "requester_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assigned_to": {
+          "name": "assigned_to",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "support_ticket_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'OPEN'"
+        },
+        "resolved_at": {
+          "name": "resolved_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "closed_at": {
+          "name": "closed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -3750,8 +6585,105 @@
           "default": "now()"
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
+      "indexes": {
+        "conversations_type_status_updated_at_idx": {
+          "name": "conversations_type_status_updated_at_idx",
+          "columns": [
+            {
+              "expression": "type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "conversations_requester_created_at_idx": {
+          "name": "conversations_requester_created_at_idx",
+          "columns": [
+            {
+              "expression": "requester_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "conversations_assigned_to_status_idx": {
+          "name": "conversations_assigned_to_status_idx",
+          "columns": [
+            {
+              "expression": "assigned_to",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "conversations_requester_id_users_id_fk": {
+          "name": "conversations_requester_id_users_id_fk",
+          "tableFrom": "conversations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "requester_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "conversations_assigned_to_users_id_fk": {
+          "name": "conversations_assigned_to_users_id_fk",
+          "tableFrom": "conversations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "assigned_to"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -4167,6 +7099,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "idempotency_key": {
+          "name": "idempotency_key",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "read": {
           "name": "read",
           "type": "boolean",
@@ -4188,7 +7126,23 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "notifications_idempotency_key_unique": {
+          "name": "notifications_idempotency_key_unique",
+          "columns": [
+            {
+              "expression": "idempotency_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "notifications_user_id_users_id_fk": {
           "name": "notifications_user_id_users_id_fk",
@@ -4206,6 +7160,326 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.notification_delivery_jobs": {
+      "name": "notification_delivery_jobs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "notification_channel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idempotency_key": {
+          "name": "idempotency_key",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payload": {
+          "name": "payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "notification_delivery_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "max_attempts": {
+          "name": "max_attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 5
+        },
+        "available_at": {
+          "name": "available_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "locked_at": {
+          "name": "locked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "worker_id": {
+          "name": "worker_id",
+          "type": "varchar(150)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "processed_at": {
+          "name": "processed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_error": {
+          "name": "last_error",
+          "type": "varchar(2000)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "notification_delivery_jobs_idempotency_idx": {
+          "name": "notification_delivery_jobs_idempotency_idx",
+          "columns": [
+            {
+              "expression": "idempotency_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "notification_delivery_jobs_pending_idx": {
+          "name": "notification_delivery_jobs_pending_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "available_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "notification_delivery_jobs_user_channel_idx": {
+          "name": "notification_delivery_jobs_user_channel_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "channel",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "notification_delivery_jobs_processing_idx": {
+          "name": "notification_delivery_jobs_processing_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "locked_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "notification_delivery_jobs_user_id_users_id_fk": {
+          "name": "notification_delivery_jobs_user_id_users_id_fk",
+          "tableFrom": "notification_delivery_jobs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.push_subscriptions": {
+      "name": "push_subscriptions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "endpoint": {
+          "name": "endpoint",
+          "type": "varchar(2000)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "keys": {
+          "name": "keys",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "device_name": {
+          "name": "device_name",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "push_subscriptions_user_idx": {
+          "name": "push_subscriptions_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "push_subscriptions_user_id_users_id_fk": {
+          "name": "push_subscriptions_user_id_users_id_fk",
+          "tableFrom": "push_subscriptions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "push_subscriptions_endpoint_unique": {
+          "name": "push_subscriptions_endpoint_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "endpoint"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -5518,121 +8792,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.push_subscriptions": {
-      "name": "push_subscriptions",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "endpoint": {
-          "name": "endpoint",
-          "type": "varchar(2000)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "keys": {
-          "name": "keys",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_agent": {
-          "name": "user_agent",
-          "type": "varchar(500)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "device_name": {
-          "name": "device_name",
-          "type": "varchar(120)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "active": {
-          "name": "active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "push_subscriptions_user_idx": {
-          "name": "push_subscriptions_user_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "active",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "push_subscriptions_user_id_users_id_fk": {
-          "name": "push_subscriptions_user_id_users_id_fk",
-          "tableFrom": "push_subscriptions",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "push_subscriptions_endpoint_unique": {
-          "name": "push_subscriptions_endpoint_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "endpoint"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.listing_reviews": {
       "name": "listing_reviews",
       "schema": "",
@@ -5891,6 +9050,211 @@
           "value": "\n                \"jobs\".\"attempts\" >= 0\n                AND\n                \"jobs\".\"max_attempts\" > 0\n                AND\n                \"jobs\".\"attempts\" <= \"jobs\".\"max_attempts\"\n            "
         }
       },
+      "isRLSEnabled": false
+    },
+    "public.admin_security_challenges": {
+      "name": "admin_security_challenges",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "current_stage": {
+          "name": "current_stage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "failed_attempts": {
+          "name": "failed_attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'IN_PROGRESS'"
+        },
+        "challenge_version": {
+          "name": "challenge_version",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'v1'"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consumed_at": {
+          "name": "consumed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "failed_at": {
+          "name": "failed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ip_address": {
+          "name": "ip_address",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "admin_security_challenges_status_expiry_idx": {
+          "name": "admin_security_challenges_status_expiry_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "admin_security_challenges_user_created_idx": {
+          "name": "admin_security_challenges_user_created_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "admin_security_challenges_expiry_idx": {
+          "name": "admin_security_challenges_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "admin_security_challenges_token_hash_unique_idx": {
+          "name": "admin_security_challenges_token_hash_unique_idx",
+          "columns": [
+            {
+              "expression": "token_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "admin_security_challenges_user_id_users_id_fk": {
+          "name": "admin_security_challenges_user_id_users_id_fk",
+          "tableFrom": "admin_security_challenges",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "admin_security_challenges_token_hash_unique": {
+          "name": "admin_security_challenges_token_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token_hash"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
       "isRLSEnabled": false
     },
     "public.auth_login_throttles": {
@@ -6164,640 +9528,6 @@
       },
       "policies": {},
       "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.user_privacy_settings": {
-      "name": "user_privacy_settings",
-      "schema": "",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "show_phone": {
-          "name": "show_phone",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "show_email": {
-          "name": "show_email",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "allow_direct_messages": {
-          "name": "allow_direct_messages",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        },
-        "show_online_status": {
-          "name": "show_online_status",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        },
-        "allow_marketing_emails": {
-          "name": "allow_marketing_emails",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        },
-        "allow_marketing_sms": {
-          "name": "allow_marketing_sms",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_privacy_settings_user_id_users_id_fk": {
-          "name": "user_privacy_settings_user_id_users_id_fk",
-          "tableFrom": "user_privacy_settings",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.vehicle_variants": {
-      "name": "vehicle_variants",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "generation_id": {
-          "name": "generation_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "engine_id": {
-          "name": "engine_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "year": {
-          "name": "year",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(200)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "slug": {
-          "name": "slug",
-          "type": "varchar(220)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "engine_name": {
-          "name": "engine_name",
-          "type": "varchar(150)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "engine_displacement_cc": {
-          "name": "engine_displacement_cc",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "cylinders": {
-          "name": "cylinders",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "horsepower": {
-          "name": "horsepower",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "fuel_type": {
-          "name": "fuel_type",
-          "type": "vehicle_fuel_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "transmission": {
-          "name": "transmission",
-          "type": "vehicle_transmission",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "drive_type": {
-          "name": "drive_type",
-          "type": "vehicle_drive_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "body_style": {
-          "name": "body_style",
-          "type": "vehicle_body_style",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "seats": {
-          "name": "seats",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "doors": {
-          "name": "doors",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "aliases": {
-          "name": "aliases",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'[]'::jsonb"
-        },
-        "nigeria_market": {
-          "name": "nigeria_market",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        },
-        "active": {
-          "name": "active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "vehicle_variants_generation_idx": {
-          "name": "vehicle_variants_generation_idx",
-          "columns": [
-            {
-              "expression": "generation_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "vehicle_variants_engine_idx": {
-          "name": "vehicle_variants_engine_idx",
-          "columns": [
-            {
-              "expression": "engine_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "vehicle_variants_year_idx": {
-          "name": "vehicle_variants_year_idx",
-          "columns": [
-            {
-              "expression": "year",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "vehicle_variants_active_idx": {
-          "name": "vehicle_variants_active_idx",
-          "columns": [
-            {
-              "expression": "generation_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "active",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "vehicle_variants_market_idx": {
-          "name": "vehicle_variants_market_idx",
-          "columns": [
-            {
-              "expression": "nigeria_market",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "active",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "vehicle_variants_fuel_idx": {
-          "name": "vehicle_variants_fuel_idx",
-          "columns": [
-            {
-              "expression": "fuel_type",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "vehicle_variants_transmission_idx": {
-          "name": "vehicle_variants_transmission_idx",
-          "columns": [
-            {
-              "expression": "transmission",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "vehicle_variants_body_idx": {
-          "name": "vehicle_variants_body_idx",
-          "columns": [
-            {
-              "expression": "body_style",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "vehicle_variants_generation_id_vehicle_generations_id_fk": {
-          "name": "vehicle_variants_generation_id_vehicle_generations_id_fk",
-          "tableFrom": "vehicle_variants",
-          "tableTo": "vehicle_generations",
-          "columnsFrom": [
-            "generation_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        },
-        "vehicle_variants_engine_id_vehicle_engines_id_fk": {
-          "name": "vehicle_variants_engine_id_vehicle_engines_id_fk",
-          "tableFrom": "vehicle_variants",
-          "tableTo": "vehicle_engines",
-          "columnsFrom": [
-            "engine_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "vehicle_variants_generation_year_slug_unique": {
-          "name": "vehicle_variants_generation_year_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "generation_id",
-            "year",
-            "slug"
-          ]
-        },
-        "vehicle_variants_generation_year_name_unique": {
-          "name": "vehicle_variants_generation_year_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "generation_id",
-            "year",
-            "name"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {
-        "vehicle_variants_year_check": {
-          "name": "vehicle_variants_year_check",
-          "value": "\n                    year >= 1886\n                    AND year <= 2100\n                "
-        },
-        "vehicle_variants_engine_displacement_check": {
-          "name": "vehicle_variants_engine_displacement_check",
-          "value": "\n                    engine_displacement_cc IS NULL\n                    OR engine_displacement_cc > 0\n                "
-        },
-        "vehicle_variants_cylinders_check": {
-          "name": "vehicle_variants_cylinders_check",
-          "value": "\n                    cylinders IS NULL\n                    OR cylinders > 0\n                "
-        },
-        "vehicle_variants_horsepower_check": {
-          "name": "vehicle_variants_horsepower_check",
-          "value": "\n                    horsepower IS NULL\n                    OR horsepower > 0\n                "
-        },
-        "vehicle_variants_seats_check": {
-          "name": "vehicle_variants_seats_check",
-          "value": "\n                    seats IS NULL\n                    OR seats > 0\n                "
-        },
-        "vehicle_variants_doors_check": {
-          "name": "vehicle_variants_doors_check",
-          "value": "\n                    doors IS NULL\n                    OR doors > 0\n                "
-        }
-      },
-      "isRLSEnabled": false
-    },
-    "public.vehicle_engines": {
-      "name": "vehicle_engines",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "model_id": {
-          "name": "model_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(150)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "slug": {
-          "name": "slug",
-          "type": "varchar(180)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "displacement_cc": {
-          "name": "displacement_cc",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "cylinders": {
-          "name": "cylinders",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "horsepower": {
-          "name": "horsepower",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "aliases": {
-          "name": "aliases",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'[]'::jsonb"
-        },
-        "nigeria_market": {
-          "name": "nigeria_market",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        },
-        "active": {
-          "name": "active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "vehicle_engines_model_idx": {
-          "name": "vehicle_engines_model_idx",
-          "columns": [
-            {
-              "expression": "model_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "vehicle_engines_active_idx": {
-          "name": "vehicle_engines_active_idx",
-          "columns": [
-            {
-              "expression": "model_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "active",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "vehicle_engines_market_idx": {
-          "name": "vehicle_engines_market_idx",
-          "columns": [
-            {
-              "expression": "model_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "nigeria_market",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "active",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "vehicle_engines_model_id_vehicle_models_id_fk": {
-          "name": "vehicle_engines_model_id_vehicle_models_id_fk",
-          "tableFrom": "vehicle_engines",
-          "tableTo": "vehicle_models",
-          "columnsFrom": [
-            "model_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "vehicle_engines_model_name_unique": {
-          "name": "vehicle_engines_model_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "model_id",
-            "name"
-          ]
-        },
-        "vehicle_engines_model_slug_unique": {
-          "name": "vehicle_engines_model_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "model_id",
-            "slug"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {
-        "vehicle_engines_displacement_check": {
-          "name": "vehicle_engines_displacement_check",
-          "value": "\n                    displacement_cc IS NULL\n                    OR displacement_cc > 0\n                "
-        },
-        "vehicle_engines_cylinders_check": {
-          "name": "vehicle_engines_cylinders_check",
-          "value": "\n                    cylinders IS NULL\n                    OR cylinders > 0\n                "
-        },
-        "vehicle_engines_horsepower_check": {
-          "name": "vehicle_engines_horsepower_check",
-          "value": "\n                    horsepower IS NULL\n                    OR horsepower > 0\n                "
-        }
-      },
       "isRLSEnabled": false
     },
     "public.image_analysis_jobs": {
@@ -7389,6 +10119,174 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.image_review_decisions": {
+      "name": "image_review_decisions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "listing_image_id": {
+          "name": "listing_image_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "listing_id": {
+          "name": "listing_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reviewer_id": {
+          "name": "reviewer_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decision": {
+          "name": "decision",
+          "type": "image_review_decision",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "image_review_decisions_image_idx": {
+          "name": "image_review_decisions_image_idx",
+          "columns": [
+            {
+              "expression": "listing_image_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "image_review_decisions_listing_idx": {
+          "name": "image_review_decisions_listing_idx",
+          "columns": [
+            {
+              "expression": "listing_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "image_review_decisions_reviewer_idx": {
+          "name": "image_review_decisions_reviewer_idx",
+          "columns": [
+            {
+              "expression": "reviewer_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "image_review_decisions_listing_image_id_listing_images_id_fk": {
+          "name": "image_review_decisions_listing_image_id_listing_images_id_fk",
+          "tableFrom": "image_review_decisions",
+          "tableTo": "listing_images",
+          "columnsFrom": [
+            "listing_image_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "image_review_decisions_listing_id_listings_id_fk": {
+          "name": "image_review_decisions_listing_id_listings_id_fk",
+          "tableFrom": "image_review_decisions",
+          "tableTo": "listings",
+          "columnsFrom": [
+            "listing_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "image_review_decisions_reviewer_id_users_id_fk": {
+          "name": "image_review_decisions_reviewer_id_users_id_fk",
+          "tableFrom": "image_review_decisions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "reviewer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.listing_credit_ledger": {
       "name": "listing_credit_ledger",
       "schema": "",
@@ -7626,6 +10524,172 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.idempotency_records": {
+      "name": "idempotency_records",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "operation": {
+          "name": "operation",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payload_hash": {
+          "name": "payload_hash",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "listing_id": {
+          "name": "listing_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "response_status": {
+          "name": "response_status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 201
+        },
+        "response_body": {
+          "name": "response_body",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idempotency_records_owner_operation_key_unique": {
+          "name": "idempotency_records_owner_operation_key_unique",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "operation",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idempotency_records_expires_at_idx": {
+          "name": "idempotency_records_expires_at_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idempotency_records_listing_id_idx": {
+          "name": "idempotency_records_listing_id_idx",
+          "columns": [
+            {
+              "expression": "listing_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "idempotency_records_user_id_users_id_fk": {
+          "name": "idempotency_records_user_id_users_id_fk",
+          "tableFrom": "idempotency_records",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "idempotency_records_listing_id_listings_id_fk": {
+          "name": "idempotency_records_listing_id_listings_id_fk",
+          "tableFrom": "idempotency_records",
+          "tableTo": "listings",
+          "columnsFrom": [
+            "listing_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "idempotency_records_key_length_check": {
+          "name": "idempotency_records_key_length_check",
+          "value": "length(trim(\"idempotency_records\".\"key\")) > 0"
+        }
+      },
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -7646,12 +10710,97 @@
         "DELETED"
       ]
     },
+    "public.vehicle_body_style": {
+      "name": "vehicle_body_style",
+      "schema": "public",
+      "values": [
+        "SEDAN",
+        "SUV",
+        "COUPE",
+        "HATCHBACK",
+        "WAGON",
+        "MPV",
+        "PICKUP",
+        "VAN",
+        "CONVERTIBLE",
+        "TRUCK",
+        "BUS"
+      ]
+    },
+    "public.vehicle_drive_type": {
+      "name": "vehicle_drive_type",
+      "schema": "public",
+      "values": [
+        "FWD",
+        "RWD",
+        "AWD",
+        "FOUR_WD"
+      ]
+    },
+    "public.vehicle_fuel_type": {
+      "name": "vehicle_fuel_type",
+      "schema": "public",
+      "values": [
+        "PETROL",
+        "DIESEL",
+        "HYBRID",
+        "PLUG_IN_HYBRID",
+        "ELECTRIC",
+        "CNG",
+        "LPG"
+      ]
+    },
+    "public.vehicle_transmission": {
+      "name": "vehicle_transmission",
+      "schema": "public",
+      "values": [
+        "MANUAL",
+        "AUTOMATIC",
+        "CVT",
+        "DCT",
+        "AMT"
+      ]
+    },
+    "public.vehicle_catalog_entity_type": {
+      "name": "vehicle_catalog_entity_type",
+      "schema": "public",
+      "values": [
+        "MAKE",
+        "MODEL",
+        "GENERATION",
+        "ENGINE",
+        "VARIANT",
+        "MODEL_YEAR"
+      ]
+    },
+    "public.vehicle_catalog_source_type": {
+      "name": "vehicle_catalog_source_type",
+      "schema": "public",
+      "values": [
+        "MANUFACTURER",
+        "GOVERNMENT",
+        "TECHNICAL_DOCUMENT",
+        "AUTOMOTIVE_PUBLICATION",
+        "OTHER"
+      ]
+    },
+    "public.vehicle_catalog_verification_status": {
+      "name": "vehicle_catalog_verification_status",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "VERIFIED",
+        "DISPUTED",
+        "REJECTED"
+      ]
+    },
     "public.listing_condition": {
       "name": "listing_condition",
       "schema": "public",
       "values": [
-        "NEW",
-        "USED"
+        "BRAND_NEW",
+        "FOREIGN_USED",
+        "NIGERIAN_USED"
       ]
     },
     "public.listing_status": {
@@ -7666,6 +10815,14 @@
         "SOLD",
         "SUSPENDED",
         "DELETED"
+      ]
+    },
+    "public.image_check_source": {
+      "name": "image_check_source",
+      "schema": "public",
+      "values": [
+        "AUTOMATED",
+        "ADMIN"
       ]
     },
     "public.image_check_status": {
@@ -7768,6 +10925,15 @@
         "REJECTED"
       ]
     },
+    "public.dealer_document_status": {
+      "name": "dealer_document_status",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "APPROVED",
+        "REJECTED"
+      ]
+    },
     "public.boost_status": {
       "name": "boost_status",
       "schema": "public",
@@ -7788,6 +10954,16 @@
         "SUPPORT"
       ]
     },
+    "public.support_ticket_status": {
+      "name": "support_ticket_status",
+      "schema": "public",
+      "values": [
+        "OPEN",
+        "IN_PROGRESS",
+        "RESOLVED",
+        "CLOSED"
+      ]
+    },
     "public.notification_type": {
       "name": "notification_type",
       "schema": "public",
@@ -7801,13 +10977,36 @@
         "SUBSCRIPTION_PAYMENT_PENDING",
         "SUBSCRIPTION_ACTIVATED",
         "SUBSCRIPTION_EXPIRED",
+        "SUBSCRIPTION_EXPIRY_REMINDER",
         "BOOST_PAYMENT_PENDING",
         "BOOST_PAYMENT_SUCCESSFUL",
+        "BOOST_PAYMENT_RECEIVED",
         "BOOST_ACTIVATED",
+        "BOOST_EXPIRY_REMINDER",
         "BOOST_EXPIRED",
         "MESSAGE_RECEIVED",
         "DEALER_VERIFIED",
         "DEALER_APPLICATION_REJECTED"
+      ]
+    },
+    "public.notification_channel": {
+      "name": "notification_channel",
+      "schema": "public",
+      "values": [
+        "IN_APP",
+        "SOCKET",
+        "EMAIL",
+        "PUSH"
+      ]
+    },
+    "public.notification_delivery_status": {
+      "name": "notification_delivery_status",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "PROCESSING",
+        "SUCCEEDED",
+        "FAILED"
       ]
     },
     "public.payment_purpose": {
@@ -7902,57 +11101,6 @@
         "LIFECYCLE"
       ]
     },
-    "public.vehicle_body_style": {
-      "name": "vehicle_body_style",
-      "schema": "public",
-      "values": [
-        "SEDAN",
-        "SUV",
-        "COUPE",
-        "HATCHBACK",
-        "WAGON",
-        "MPV",
-        "PICKUP",
-        "VAN",
-        "CONVERTIBLE",
-        "TRUCK",
-        "BUS"
-      ]
-    },
-    "public.vehicle_drive_type": {
-      "name": "vehicle_drive_type",
-      "schema": "public",
-      "values": [
-        "FWD",
-        "RWD",
-        "AWD",
-        "FOUR_WD"
-      ]
-    },
-    "public.vehicle_fuel_type": {
-      "name": "vehicle_fuel_type",
-      "schema": "public",
-      "values": [
-        "PETROL",
-        "DIESEL",
-        "HYBRID",
-        "PLUG_IN_HYBRID",
-        "ELECTRIC",
-        "CNG",
-        "LPG"
-      ]
-    },
-    "public.vehicle_transmission": {
-      "name": "vehicle_transmission",
-      "schema": "public",
-      "values": [
-        "MANUAL",
-        "AUTOMATIC",
-        "CVT",
-        "DCT",
-        "AMT"
-      ]
-    },
     "public.image_analysis_job_status": {
       "name": "image_analysis_job_status",
       "schema": "public",
@@ -7994,6 +11142,15 @@
         "COMPLETED",
         "FAILED",
         "CANCELLED"
+      ]
+    },
+    "public.image_review_decision": {
+      "name": "image_review_decision",
+      "schema": "public",
+      "values": [
+        "APPROVED",
+        "REJECTED",
+        "NEEDS_REVIEW"
       ]
     }
   },

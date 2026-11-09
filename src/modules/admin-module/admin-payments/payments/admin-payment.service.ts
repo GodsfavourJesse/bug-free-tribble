@@ -20,12 +20,10 @@ import { AppError } from "../../../../errors/app-error.ts";
 import { writeAudit } from "../../admin.service.ts";
 
 const PAYMENT_STATUSES = [
-    "PENDING",
+    "STARTED",
     "SUCCESS",
     "FAILED",
     "ABANDONED",
-    "REVERSED",
-    "PROCESSING",
 ] as const;
 
 type PaymentStatus = typeof PAYMENT_STATUSES[number];

@@ -5,6 +5,7 @@ import {
     desc,
     eq,
     or,
+    sql,
     type SQL,
 } from "drizzle-orm";
 
@@ -326,57 +327,61 @@ export async function getAdminImageReview(
                 expiresAt: listings.expiresAt,
                 createdAt: listings.createdAt,
                 updatedAt: listings.updatedAt,
+                makeName: listings.makeName,
+                modelName: listings.modelName,
+                year: listings.year,
+                generationName: listings.generationName,
+                variantName: listings.variantName,
+                bodyStyle: listings.bodyStyle,
+                fuelType: listings.fuelType,
+                transmission: listings.transmission,
+                driveType: listings.driveType,
+                engineCapacity: listings.engineCapacity,
+                horsepower: listings.horsepower,
+                exteriorColor: listings.exteriorColor,
+                interiorColor: listings.interiorColor,
+                seats: listings.seats,
+                doors: listings.doors,
+                specifications: listings.specifications,
             },
 
             vehicle: {
                 variantId: vehicleVariants.id,
-                year: vehicleVariants.year,
-                variantName: vehicleVariants.name,
+                year: sql<number | null>`COALESCE(${listings.year}, ${vehicleVariants.year})`,
+                variantName: sql<string | null>`COALESCE(${listings.variantName}, ${vehicleVariants.name})`,
 
-                fuelType:
-                    vehicleVariants.fuelType,
+                fuelType: sql<string | null>`COALESCE(${listings.fuelType}, ${vehicleVariants.fuelType})`,
 
-                transmission:
-                    vehicleVariants.transmission,
+                transmission: sql<string | null>`COALESCE(${listings.transmission}, ${vehicleVariants.transmission})`,
 
-                driveType:
-                    vehicleVariants.driveType,
+                driveType: sql<string | null>`COALESCE(${listings.driveType}, ${vehicleVariants.driveType})`,
 
-                bodyStyle:
-                    vehicleVariants.bodyStyle,
+                bodyStyle: sql<string | null>`COALESCE(${listings.bodyStyle}, ${vehicleVariants.bodyStyle})`,
 
-                seats:
-                    vehicleVariants.seats,
+                seats: sql<number | null>`COALESCE(${listings.seats}, ${vehicleVariants.seats})`,
 
-                doors:
-                    vehicleVariants.doors,
+                doors: sql<number | null>`COALESCE(${listings.doors}, ${vehicleVariants.doors})`,
 
-                engineName:
-                    vehicleVariants.engineName,
+                engineName: listings.engineCapacity,
 
-                engineDisplacementCc:
-                    vehicleVariants.engineDisplacementCc,
+                engineDisplacementCc: sql<number | null>`NULL`,
 
-                horsepower:
-                    vehicleVariants.horsepower,
+                horsepower: sql<number | null>`COALESCE(${listings.horsepower}, ${vehicleVariants.horsepower})`,
 
                 generationId:
                     vehicleGenerations.id,
 
-                generationName:
-                    vehicleGenerations.name,
+                generationName: sql<string | null>`COALESCE(${listings.generationName}, ${vehicleGenerations.name})`,
 
                 modelId:
                     vehicleModels.id,
 
-                modelName:
-                    vehicleModels.name,
+                modelName: sql<string | null>`COALESCE(${listings.modelName}, ${vehicleModels.name})`,
 
                 makeId:
                     vehicleMakes.id,
 
-                makeName:
-                    vehicleMakes.name,
+                makeName: sql<string | null>`COALESCE(${listings.makeName}, ${vehicleMakes.name})`,
             },
 
             seller: {
@@ -400,28 +405,28 @@ export async function getAdminImageReview(
                 users.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleVariants,
             eq(
                 listings.vehicleVariantId,
                 vehicleVariants.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
                 vehicleGenerations.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleModels,
             eq(
                 vehicleGenerations.modelId,
                 vehicleModels.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleMakes,
             eq(
                 vehicleModels.makeId,

@@ -184,34 +184,37 @@ export async function getDealerAnalytics(
             createdAt: listings.createdAt,
             expiresAt: listings.expiresAt,
 
-            variantName: vehicleVariants.name,
-            generationName: vehicleGenerations.name,
-            modelName: vehicleModels.name,
-            makeName: vehicleMakes.name,
+            // Prefer the listing snapshot so manual listings are
+            // represented even when no catalogue variant is linked.
+            variantName: sql<string | null>`COALESCE(${listings.variantName}, ${vehicleVariants.name})`,
+            generationName: sql<string | null>`COALESCE(${listings.generationName}, ${vehicleGenerations.name})`,
+            modelName: sql<string>`COALESCE(${listings.modelName}, ${vehicleModels.name})`,
+            makeName: sql<string>`COALESCE(${listings.makeName}, ${vehicleMakes.name})`,
+            year: sql<number | null>`COALESCE(${listings.year}, ${vehicleVariants.year})`,
         })
         .from(listings)
-        .innerJoin(
+        .leftJoin(
             vehicleVariants,
             eq(
                 listings.vehicleVariantId,
                 vehicleVariants.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
                 vehicleGenerations.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleModels,
             eq(
                 vehicleGenerations.modelId,
                 vehicleModels.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleMakes,
             eq(
                 vehicleModels.makeId,

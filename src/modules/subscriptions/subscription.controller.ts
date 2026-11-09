@@ -4,8 +4,8 @@ import type {
 } from "express";
 
 import {
-    getActiveSubscription,
     getCreditBalance,
+    getCurrentSubscription,
     getSubscriptionPlanPrice,
 } from "./subscription.service.ts";
 
@@ -16,6 +16,7 @@ import {
 } from "../../database/schema/index.ts";
 
 import { eq } from "drizzle-orm";
+import { AppError } from "../../errors/app-error.ts";
 
 export async function plans(
     _request: Request,
@@ -58,7 +59,7 @@ export async function current(
         subscription,
         creditBalance,
     ] = await Promise.all([
-        getActiveSubscription(user.id),
+        getCurrentSubscription(user.id),
         getCreditBalance(user.id),
     ]);
 
@@ -114,12 +115,24 @@ export async function price(
             },
         });
     } catch (error) {
-        response.status(404).json({
+        if (error instanceof AppError) {
+            response.status(error.statusCode).json({
+                success: false,
+                message: error.message,
+                code: error.code,
+            });
+
+            return;
+        }
+
+        console.error(
+            "Get subscription price error:",
+            error,
+        );
+
+        response.status(500).json({
             success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : "Subscription plan not found.",
+            message: "Unable to retrieve subscription pricing.",
         });
     }
 }

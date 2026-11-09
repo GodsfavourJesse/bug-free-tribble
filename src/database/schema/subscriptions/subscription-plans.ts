@@ -154,6 +154,16 @@ export const subscriptionPlanVersions =
             )
                 .notNull(),
 
+            normalUserDiscountPercent: numeric(
+                "normal_user_discount_percent",
+                {
+                    precision: 5,
+                    scale: 2,
+                },
+            )
+                .notNull()
+                .default("0.00"),
+
             dealerDiscountPercent: numeric(
                 "dealer_discount_percent",
                 {
@@ -228,9 +238,19 @@ export const subscriptionPlanVersions =
                     sql`${table.listingCredits} > 0`,
                 ),
 
+            normalUserDiscountValidCheck:
+                check(
+                    "subscription_plan_versions_normal_user_discount_valid",
+                    sql`
+                        ${table.normalUserDiscountPercent} >= 0
+                        AND
+                        ${table.normalUserDiscountPercent} <= 100
+                    `,
+                ),
+
             dealerDiscountValidCheck:
                 check(
-                    "subscription_plan_versions_discount_valid",
+                    "subscription_plan_versions_dealer_discount_valid",
                     sql`
                         ${table.dealerDiscountPercent} >= 0
                         AND

@@ -17,8 +17,7 @@ import {
 } from "../payment.service.ts";
 
 const RECONCILABLE_STATUSES = [
-    "PENDING",
-    "PROCESSING",
+    "STARTED",
 ] as const;
 
 const DEFAULT_BATCH_SIZE = 20;
@@ -167,8 +166,7 @@ export async function reconcilePendingPayments(
 
             if (
                 currentPayment.status === "FAILED" ||
-                currentPayment.status === "ABANDONED" ||
-                currentPayment.status === "REVERSED"
+                currentPayment.status === "ABANDONED"
             ) {
                 result.failed += 1;
                 continue;

@@ -88,6 +88,11 @@ function sendError(
         return;
     }
 
+    console.error(
+        "[ADMIN SUBSCRIPTION ERROR]",
+        error,
+    );
+
     response.status(500).json({
         success: false,
         message: fallback,
@@ -144,23 +149,24 @@ export async function subscriptionsList(
 }
 
 export async function plans(
-    _request: Request,
+    request: Request,
     response: Response,
 ): Promise<void> {
     try {
         const result = await listPlans();
 
-        response.json({
+        response.status(200).json({
             success: true,
             data: {
                 plans: result,
             },
         });
-    } catch {
-        response.status(500).json({
-            success: false,
-            message: "Unable to retrieve subscription plans.",
-        });
+    } catch (error) {
+        sendError(
+            response,
+            error,
+            "Unable to retrieve subscription plans.",
+        );
     }
 }
 
@@ -178,6 +184,8 @@ export async function createSubscriptionPlan(
             {
                 ...input,
                 price: input.price.toFixed(2),
+                normalUserDiscountPercent:
+                    input.normalUserDiscountPercent,
             },
             getActorId(request),
             getAuditMetadata(request),
@@ -248,6 +256,12 @@ export async function updateSubscriptionPlan(
                 : {}),
             ...(input.listingCredits !== undefined
                 ? { listingCredits: input.listingCredits }
+                : {}),
+            ...(input.normalUserDiscountPercent !== undefined
+                ? {
+                    normalUserDiscountPercent:
+                        input.normalUserDiscountPercent,
+                }
                 : {}),
             ...(input.dealerDiscountPercent !== undefined
                 ? {

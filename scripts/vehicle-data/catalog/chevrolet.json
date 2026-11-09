@@ -1,0 +1,1113 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Chevrolet",
+    "slug": "chevrolet",
+    "models": [
+      {
+        "name": "Cruze",
+        "slug": "cruze",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2011,
+            "endYear": 2016,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.8L Ecotec",
+                "slug": "1-8l-ecotec",
+                "displacementCc": 1796,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "1.8 LS",
+                "slug": "1-8-ls",
+                "year": 2011,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LT",
+                "slug": "1-8-lt",
+                "year": 2011,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LS",
+                "slug": "1-8-ls",
+                "year": 2012,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LT",
+                "slug": "1-8-lt",
+                "year": 2012,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LS",
+                "slug": "1-8-ls",
+                "year": 2013,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LT",
+                "slug": "1-8-lt",
+                "year": 2013,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LS",
+                "slug": "1-8-ls",
+                "year": 2014,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LT",
+                "slug": "1-8-lt",
+                "year": 2014,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LS",
+                "slug": "1-8-ls",
+                "year": 2015,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LT",
+                "slug": "1-8-lt",
+                "year": 2015,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LS",
+                "slug": "1-8-ls",
+                "year": 2016,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.8 LT",
+                "slug": "1-8-lt",
+                "year": 2016,
+                "engineSlug": "1-8l-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "Second Generation",
+            "slug": "second-generation",
+            "startYear": 2016,
+            "endYear": 2019,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.4L Turbo Ecotec",
+                "slug": "1-4l-turbo-ecotec",
+                "displacementCc": 1399,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "1.4T LT",
+                "slug": "1-4t-lt",
+                "year": 2016,
+                "engineSlug": "1-4l-turbo-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.4T Premier",
+                "slug": "1-4t-premier",
+                "year": 2016,
+                "engineSlug": "1-4l-turbo-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.4T LT",
+                "slug": "1-4t-lt",
+                "year": 2017,
+                "engineSlug": "1-4l-turbo-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.4T Premier",
+                "slug": "1-4t-premier",
+                "year": 2017,
+                "engineSlug": "1-4l-turbo-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.4T LT",
+                "slug": "1-4t-lt",
+                "year": 2018,
+                "engineSlug": "1-4l-turbo-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.4T Premier",
+                "slug": "1-4t-premier",
+                "year": 2018,
+                "engineSlug": "1-4l-turbo-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.4T LT",
+                "slug": "1-4t-lt",
+                "year": 2019,
+                "engineSlug": "1-4l-turbo-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.4T Premier",
+                "slug": "1-4t-premier",
+                "year": 2019,
+                "engineSlug": "1-4l-turbo-ecotec",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Equinox",
+        "slug": "equinox",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "Third Generation",
+            "slug": "third-generation",
+            "startYear": 2018,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.5L Turbo",
+                "slug": "1-5l-turbo",
+                "displacementCc": 1490,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "1.5L LS",
+                "slug": "1-5l-ls",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LS",
+                "slug": "1-5l-ls",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LS",
+                "slug": "1-5l-ls",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LS",
+                "slug": "1-5l-ls",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LS",
+                "slug": "1-5l-ls",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LS",
+                "slug": "1-5l-ls",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LS",
+                "slug": "1-5l-ls",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Malibu",
+        "slug": "malibu",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "Ninth Generation",
+            "slug": "ninth-generation",
+            "startYear": 2016,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.5L Turbo",
+                "slug": "1-5l-turbo",
+                "displacementCc": 1490,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "1.5L L",
+                "slug": "1-5l-l",
+                "year": 2016,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2016,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L L",
+                "slug": "1-5l-l",
+                "year": 2017,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2017,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L L",
+                "slug": "1-5l-l",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L L",
+                "slug": "1-5l-l",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L L",
+                "slug": "1-5l-l",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L L",
+                "slug": "1-5l-l",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L L",
+                "slug": "1-5l-l",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L L",
+                "slug": "1-5l-l",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L L",
+                "slug": "1-5l-l",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.5L LT",
+                "slug": "1-5l-lt",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

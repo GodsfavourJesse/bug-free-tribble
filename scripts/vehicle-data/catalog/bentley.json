@@ -1,0 +1,1034 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Bentley",
+    "slug": "bentley",
+    "sources": [],
+    "models": [
+      {
+        "name": "Continental GT",
+        "slug": "continental-gt",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "Second Generation",
+            "slug": "second-generation",
+            "startYear": 2011,
+            "endYear": 2018,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "4.0L Twin-Turbo V8",
+                "slug": "4-0l-twin-turbo-v8",
+                "displacementCc": 3993,
+                "cylinders": 8,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2011,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT Speed",
+                "slug": "gt-speed",
+                "year": 2012,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W12",
+                "slug": "w12",
+                "year": 2013,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2014,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT Speed",
+                "slug": "gt-speed",
+                "year": 2015,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W12",
+                "slug": "w12",
+                "year": 2016,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2017,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "GT Speed",
+                "slug": "gt-speed",
+                "year": 2018,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "Third Generation",
+            "slug": "third-generation",
+            "startYear": 2019,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "4.0L Twin-Turbo V8",
+                "slug": "4-0l-twin-turbo-v8",
+                "displacementCc": 3996,
+                "cylinders": 8,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2019,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Azure",
+                "slug": "azure",
+                "year": 2020,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Speed",
+                "slug": "speed",
+                "year": 2021,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2022,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Azure",
+                "slug": "azure",
+                "year": 2023,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Speed",
+                "slug": "speed",
+                "year": 2024,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2025,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Azure",
+                "slug": "azure",
+                "year": 2026,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "COUPE",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Flying Spur",
+        "slug": "flying-spur",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "Second Generation",
+            "slug": "second-generation",
+            "startYear": 2014,
+            "endYear": 2019,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "4.0L Twin-Turbo V8",
+                "slug": "4-0l-twin-turbo-v8",
+                "displacementCc": 3993,
+                "cylinders": 8,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2014,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W12",
+                "slug": "w12",
+                "year": 2015,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2016,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W12",
+                "slug": "w12",
+                "year": 2017,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2018,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W12",
+                "slug": "w12",
+                "year": 2019,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "Third Generation",
+            "slug": "third-generation",
+            "startYear": 2020,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "4.0L Twin-Turbo V8",
+                "slug": "4-0l-twin-turbo-v8",
+                "displacementCc": 3996,
+                "cylinders": 8,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2020,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Azure",
+                "slug": "azure",
+                "year": 2021,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Speed",
+                "slug": "speed",
+                "year": 2022,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2023,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Azure",
+                "slug": "azure",
+                "year": 2024,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Speed",
+                "slug": "speed",
+                "year": 2025,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2026,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "RWD",
+                "bodyStyle": "SEDAN",
+                "seats": 4,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Bentayga",
+        "slug": "bentayga",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2016,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "4.0L Twin-Turbo V8",
+                "slug": "4-0l-twin-turbo-v8",
+                "displacementCc": 3996,
+                "cylinders": 8,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2016,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2017,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Azure",
+                "slug": "azure",
+                "year": 2018,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Speed",
+                "slug": "speed",
+                "year": 2019,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2020,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2021,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Azure",
+                "slug": "azure",
+                "year": 2022,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Speed",
+                "slug": "speed",
+                "year": 2023,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "V8",
+                "slug": "v8",
+                "year": 2024,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2025,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Azure",
+                "slug": "azure",
+                "year": 2026,
+                "engineSlug": "4-0l-twin-turbo-v8",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 2,
+                "doors": 2,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

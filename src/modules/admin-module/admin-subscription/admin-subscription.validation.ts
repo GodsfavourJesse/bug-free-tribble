@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+const discountPercentSchema = z.coerce
+    .number()
+    .finite()
+    .min(0, "Discount cannot be below 0%.")
+    .max(100, "Discount cannot exceed 100%.");
+
 export const createSubscriptionPlanSchema = z.object({
     name: z.string().trim().min(2).max(100),
 
@@ -24,12 +30,9 @@ export const createSubscriptionPlanSchema = z.object({
         .int()
         .positive(),
 
-    dealerDiscountPercent: z.coerce
-        .number()
-        .finite()
-        .min(0)
-        .max(100),
+    normalUserDiscountPercent: discountPercentSchema.default(0),
 
+    dealerDiscountPercent: discountPercentSchema,
 });
 
 export const updateSubscriptionPlanSchema = z.object({
@@ -61,12 +64,9 @@ export const updateSubscriptionPlanSchema = z.object({
         .positive()
         .optional(),
 
-    dealerDiscountPercent: z.coerce
-        .number()
-        .finite()
-        .min(0)
-        .max(100)
-        .optional(),
+    normalUserDiscountPercent: discountPercentSchema.optional(),
+
+    dealerDiscountPercent: discountPercentSchema.optional(),
 
     active: z
         .union([
@@ -87,15 +87,12 @@ export const updateSubscriptionPlanSchema = z.object({
             );
         })
         .optional(),
-
 });
 
 export type CreateSubscriptionPlanInput = z.infer<
-typeof createSubscriptionPlanSchema
-
-> ;
+    typeof createSubscriptionPlanSchema
+>;
 
 export type UpdateSubscriptionPlanInput = z.infer<
-typeof updateSubscriptionPlanSchema
-
-> ;
+    typeof updateSubscriptionPlanSchema
+>;

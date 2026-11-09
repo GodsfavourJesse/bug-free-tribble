@@ -1,0 +1,1820 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Mini",
+    "slug": "mini",
+    "models": [
+      {
+        "name": "Cooper",
+        "slug": "cooper",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "R56",
+            "slug": "r56",
+            "startYear": 2006,
+            "endYear": 2013,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.6L Petrol",
+                "slug": "1-6l-petrol",
+                "displacementCc": 1598,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2006,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2007,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2008,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2009,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "One",
+                "slug": "one",
+                "year": 2006,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2006,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "One",
+                "slug": "one",
+                "year": 2007,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2007,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "One",
+                "slug": "one",
+                "year": 2008,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2008,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "One",
+                "slug": "one",
+                "year": 2009,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2009,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "One",
+                "slug": "one",
+                "year": 2010,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2010,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "One",
+                "slug": "one",
+                "year": 2011,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2011,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "One",
+                "slug": "one",
+                "year": 2012,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2012,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "One",
+                "slug": "one",
+                "year": 2013,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2013,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "F56",
+            "slug": "f56",
+            "startYear": 2014,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.5L Turbo",
+                "slug": "1-5l-turbo",
+                "displacementCc": 1499,
+                "cylinders": 3,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2014,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2014,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2015,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2015,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2016,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2016,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2017,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2017,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "HATCHBACK",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Countryman",
+        "slug": "countryman",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "R60",
+            "slug": "r60",
+            "startYear": 2010,
+            "endYear": 2016,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.6L Turbo",
+                "slug": "1-6l-turbo",
+                "displacementCc": 1598,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2010,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2010,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2011,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2011,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2012,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2012,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2013,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2013,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2014,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2014,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2015,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2015,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2016,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2016,
+                "engineSlug": "1-6l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "F60",
+            "slug": "f60",
+            "startYear": 2017,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.5L Turbo",
+                "slug": "1-5l-turbo",
+                "displacementCc": 1499,
+                "cylinders": 3,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2017,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2017,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Clubman",
+        "slug": "clubman",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "F54",
+            "slug": "f54",
+            "startYear": 2015,
+            "endYear": 2024,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.5L Turbo",
+                "slug": "1-5l-turbo",
+                "displacementCc": 1499,
+                "cylinders": 3,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2015,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2015,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2016,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2016,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2017,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2017,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2018,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2019,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2020,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2021,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2022,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2023,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper",
+                "slug": "cooper",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Cooper S",
+                "slug": "cooper-s",
+                "year": 2024,
+                "engineSlug": "1-5l-turbo",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "WAGON",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

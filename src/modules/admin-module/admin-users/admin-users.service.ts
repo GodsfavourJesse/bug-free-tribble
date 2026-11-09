@@ -20,6 +20,8 @@ import {
     subscriptions,
     payments,
     dealerApplications,
+    subscriptionPlans,
+    subscriptionPlanVersions,
 } from "../../../database/schema/index.ts";
 
 import {
@@ -29,6 +31,7 @@ import {
 import type {
     AdminUsersQuery,
 } from "./admin-users.validation.ts";
+import { getCreditBreakdown } from "../../credits/credit.service.ts";
 
 const ADMIN_ROLE_NAMES = [
     "SUPER_ADMIN",
@@ -273,7 +276,8 @@ async function attachAdminRoles<
 }
 
 /**
- * Retrieves one account by ID.
+ * Retrieves one account by ID, including listing credits,
+ * subscription history, payments and related information.
  */
 export async function getAdminUserById(
     userId: string,
@@ -281,9 +285,7 @@ export async function getAdminUserById(
     const rows = await db
         .select(safeUserSelection)
         .from(users)
-        .where(
-            eq(users.id, userId),
-        )
+        .where(eq(users.id, userId))
         .limit(1);
 
     const user = rows[0];
@@ -305,64 +307,113 @@ export async function getAdminUserById(
         recentSubscriptions,
         recentPayments,
         dealerApplicationsForUser,
+        creditBreakdown,
     ] = await Promise.all([
-        db.select({
-            id: listings.id,
-            title: listings.title,
-            status: listings.status,
-            price: listings.price,
-            currency: listings.currency,
-            createdAt: listings.createdAt,
-        })
+        db
+            .select({
+                id: listings.id,
+                title: listings.title,
+                status: listings.status,
+                price: listings.price,
+                currency: listings.currency,
+                createdAt: listings.createdAt,
+            })
             .from(listings)
             .where(eq(listings.sellerId, userId))
             .orderBy(desc(listings.createdAt))
             .limit(10),
 
-        db.select({
-            id: subscriptions.id,
-            status: subscriptions.status,
-            effectivePrice: subscriptions.effectivePrice,
-            currency: subscriptions.currency,
-            startsAt: subscriptions.startsAt,
-            expiresAt: subscriptions.expiresAt,
-            createdAt: subscriptions.createdAt,
-        })
-            .from(subscriptions)
-            .where(eq(subscriptions.userId, userId))
-            .orderBy(desc(subscriptions.createdAt))
-            .limit(10),
+        db
+            .select({
+                id: subscriptions.id,
 
-        db.select({
-            id: payments.id,
-            reference: payments.reference,
-            purpose: payments.purpose,
-            status: payments.status,
-            amount: payments.amount,
-            currency: payments.currency,
-            paidAt: payments.paidAt,
-            createdAt: payments.createdAt,
-        })
+                planId: subscriptions.planId,
+                planVersionId: subscriptions.planVersionId,
+
+                planName: subscriptionPlans.name,
+                planVersion: subscriptionPlanVersions.version,
+
+                status: subscriptions.status,
+
+                originalPrice: subscriptions.originalPrice,
+                dealerDiscountPercent: subscriptions.dealerDiscountPercent,
+                effectivePrice: subscriptions.effectivePrice,
+                currency: subscriptions.currency,
+
+                durationDays: subscriptions.durationDays,
+
+                listingCredits: subscriptions.listingCredits,
+
+                startsAt: subscriptions.startsAt,
+                expiresAt: subscriptions.expiresAt,
+                cancelledAt: subscriptions.cancelledAt,
+                cancellationReason: subscriptions.cancellationReason,
+
+                previousSubscriptionId: subscriptions.previousSubscriptionId,
+
+                createdAt: subscriptions.createdAt,
+                updatedAt: subscriptions.updatedAt,
+            })
+            .from(subscriptions)
+            .leftJoin(
+                subscriptionPlans,
+                eq(
+                    subscriptions.planId,
+                    subscriptionPlans.id,
+                ),
+            )
+            .leftJoin(
+                subscriptionPlanVersions,
+                eq(
+                    subscriptions.planVersionId,
+                    subscriptionPlanVersions.id,
+                ),
+            )
+            .where(
+                eq(subscriptions.userId, userId),
+            )
+            .orderBy(
+                desc(subscriptions.createdAt),
+            )
+            .limit(20),
+
+        db
+            .select({
+                id: payments.id,
+                reference: payments.reference,
+                purpose: payments.purpose,
+                status: payments.status,
+                amount: payments.amount,
+                currency: payments.currency,
+                paidAt: payments.paidAt,
+                createdAt: payments.createdAt,
+            })
             .from(payments)
             .where(eq(payments.userId, userId))
             .orderBy(desc(payments.createdAt))
             .limit(10),
 
-        db.select({
-            id: dealerApplications.id,
-            companyName: dealerApplications.companyName,
-            status: dealerApplications.status,
-            createdAt: dealerApplications.createdAt,
-            reviewedAt: dealerApplications.reviewedAt,
-        })
+        db
+            .select({
+                id: dealerApplications.id,
+                companyName: dealerApplications.companyName,
+                status: dealerApplications.status,
+                createdAt: dealerApplications.createdAt,
+                reviewedAt: dealerApplications.reviewedAt,
+            })
             .from(dealerApplications)
             .where(eq(dealerApplications.userId, userId))
             .orderBy(desc(dealerApplications.createdAt))
             .limit(10),
+
+        getCreditBreakdown(userId),
     ]);
 
     return {
         ...usersWithRoles[0]!,
+
+        credits: creditBreakdown,
+
         related: {
             recentListings,
             recentSubscriptions,

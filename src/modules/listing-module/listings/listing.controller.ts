@@ -57,14 +57,14 @@ function getRequiredParam(
 function removeUndefined<T extends Record<string, unknown>>(
     input: T,
 ): {
-    [K in keyof T]?: Exclude<T[K], undefined>;
+    [K in keyof T]: Exclude<T[K], undefined>;
 } {
     return Object.fromEntries(
         Object.entries(input).filter(
             ([, value]) => value !== undefined,
         ),
     ) as {
-        [K in keyof T]?: Exclude<T[K], undefined>;
+        [K in keyof T]: Exclude<T[K], undefined>;
     };
 }
 
@@ -141,34 +141,28 @@ export async function create(
             request.body,
         );
 
+        // Zod's inferred optional properties may explicitly include
+        // `undefined`. Remove those keys before passing the payload to
+        // CreateListingInput, which uses exact optional property types.
+        const cleanInput = removeUndefined(input);
+
         const result = await createListing(
             {
+                ...cleanInput,
                 sellerId: request.user.id,
-                vehicleVariantId: input.vehicleVariantId,
-                title: input.title,
-                description: input.description,
-                price: input.price,
-                currency: input.currency,
-                condition: input.condition,
-                country: input.country,
-                ...(input.mileage !== undefined
-                    ? { mileage: input.mileage }
-                    : {}),
-                ...(input.state !== undefined
-                    ? { state: input.state }
-                    : {}),
-                ...(input.city !== undefined
-                    ? { city: input.city }
-                    : {}),
             },
             idempotencyKey,
         );
 
-        response.status(result.replayed ? 200 : 201).json({
+        response.status(
+            result.replayed ? 200 : 201,
+        ).json({
             success: true,
             data: {
                 listing: result.listing,
                 replayed: result.replayed,
+                creditConsumption:
+                    result.creditConsumption,
             },
         });
     } catch (error) {

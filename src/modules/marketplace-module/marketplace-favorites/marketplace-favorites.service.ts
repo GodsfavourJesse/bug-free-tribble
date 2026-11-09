@@ -32,10 +32,10 @@ export interface FavoriteListResult {
     favorites: Array<{
         favorite: typeof listingFavorites.$inferSelect;
         listing: typeof listings.$inferSelect;
-        make: typeof vehicleMakes.$inferSelect;
-        model: typeof vehicleModels.$inferSelect;
-        generation: typeof vehicleGenerations.$inferSelect;
-        variant: typeof vehicleVariants.$inferSelect;
+        make: typeof vehicleMakes.$inferSelect | null;
+        model: typeof vehicleModels.$inferSelect | null;
+        generation: typeof vehicleGenerations.$inferSelect | null;
+        variant: typeof vehicleVariants.$inferSelect | null;
     }>;
     pagination: FavoritePagination;
 }
@@ -45,6 +45,9 @@ export interface FavoriteListResult {
  *
  * Only approved, currently available listings can be added.
  * ON CONFLICT DO NOTHING makes the operation idempotent.
+ *
+ * Catalogue relationships are optional, so manual listings
+ * can also be added to favorites.
  */
 export async function addFavorite(
     userId: string,
@@ -163,6 +166,9 @@ export async function isFavorite(
  * Expired, rejected, suspended, sold, or otherwise unavailable
  * listings are excluded from the returned list. Their favorite
  * records are not deleted automatically.
+ *
+ * Catalogue relationships are optional. Manual listings are
+ * returned using their listing snapshot fields.
  */
 export async function listFavorites(
     userId: string,
@@ -229,28 +235,28 @@ export async function listFavorites(
                 listings.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleVariants,
             eq(
                 listings.vehicleVariantId,
                 vehicleVariants.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
                 vehicleGenerations.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleModels,
             eq(
                 vehicleGenerations.modelId,
                 vehicleModels.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleMakes,
             eq(
                 vehicleModels.makeId,

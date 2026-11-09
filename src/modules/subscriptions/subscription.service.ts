@@ -4,7 +4,7 @@ import {
     eq,
     gt,
     isNull,
-    lt,
+    lte,
     or,
     sql,
 } from "drizzle-orm";
@@ -62,14 +62,31 @@ interface SubscriptionPrice {
     planVersionId: string;
     planName: string;
     version: number;
+
     originalPrice: string;
+
+    normalUserDiscountPercent: string;
     dealerDiscountPercent: string;
+    appliedDiscountPercent: string;
+
     effectivePrice: string;
     currency: string;
     durationDays: number;
     listingCredits: number;
+
     isDealer: boolean;
 }
+
+/*
+ * ============================================================
+ * DISCOUNT ELIGIBILITY
+ * ============================================================
+ */
+
+type DiscountEligibility =
+    | "NORMAL_USER"
+    | "VERIFIED_DEALER"
+    | "UNVERIFIED_DEALER";
 
 /*
  * ============================================================
@@ -77,12 +94,15 @@ interface SubscriptionPrice {
  * ============================================================
  */
 
+/**
+ * Calculates the final subscription price after discount.
+ */
 function calculateEffectivePrice(
     originalPrice: string,
-    dealerDiscountPercent: string,
+    discountPercent: string,
 ): string {
     const original = Number(originalPrice);
-    const discount = Number(dealerDiscountPercent);
+    const discount = Number(discountPercent);
 
     if (
         !Number.isFinite(original) ||
@@ -104,6 +124,9 @@ function calculateEffectivePrice(
     return effective.toFixed(2);
 }
 
+/**
+ * Calculates the subscription expiry date.
+ */
 function calculateExpiry(
     startsAt: Date,
     durationDays: number,
@@ -117,16 +140,35 @@ function calculateExpiry(
     return expiresAt;
 }
 
-async function getUserDealerDiscountEligibility(
+/**
+ * Determines which discount category applies to a user.
+ *
+ * NORMAL_USER:
+ * - Account type is USER.
+ * - Receives normal-user discount.
+ *
+ * VERIFIED_DEALER:
+ * - Account type is DEALER.
+ * - Dealer profile is verified.
+ * - Receives dealer discount.
+ *
+ * UNVERIFIED_DEALER:
+ * - Account type is DEALER.
+ * - Dealer profile is not verified.
+ * - Receives no discount.
+ */
+async function getUserDiscountEligibility(
     executor: DatabaseExecutor,
     userId: string,
-): Promise<boolean> {
+): Promise<DiscountEligibility> {
     const result = await executor
         .select({
             accountType: users.accountType,
         })
         .from(users)
-        .where(eq(users.id, userId))
+        .where(
+            eq(users.id, userId),
+        )
         .limit(1);
 
     const user = result[0];
@@ -139,8 +181,16 @@ async function getUserDealerDiscountEligibility(
         );
     }
 
+    if (user.accountType === "USER") {
+        return "NORMAL_USER";
+    }
+
     if (user.accountType !== "DEALER") {
-        return false;
+        throw new AppError(
+            "Invalid user account type.",
+            400,
+            "INVALID_ACCOUNT_TYPE",
+        );
     }
 
     const verifiedProfile = await executor
@@ -156,9 +206,44 @@ async function getUserDealerDiscountEligibility(
         )
         .limit(1);
 
-    return verifiedProfile.length > 0;
+    return verifiedProfile.length > 0
+        ? "VERIFIED_DEALER"
+        : "UNVERIFIED_DEALER";
 }
 
+/**
+ * Returns the discount percentage that should be applied
+ * to the current user.
+ */
+function getAppliedDiscountPercent(
+    eligibility: DiscountEligibility,
+    normalUserDiscountPercent: string,
+    dealerDiscountPercent: string,
+): string {
+    switch (eligibility) {
+        case "NORMAL_USER":
+            return normalUserDiscountPercent;
+
+        case "VERIFIED_DEALER":
+            return dealerDiscountPercent;
+
+        case "UNVERIFIED_DEALER":
+            return "0.00";
+    }
+}
+
+/**
+ * Returns whether the user qualifies as a verified dealer.
+ */
+function isVerifiedDealer(
+    eligibility: DiscountEligibility,
+): boolean {
+    return eligibility === "VERIFIED_DEALER";
+}
+
+/**
+ * Gets the latest active version of a subscription plan.
+ */
 async function getLatestActivePlanVersion(
     executor: DatabaseExecutor,
     planId: string,
@@ -210,6 +295,9 @@ async function getLatestActivePlanVersion(
     return row;
 }
 
+/**
+ * Gets a user's pending subscription.
+ */
 async function getPendingSubscription(
     executor: DatabaseExecutor,
     userId: string,
@@ -228,6 +316,9 @@ async function getPendingSubscription(
     return result[0];
 }
 
+/**
+ * Gets the user's active or still-valid cancelled subscription.
+ */
 async function getActiveSubscriptionForUser(
     executor: DatabaseExecutor,
     userId: string,
@@ -250,12 +341,17 @@ async function getActiveSubscriptionForUser(
                 ),
             ),
         )
-        .orderBy(desc(subscriptions.expiresAt))
+        .orderBy(
+            desc(subscriptions.expiresAt),
+        )
         .limit(1);
 
     return result[0];
 }
 
+/**
+ * Writes a subscription history event.
+ */
 async function writeSubscriptionHistory(
     executor: DatabaseExecutor,
     input: {
@@ -314,6 +410,12 @@ async function writeSubscriptionHistory(
         .insert(subscriptionHistory)
         .values(values);
 }
+
+/*
+ * ============================================================
+ * PUBLIC HISTORY HELPER
+ * ============================================================
+ */
 
 export async function recordSubscriptionHistoryEvent(
     executor: DatabaseExecutor,
@@ -388,8 +490,6 @@ export async function addCredits(
  * CONSUME CREDIT
  * ============================================================
  *
- * This operation uses the centralized credit service.
- *
  * A reference ID is mandatory so retrying the same operation
  * cannot accidentally consume the same credit more than once.
  *
@@ -425,14 +525,22 @@ export async function consumeCredit(
  * ============================================================
  * PLAN PRICE
  * ============================================================
+ *
+ * Returns the plan price and both configured discounts.
+ *
+ * The applied discount depends on the user's eligibility:
+ *
+ * - Normal user: normalUserDiscountPercent.
+ * - Verified dealer: dealerDiscountPercent.
+ * - Unverified dealer: 0%.
  */
 
 export async function getSubscriptionPlanPrice(
     userId: string,
     planId: string,
 ): Promise<SubscriptionPrice> {
-    const isDealer =
-        await getUserDealerDiscountEligibility(
+    const eligibility =
+        await getUserDiscountEligibility(
             db,
             userId,
         );
@@ -442,13 +550,22 @@ export async function getSubscriptionPlanPrice(
         planId,
     );
 
-    const dealerDiscountPercent = isDealer
-        ? row.version.dealerDiscountPercent
-        : "0.00";
+    const normalUserDiscountPercent =
+        row.version.normalUserDiscountPercent;
+
+    const dealerDiscountPercent =
+        row.version.dealerDiscountPercent;
+
+    const appliedDiscountPercent =
+        getAppliedDiscountPercent(
+            eligibility,
+            normalUserDiscountPercent,
+            dealerDiscountPercent,
+        );
 
     const effectivePrice = calculateEffectivePrice(
         row.version.price,
-        dealerDiscountPercent,
+        appliedDiscountPercent,
     );
 
     return {
@@ -456,13 +573,19 @@ export async function getSubscriptionPlanPrice(
         planVersionId: row.version.id,
         planName: row.plan.name,
         version: row.version.version,
+
         originalPrice: row.version.price,
+
+        normalUserDiscountPercent,
         dealerDiscountPercent,
+        appliedDiscountPercent,
+
         effectivePrice,
         currency: row.version.currency,
         durationDays: row.version.durationDays,
         listingCredits: row.version.listingCredits,
-        isDealer,
+
+        isDealer: isVerifiedDealer(eligibility),
     };
 }
 
@@ -483,20 +606,20 @@ export async function createPendingSubscriptionInTransaction(
     /*
      * Serialize subscription creation for this user.
      */
-    await tx.execute(
-        sql`
-            SELECT pg_advisory_xact_lock(
-                hashtext(
-                    ${`karmass:subscription:${input.userId}`}
-                )
+    await tx.execute(sql`
+        SELECT pg_advisory_xact_lock(
+            hashtextextended(
+                ${`karmass:subscription:${input.userId}`},
+                0
             )
-        `,
-    );
+        )
+    `);
 
-    const isDealer = await getUserDealerDiscountEligibility(
-        tx,
-        input.userId,
-    );
+    const eligibility =
+        await getUserDiscountEligibility(
+            tx,
+            input.userId,
+        );
 
     const plan = await getLatestActivePlanVersion(
         tx,
@@ -543,15 +666,39 @@ export async function createPendingSubscriptionInTransaction(
         );
     }
 
-    const discount = isDealer
-        ? plan.version.dealerDiscountPercent
-        : "0.00";
+    /*
+     * Read both configured discounts from the plan version.
+     */
+    const normalUserDiscountPercent =
+        plan.version.normalUserDiscountPercent;
 
+    const dealerDiscountPercent =
+        plan.version.dealerDiscountPercent;
+
+    /*
+     * Determine which discount applies to this account.
+     */
+    const appliedDiscountPercent =
+        getAppliedDiscountPercent(
+            eligibility,
+            normalUserDiscountPercent,
+            dealerDiscountPercent,
+        );
+
+    /*
+     * Calculate the final price using the actual discount.
+     */
     const effectivePrice = calculateEffectivePrice(
         plan.version.price,
-        discount,
+        appliedDiscountPercent,
     );
 
+    /*
+     * Save a complete pricing snapshot.
+     *
+     * The configured discounts and the applied discount
+     * are stored separately.
+     */
     const inserted = await tx
         .insert(subscriptions)
         .values({
@@ -559,8 +706,13 @@ export async function createPendingSubscriptionInTransaction(
             planId: plan.plan.id,
             planVersionId: plan.version.id,
             status: "PENDING",
+
             originalPrice: plan.version.price,
-            dealerDiscountPercent: discount,
+
+            normalUserDiscountPercent,
+            dealerDiscountPercent,
+            appliedDiscountPercent,
+
             effectivePrice,
             currency: plan.version.currency,
             durationDays: plan.version.durationDays,
@@ -578,6 +730,9 @@ export async function createPendingSubscriptionInTransaction(
         );
     }
 
+    /*
+     * Record subscription creation.
+     */
     await writeSubscriptionHistory(tx, {
         subscriptionId: subscription.id,
         userId: input.userId,
@@ -585,6 +740,13 @@ export async function createPendingSubscriptionInTransaction(
         newStatus: "PENDING",
         amount: effectivePrice,
         currency: plan.version.currency,
+        metadata: JSON.stringify({
+            originalPrice: plan.version.price,
+            normalUserDiscountPercent,
+            dealerDiscountPercent,
+            appliedDiscountPercent,
+            eligibility,
+        }),
     });
 
     return subscription;
@@ -661,8 +823,17 @@ async function activateSubscriptionWithExecutor(
     paymentReference: string | undefined,
     tx: DatabaseTransaction,
 ) {
-    const result = await tx
-        .select()
+    /*
+     * Initial lookup.
+     *
+     * We need the user ID to acquire the user-level
+     * advisory lock before locking the subscription row.
+     */
+    const initialRows = await tx
+        .select({
+            id: subscriptions.id,
+            userId: subscriptions.userId,
+        })
         .from(subscriptions)
         .where(
             eq(
@@ -672,7 +843,45 @@ async function activateSubscriptionWithExecutor(
         )
         .limit(1);
 
-    const subscription = result[0];
+    const initialSubscription = initialRows[0];
+
+    if (!initialSubscription) {
+        throw new AppError(
+            "Subscription not found.",
+            404,
+            "SUBSCRIPTION_NOT_FOUND",
+        );
+    }
+
+    /*
+     * Serialize subscription activation for this user.
+     */
+    await tx.execute(sql`
+        SELECT pg_advisory_xact_lock(
+            hashtextextended(
+                ${`karmass:subscription:${initialSubscription.userId}`},
+                0
+            )
+        )
+    `);
+
+    /*
+     * Lock the subscription row after acquiring
+     * the user-level advisory lock.
+     */
+    const lockedRows = await tx
+        .select()
+        .from(subscriptions)
+        .where(
+            eq(
+                subscriptions.id,
+                subscriptionId,
+            ),
+        )
+        .for("update")
+        .limit(1);
+
+    const subscription = lockedRows[0];
 
     if (!subscription) {
         throw new AppError(
@@ -683,10 +892,32 @@ async function activateSubscriptionWithExecutor(
     }
 
     /*
-     * Preserve retry safety: an already-active subscription
-     * must not receive another credit grant.
+     * Defensive ownership check.
      */
-    if (subscription.status === "ACTIVE") {
+    if (
+        subscription.userId !==
+        initialSubscription.userId
+    ) {
+        throw new AppError(
+            "Subscription ownership changed during activation.",
+            409,
+            "SUBSCRIPTION_OWNERSHIP_MISMATCH",
+        );
+    }
+
+    /*
+     * Retry and late-payment safety.
+     *
+     * ACTIVE, CANCELLED, and EXPIRED subscriptions have
+     * already passed through activation.
+     *
+     * Never grant subscription credits again for these states.
+     */
+    if (
+        subscription.status === "ACTIVE" ||
+        subscription.status === "CANCELLED" ||
+        subscription.status === "EXPIRED"
+    ) {
         return subscription;
     }
 
@@ -699,66 +930,17 @@ async function activateSubscriptionWithExecutor(
     }
 
     /*
-     * Serialize activation for this user's subscriptions.
+     * Check whether another subscription is already active.
      */
-    await tx.execute(
-        sql`
-            SELECT pg_advisory_xact_lock(
-                hashtext(
-                    ${`karmass:subscription:${subscription.userId}`}
-                )
-            )
-        `,
-    );
-
-    /*
-     * Re-read after acquiring the lock. Another transaction
-     * may have activated this subscription while we waited.
-     */
-    const refreshedResult = await tx
-        .select()
-        .from(subscriptions)
-        .where(
-            eq(
-                subscriptions.id,
-                subscriptionId,
-            ),
-        )
-        .limit(1);
-
-    const refreshedSubscription =
-        refreshedResult[0];
-
-    if (!refreshedSubscription) {
-        throw new AppError(
-            "Subscription not found.",
-            404,
-            "SUBSCRIPTION_NOT_FOUND",
-        );
-    }
-
-    if (refreshedSubscription.status === "ACTIVE") {
-        return refreshedSubscription;
-    }
-
-    if (refreshedSubscription.status !== "PENDING") {
-        throw new AppError(
-            "Only pending subscriptions can be activated.",
-            409,
-            "SUBSCRIPTION_NOT_PENDING",
-        );
-    }
-
     const existingActive =
         await getActiveSubscriptionForUser(
             tx,
-            refreshedSubscription.userId,
+            subscription.userId,
         );
 
     if (
         existingActive &&
-        existingActive.id !==
-            refreshedSubscription.id
+        existingActive.id !== subscription.id
     ) {
         throw new AppError(
             "User already has an active subscription.",
@@ -767,14 +949,35 @@ async function activateSubscriptionWithExecutor(
         );
     }
 
+    /*
+     * Calculate the subscription activation period.
+     */
     const startsAt = new Date();
 
     const expiresAt = calculateExpiry(
         startsAt,
-        refreshedSubscription.durationDays,
+        subscription.durationDays,
     );
 
-    const updated = await tx
+    if (
+        !(expiresAt instanceof Date) ||
+        Number.isNaN(expiresAt.getTime()) ||
+        expiresAt <= startsAt
+    ) {
+        throw new AppError(
+            "Invalid subscription expiry date.",
+            500,
+            "INVALID_SUBSCRIPTION_EXPIRY",
+        );
+    }
+
+    /*
+     * Activate the subscription.
+     *
+     * The status condition provides an additional
+     * safeguard against unexpected concurrent updates.
+     */
+    const updatedRows = await tx
         .update(subscriptions)
         .set({
             status: "ACTIVE",
@@ -786,7 +989,7 @@ async function activateSubscriptionWithExecutor(
             and(
                 eq(
                     subscriptions.id,
-                    refreshedSubscription.id,
+                    subscription.id,
                 ),
                 eq(
                     subscriptions.status,
@@ -796,7 +999,7 @@ async function activateSubscriptionWithExecutor(
         )
         .returning();
 
-    const activated = updated[0];
+    const activated = updatedRows[0];
 
     if (!activated) {
         throw new AppError(
@@ -806,6 +1009,9 @@ async function activateSubscriptionWithExecutor(
         );
     }
 
+    /*
+     * Record payment success in subscription history.
+     */
     await writeSubscriptionHistory(tx, {
         subscriptionId: activated.id,
         userId: activated.userId,
@@ -819,11 +1025,21 @@ async function activateSubscriptionWithExecutor(
                   reason: "Payment confirmed.",
                   metadata: JSON.stringify({
                       paymentReference,
+                      originalPrice: activated.originalPrice,
+                      normalUserDiscountPercent:
+                          activated.normalUserDiscountPercent,
+                      dealerDiscountPercent:
+                          activated.dealerDiscountPercent,
+                      appliedDiscountPercent:
+                          activated.appliedDiscountPercent,
                   }),
               }
             : {}),
     });
 
+    /*
+     * Record subscription activation.
+     */
     await writeSubscriptionHistory(tx, {
         subscriptionId: activated.id,
         userId: activated.userId,
@@ -835,12 +1051,11 @@ async function activateSubscriptionWithExecutor(
     });
 
     /*
-     * Grant subscription credits through the centralized
-     * credit service.
+     * Grant listing credits.
      *
-     * The subscription ID is the stable reference. The unique
-     * user/reason/reference constraint makes the grant
-     * idempotent.
+     * The subscription ID is the stable reference.
+     * The credit service must enforce idempotency at
+     * the database level.
      */
     await grantCredits(
         {
@@ -852,6 +1067,9 @@ async function activateSubscriptionWithExecutor(
         tx,
     );
 
+    /*
+     * Record the credit allocation in subscription history.
+     */
     await writeSubscriptionHistory(tx, {
         subscriptionId: activated.id,
         userId: activated.userId,
@@ -1048,7 +1266,7 @@ export async function expireSubscription(
                         subscriptions.status,
                         previousStatus,
                     ),
-                    lt(
+                    lte(
                         subscriptions.expiresAt,
                         now,
                     ),

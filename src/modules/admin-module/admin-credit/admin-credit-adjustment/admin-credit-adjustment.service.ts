@@ -304,14 +304,11 @@ export async function adjustUserListingCredits(
                         listingCreditLedger,
                     )
                     .values({
-                        userId:
-                            input.targetUserId,
-                        amount:
-                            input.amount,
-                        reason:
-                            CREDIT_REASONS.ADMIN_ADJUSTMENT,
-                        referenceId:
-                            input.referenceId,
+                        userId: input.targetUserId,
+                        amount: input.amount,
+                        reason: CREDIT_REASONS.ADMIN_ADJUSTMENT,
+                        creditSource: "ADMIN_ADJUSTMENT",
+                        referenceId: input.referenceId,
                     })
                     .onConflictDoNothing({
                         target: [

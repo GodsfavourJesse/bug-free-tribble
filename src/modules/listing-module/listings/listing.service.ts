@@ -48,6 +48,7 @@ import {
     type GetListingViewer,
     type SellerListingsOptions,
     type SellerListingStatus,
+    type ListingVehicleDetails,
 } from "./listing.types.ts";
 
 import {
@@ -57,7 +58,11 @@ import {
 } from "../listing-view/listing-view.service.ts";
 import { normalizeImage } from "../../../infrastructure/storage/image-normalizer.ts";
 import { validateImage } from "../../../infrastructure/storage/image-validator.ts";
-import { consumeCreditUsingExecutor, CREDIT_REASONS } from "../../credits/credit.service.ts";
+import { 
+    consumeCreditUsingExecutor, 
+    CREDIT_REASONS,
+    type CreditConsumptionResult, 
+} from "../../credits/credit.service.ts";
 import { AppError } from "../../../errors/app-error.ts";
 import { createHash } from "node:crypto";
 import { enqueueImageAnalysisJob } from "../../image-module/image-analysis/image-analysis-job.service.ts";
@@ -70,19 +75,26 @@ const IDEMPOTENCY_KEY_TTL_HOURS = 24;
 interface CreateListingResult {
     listing: typeof listings.$inferSelect;
     replayed: boolean;
+    creditConsumption: CreditConsumptionResult | null;
 }
 
 interface IdempotencyResponseBody
- extends Record<string, unknown> {
+    extends Record<string, unknown> {
     success: true;
+
     data: {
         listing: typeof listings.$inferSelect;
+
+        /**
+         * Persisted alongside the original listing response.
+         * Optional for compatibility with older idempotency records.
+         */
+        creditConsumption?: CreditConsumptionResult;
     };
 }
 
-interface CreateListingInput {
+interface CreateListingInput extends ListingVehicleDetails {
     sellerId: string;
-    vehicleVariantId: string;
     title: string;
     description: string;
     price: number;
@@ -265,14 +277,8 @@ export async function createListing(
         );
     }
 
-    /*
-     * Build a deterministic representation of the validated input.
-     *
-     * Explicit property ordering ensures that the same logical
-     * payload produces the same hash.
-     */
     const canonicalPayload = JSON.stringify({
-        vehicleVariantId: input.vehicleVariantId,
+        ...input,
         title: input.title,
         description: input.description,
         price: input.price,
@@ -288,40 +294,27 @@ export async function createListing(
         .update(canonicalPayload)
         .digest("hex");
 
-    return db.transaction(async (tx) => {
+    /*
+     * Everything required to create the listing and consume
+     * its credit is committed in one transaction.
+     */
+    const result = await db.transaction(async (tx) => {
         const now = new Date();
 
-        /*
-         * Expired records must not be reused while they still occupy
-         * the unique key. Delete this user's expired record for this
-         * operation/key before attempting to claim it.
-         *
-         * The delete and claim happen inside this transaction.
-         */
         await tx
             .delete(idempotencyRecords)
             .where(
                 and(
-                    eq(
-                        idempotencyRecords.userId,
-                        input.sellerId,
-                    ),
+                    eq(idempotencyRecords.userId, input.sellerId),
                     eq(
                         idempotencyRecords.operation,
                         CREATE_LISTING_OPERATION,
                     ),
-                    eq(
-                        idempotencyRecords.key,
-                        normalizedKey,
-                    ),
+                    eq(idempotencyRecords.key, normalizedKey),
                     sql`${idempotencyRecords.expiresAt} <= ${now}`,
                 ),
             );
 
-        /*
-         * Claim the key. The unique index serializes competing
-         * requests using the same user, operation and key.
-         */
         const claimed = await tx
             .insert(idempotencyRecords)
             .values({
@@ -349,8 +342,7 @@ export async function createListing(
             });
 
         /*
-         * If another committed request already owns the key,
-         * return its result when the payload matches.
+         * Handle an existing idempotency key.
          */
         if (claimed.length === 0) {
             const existingRows = await tx
@@ -408,13 +400,14 @@ export async function createListing(
 
             return {
                 listing: responseBody.data.listing,
+                creditConsumption:
+                    responseBody.data.creditConsumption ?? null,
                 replayed: true,
             };
         }
 
         /*
-         * Only the request that successfully claimed the key
-         * proceeds to create the listing.
+         * Serialize credit operations for this user.
          */
         await tx.execute(sql`
             SELECT pg_advisory_xact_lock(
@@ -424,37 +417,43 @@ export async function createListing(
             )
         `);
 
-        // await assertCanCreateListing(
-        //     tx,
-        //     input.sellerId,
-        // );
+        if (input.vehicleVariantId) {
+            const variant = await tx
+                .select({ id: vehicleVariants.id })
+                .from(vehicleVariants)
+                .where(eq(vehicleVariants.id, input.vehicleVariantId))
+                .limit(1);
 
-        const variant = await tx
-            .select({
-                id: vehicleVariants.id,
-            })
-            .from(vehicleVariants)
-            .where(
-                eq(
-                    vehicleVariants.id,
-                    input.vehicleVariantId,
-                ),
-            )
-            .limit(1);
-
-        if (!variant[0]) {
-            throw new AppError(
-                "Vehicle variant not found.",
-                404,
-                "VEHICLE_VARIANT_NOT_FOUND",
-            );
+            if (!variant[0]) {
+                throw new AppError(
+                    "Vehicle variant not found.",
+                    404,
+                    "VEHICLE_VARIANT_NOT_FOUND",
+                );
+            }
         }
 
         const inserted = await tx
             .insert(listings)
             .values({
                 sellerId: input.sellerId,
-                vehicleVariantId: input.vehicleVariantId,
+                vehicleVariantId: input.vehicleVariantId ?? null,
+                makeName: input.makeName ?? null,
+                modelName: input.modelName ?? null,
+                year: input.year ?? null,
+                generationName: input.generationName || null,
+                variantName: input.variantName || null,
+                bodyStyle: input.bodyStyle || null,
+                fuelType: input.fuelType || null,
+                transmission: input.transmission || null,
+                driveType: input.driveType || null,
+                engineCapacity: input.engineCapacity || null,
+                horsepower: input.horsepower ?? null,
+                exteriorColor: input.exteriorColor || null,
+                interiorColor: input.interiorColor || null,
+                seats: input.seats ?? null,
+                doors: input.doors ?? null,
+                specifications: input.specifications ?? {},
                 title: input.title,
                 description: input.description,
                 price: input.price.toString(),
@@ -485,14 +484,17 @@ export async function createListing(
         }
 
         /*
-         * The listing, credit debit, history and idempotency
-         * response all commit or roll back together.
+         * Consume the appropriate credit.
+         *
+         * Subscription credits are consumed first,
+         * followed by free credits.
          */
-        await consumeCreditUsingExecutor(tx, {
-            userId: input.sellerId,
-            reason: CREDIT_REASONS.LISTING_CREATED,
-            referenceId: listing.id,
-        });
+        const creditConsumption =
+            await consumeCreditUsingExecutor(tx, {
+                userId: input.sellerId,
+                reason: CREDIT_REASONS.LISTING_CREATED,
+                referenceId: listing.id,
+            });
 
         await tx
             .insert(listingHistory)
@@ -505,10 +507,18 @@ export async function createListing(
                 reason: "Listing created.",
             });
 
+        /*
+         * Persist the complete response, including the
+         * credit-consumption event.
+         *
+         * This allows safe notification retries when the
+         * same idempotency key is replayed.
+         */
         const responseBody: IdempotencyResponseBody = {
             success: true,
             data: {
                 listing,
+                creditConsumption,
             },
         };
 
@@ -528,9 +538,77 @@ export async function createListing(
 
         return {
             listing,
+            creditConsumption,
             replayed: false,
         };
     });
+
+    /*
+     * IMPORTANT:
+     *
+     * Notifications are created AFTER the listing transaction
+     * commits. A notification failure must never roll back
+     * a successfully created listing.
+     *
+     * The idempotency key prevents duplicate notifications.
+     */
+    if (
+        result.creditConsumption?.subscriptionCreditsExhausted
+    ) {
+        const freeCreditsRemaining =
+            result.creditConsumption.freeCreditsRemaining;
+
+        const hasFreeCredits =
+            freeCreditsRemaining > 0;
+
+        try {
+            await createNotification({
+                userId: input.sellerId,
+
+                type: "SUBSCRIPTION_CREDITS_EXHAUSTED",
+
+                title: "Your subscription listing credits are exhausted",
+
+                message: hasFreeCredits
+                    ? `You've used the last listing credit from your subscription. You still have ${freeCreditsRemaining} free listing credit${freeCreditsRemaining === 1 ? "" : "s"}. Your next listing will use your remaining free credits.`
+                    : "You've used the last listing credit from your subscription and have no free listing credits remaining. Purchase another plan to create more listings.",
+
+                data: {
+                    event: "SUBSCRIPTION_CREDITS_EXHAUSTED",
+                    listingId: result.listing.id,
+
+                    subscriptionCreditsRemaining:
+                        result.creditConsumption.subscriptionCreditsRemaining,
+
+                    freeCreditsRemaining,
+
+                    adjustmentCreditsRemaining:
+                        result.creditConsumption.adjustmentCreditsRemaining,
+
+                    totalRemaining:
+                        result.creditConsumption.remaining,
+
+                    hasFreeCredits,
+
+                    buyPlanRequired: !hasFreeCredits,
+                },
+
+                idempotencykey:
+                    `subscription-credits-exhausted:${input.sellerId}:${result.listing.id}`,
+            });
+        } catch (error) {
+            logger.error(
+                {
+                    err: error,
+                    userId: input.sellerId,
+                    listingId: result.listing.id,
+                },
+                "Listing creation succeeded, but subscription-credit exhaustion notification could not be created.",
+            );
+        }
+    }
+
+    return result;
 }
 
 export async function getListingById(
@@ -550,28 +628,28 @@ export async function getListingById(
                 vehicleMakes,
         })
         .from(listings)
-        .innerJoin(
+        .leftJoin(
             vehicleVariants,
             eq(
                 listings.vehicleVariantId,
                 vehicleVariants.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
                 vehicleGenerations.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleModels,
             eq(
                 vehicleGenerations.modelId,
                 vehicleModels.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleMakes,
             eq(
                 vehicleModels.makeId,
@@ -733,7 +811,8 @@ export async function updateListing(
      * 2. Validate a replacement vehicle variant.
      */
     if (
-        input.vehicleVariantId !== undefined
+        input.vehicleVariantId !== undefined &&
+        input.vehicleVariantId !== null
     ) {
         const variant = await db
             .select({
@@ -767,6 +846,20 @@ export async function updateListing(
     if (input.vehicleVariantId !== undefined) {
         details.vehicleVariantId =
             input.vehicleVariantId;
+    }
+
+    const vehicleFields = [
+        "makeName", "modelName", "year", "generationName", "variantName",
+        "bodyStyle", "fuelType", "transmission", "driveType", "engineCapacity",
+        "horsepower", "exteriorColor", "interiorColor", "seats", "doors",
+        "specifications",
+    ] as const;
+
+    for (const field of vehicleFields) {
+        const value = input[field];
+        if (value !== undefined) {
+            Object.assign(details, { [field]: value });
+        }
     }
 
     if (input.title !== undefined) {
@@ -1143,10 +1236,11 @@ export async function searchListings(
                     pattern,
                 ),
 
-                ilike(
-                    vehicleMakes.name,
-                    pattern,
-                ),
+                ilike(vehicleMakes.name, pattern),
+                ilike(listings.makeName, pattern),
+                ilike(listings.modelName, pattern),
+                ilike(listings.generationName, pattern),
+                ilike(listings.variantName, pattern),
             );
 
         if (
@@ -1175,28 +1269,28 @@ export async function searchListings(
                 vehicleMakes,
         })
         .from(listings)
-        .innerJoin(
+        .leftJoin(
             vehicleVariants,
             eq(
                 listings.vehicleVariantId,
                 vehicleVariants.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
                 vehicleGenerations.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleModels,
             eq(
                 vehicleGenerations.modelId,
                 vehicleModels.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleMakes,
             eq(
                 vehicleModels.makeId,
@@ -1628,28 +1722,28 @@ export async function getSellerListings(
             vehicleMake: vehicleMakes,
         })
         .from(listings)
-        .innerJoin(
+        .leftJoin(
             vehicleVariants,
             eq(
                 listings.vehicleVariantId,
                 vehicleVariants.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
                 vehicleGenerations.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleModels,
             eq(
                 vehicleGenerations.modelId,
                 vehicleModels.id,
             ),
         )
-        .innerJoin(
+        .leftJoin(
             vehicleMakes,
             eq(
                 vehicleModels.makeId,
@@ -1804,7 +1898,7 @@ export async function retrySellerImageAnalysis(
             listingId: listingImages.listingId,
         })
         .from(listingImages)
-        .innerJoin(
+        .leftJoin(
             listings,
             eq(
                 listingImages.listingId,

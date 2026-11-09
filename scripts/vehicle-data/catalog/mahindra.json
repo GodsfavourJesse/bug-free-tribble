@@ -1,0 +1,834 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Mahindra",
+    "slug": "mahindra",
+    "sources": [],
+    "models": [
+      {
+        "name": "XUV500",
+        "slug": "xuv500",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2011,
+            "endYear": 2021,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.2L Turbo Diesel",
+                "slug": "2-2l-turbo-diesel",
+                "displacementCc": 2179,
+                "cylinders": 4,
+                "fuelType": "DIESEL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "W6",
+                "slug": "w6",
+                "year": 2011,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W8",
+                "slug": "w8",
+                "year": 2012,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W10",
+                "slug": "w10",
+                "year": 2013,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W6",
+                "slug": "w6",
+                "year": 2014,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W8",
+                "slug": "w8",
+                "year": 2015,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W10",
+                "slug": "w10",
+                "year": 2016,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W6",
+                "slug": "w6",
+                "year": 2017,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W8",
+                "slug": "w8",
+                "year": 2018,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W10",
+                "slug": "w10",
+                "year": 2019,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W6",
+                "slug": "w6",
+                "year": 2020,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "W8",
+                "slug": "w8",
+                "year": 2021,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Scorpio",
+        "slug": "scorpio",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "Second Generation",
+            "slug": "second-generation",
+            "startYear": 2014,
+            "endYear": 2022,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.2L Turbo Diesel",
+                "slug": "2-2l-turbo-diesel",
+                "displacementCc": 2179,
+                "cylinders": 4,
+                "fuelType": "DIESEL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "S4",
+                "slug": "s4",
+                "year": 2014,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S6",
+                "slug": "s6",
+                "year": 2015,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S10",
+                "slug": "s10",
+                "year": 2016,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S4",
+                "slug": "s4",
+                "year": 2017,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S6",
+                "slug": "s6",
+                "year": 2018,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S10",
+                "slug": "s10",
+                "year": 2019,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S4",
+                "slug": "s4",
+                "year": 2020,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S6",
+                "slug": "s6",
+                "year": 2021,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S10",
+                "slug": "s10",
+                "year": 2022,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "Third Generation",
+            "slug": "third-generation",
+            "startYear": 2022,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.2L Turbo Diesel",
+                "slug": "2-2l-turbo-diesel",
+                "displacementCc": 2184,
+                "cylinders": 4,
+                "fuelType": "DIESEL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2022,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "N",
+                "slug": "n",
+                "year": 2023,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Z8",
+                "slug": "z8",
+                "year": 2024,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "S",
+                "slug": "s",
+                "year": 2025,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "N",
+                "slug": "n",
+                "year": 2026,
+                "engineSlug": "2-2l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Thar",
+        "slug": "thar",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "Second Generation",
+            "slug": "second-generation",
+            "startYear": 2020,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.0L Turbo Petrol",
+                "slug": "2-0l-turbo-petrol",
+                "displacementCc": 1997,
+                "cylinders": 4,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "AX",
+                "slug": "ax",
+                "year": 2020,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LX",
+                "slug": "lx",
+                "year": 2021,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Earth Edition",
+                "slug": "earth-edition",
+                "year": 2022,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "AX",
+                "slug": "ax",
+                "year": 2023,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LX",
+                "slug": "lx",
+                "year": 2024,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Earth Edition",
+                "slug": "earth-edition",
+                "year": 2025,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "AX",
+                "slug": "ax",
+                "year": 2026,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -26,6 +26,7 @@ export interface CreatePlanInput {
     currency: string;
     durationDays: number;
     listingCredits: number;
+    normalUserDiscountPercent: number;
     dealerDiscountPercent: number;
 }
 
@@ -36,6 +37,7 @@ export interface UpdatePlanInput {
     currency?: string;
     durationDays?: number;
     listingCredits?: number;
+    normalUserDiscountPercent?: string | number;
     dealerDiscountPercent?: string | number;
     active?: boolean;
 }
@@ -55,6 +57,7 @@ type PlanConfiguration = {
     currency: string;
     durationDays: number;
     listingCredits: number;
+    normalUserDiscountPercent: number;
     dealerDiscountPercent: number;
 };
 
@@ -111,6 +114,17 @@ function validatePlanConfiguration(
     }
 
     if (
+        !Number.isFinite(input.normalUserDiscountPercent) ||
+        input.normalUserDiscountPercent < 0 ||
+        input.normalUserDiscountPercent > 100
+    ) {
+        throw new SubscriptionPlanError(
+            "Normal-user discount must be between 0 and 100 percent.",
+            400,
+        );
+    }
+
+    if (
         !Number.isFinite(input.dealerDiscountPercent) ||
         input.dealerDiscountPercent < 0 ||
         input.dealerDiscountPercent > 100
@@ -130,6 +144,8 @@ function normalizeConfiguration(
         currency: input.currency.trim().toUpperCase(),
         durationDays: input.durationDays,
         listingCredits: input.listingCredits,
+        normalUserDiscountPercent:
+            input.normalUserDiscountPercent,
         dealerDiscountPercent:
             input.dealerDiscountPercent,
     };
@@ -199,6 +215,8 @@ export async function createPlan(
         currency: input.currency,
         durationDays: input.durationDays,
         listingCredits: input.listingCredits,
+        normalUserDiscountPercent:
+            input.normalUserDiscountPercent,
         dealerDiscountPercent:
             input.dealerDiscountPercent,
     });
@@ -238,9 +256,11 @@ export async function createPlan(
                         configuration.durationDays,
                     listingCredits:
                         configuration.listingCredits,
+                    normalUserDiscountPercent:
+                        configuration.normalUserDiscountPercent.toFixed(2),
+
                     dealerDiscountPercent:
-                        configuration.dealerDiscountPercent
-                            .toFixed(2),
+                        configuration.dealerDiscountPercent.toFixed(2),
                     active: true,
                     createdBy: actorUserId,
                 })
@@ -268,6 +288,8 @@ export async function createPlan(
                     currency: version.currency,
                     durationDays: version.durationDays,
                     listingCredits: version.listingCredits,
+                    normalUserDiscountPercent: 
+                        version.normalUserDiscountPercent,
                     dealerDiscountPercent:
                         version.dealerDiscountPercent,
                 },
@@ -337,6 +359,7 @@ export async function updatePlan(
             currency,
             durationDays,
             listingCredits,
+            normalUserDiscountPercent,
             dealerDiscountPercent,
         } = input;
 
@@ -407,31 +430,41 @@ export async function updatePlan(
             currency !== undefined ||
             durationDays !== undefined ||
             listingCredits !== undefined ||
+            normalUserDiscountPercent !== undefined ||
             dealerDiscountPercent !== undefined;
 
         let latestVersion = previousVersion;
 
         if (hasVersionChanges) {
-            const nextConfiguration =
-                normalizeConfiguration({
-                    price:
-                        price ?? previousVersion.price,
-                    currency:
-                        currency ?? previousVersion.currency,
-                    durationDays:
-                        durationDays ??
-                        previousVersion.durationDays,
-                    listingCredits:
-                        listingCredits ??
-                        previousVersion.listingCredits,
-                    dealerDiscountPercent:
-                        dealerDiscountPercent !== undefined
-                            ? Number(dealerDiscountPercent)
-                            : Number(
-                                previousVersion
-                                    .dealerDiscountPercent,
-                            ),
-                });
+            const nextConfiguration = normalizeConfiguration({
+                price:
+                    price ?? previousVersion.price,
+
+                currency:
+                    currency ?? previousVersion.currency,
+
+                durationDays:
+                    durationDays ??
+                    previousVersion.durationDays,
+
+                listingCredits:
+                    listingCredits ??
+                    previousVersion.listingCredits,
+
+                normalUserDiscountPercent:
+                    normalUserDiscountPercent !== undefined
+                        ? Number(normalUserDiscountPercent)
+                        : Number(
+                            previousVersion.normalUserDiscountPercent,
+                        ),
+
+                dealerDiscountPercent:
+                    dealerDiscountPercent !== undefined
+                        ? Number(dealerDiscountPercent)
+                        : Number(
+                            previousVersion.dealerDiscountPercent,
+                        ),
+            });
 
             validatePlanConfiguration(
                 nextConfiguration,
@@ -473,6 +506,11 @@ export async function updatePlan(
                         nextConfiguration.durationDays,
                     listingCredits:
                         nextConfiguration.listingCredits,
+                    normalUserDiscountPercent:
+                        nextConfiguration
+                            .normalUserDiscountPercent
+                            .toFixed(2),
+
                     dealerDiscountPercent:
                         nextConfiguration
                             .dealerDiscountPercent
@@ -512,16 +550,38 @@ export async function updatePlan(
                 previousName: existingPlan.name,
                 newName:
                     name ?? existingPlan.name,
+
                 previousActive: existingPlan.active,
                 newActive:
                     active ?? existingPlan.active,
-                previousVersion:
-                    previousVersion.version,
-                currentVersion:
-                    latestVersion.version,
+
+                previousVersion: previousVersion.version,
+                currentVersion: latestVersion.version,
+
                 versionCreated: hasVersionChanges,
-                configurationChanged:
-                    hasVersionChanges,
+                configurationChanged: hasVersionChanges,
+
+                previousPricing: {
+                    price: previousVersion.price,
+                    currency: previousVersion.currency,
+                    durationDays: previousVersion.durationDays,
+                    listingCredits: previousVersion.listingCredits,
+                    normalUserDiscountPercent:
+                        previousVersion.normalUserDiscountPercent,
+                    dealerDiscountPercent:
+                        previousVersion.dealerDiscountPercent,
+                },
+
+                currentPricing: {
+                    price: latestVersion.price,
+                    currency: latestVersion.currency,
+                    durationDays: latestVersion.durationDays,
+                    listingCredits: latestVersion.listingCredits,
+                    normalUserDiscountPercent:
+                        latestVersion.normalUserDiscountPercent,
+                    dealerDiscountPercent:
+                        latestVersion.dealerDiscountPercent,
+                },
             },
         });
 

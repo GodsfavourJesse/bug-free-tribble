@@ -3,7 +3,6 @@ import {
     asc,
     eq,
     gt,
-    inArray,
     isNull,
     or,
     sql,
@@ -23,12 +22,9 @@ import {
 } from "../../../database/schema/index.ts";
 
 import {
-    listingBoosts,
-} from "../../../database/schema/boosts.ts";
-
-import {
     getObjectStorage,
 } from "../../../infrastructure/storage/object-storage.ts";
+
 
 export async function getMarketplaceListingDetails(
     listingId: string,
@@ -41,17 +37,41 @@ export async function getMarketplaceListingDetails(
                 id: listings.id,
                 sellerId: listings.sellerId,
                 vehicleVariantId: listings.vehicleVariantId,
+
+                // Manual vehicle identity.
+                makeName: listings.makeName,
+                modelName: listings.modelName,
+                year: listings.year,
+                generationName: listings.generationName,
+                variantName: listings.variantName,
+
+                // Manual vehicle specifications.
+                bodyStyle: listings.bodyStyle,
+                fuelType: listings.fuelType,
+                transmission: listings.transmission,
+                driveType: listings.driveType,
+                engineCapacity: listings.engineCapacity,
+                horsepower: listings.horsepower,
+                exteriorColor: listings.exteriorColor,
+                interiorColor: listings.interiorColor,
+                seats: listings.seats,
+                doors: listings.doors,
+                specifications: listings.specifications,
+
                 title: listings.title,
                 description: listings.description,
                 price: listings.price,
                 currency: listings.currency,
                 mileage: listings.mileage,
                 condition: listings.condition,
+
                 country: listings.country,
                 state: listings.state,
                 city: listings.city,
+
                 status: listings.status,
                 viewCount: listings.viewCount,
+
                 publishedAt: listings.publishedAt,
                 createdAt: listings.createdAt,
                 updatedAt: listings.updatedAt,
@@ -118,6 +138,7 @@ export async function getMarketplaceListingDetails(
             `,
         })
         .from(listings)
+
         .innerJoin(
             users,
             eq(
@@ -125,34 +146,40 @@ export async function getMarketplaceListingDetails(
                 users.id,
             ),
         )
-        .innerJoin(
+
+        // Catalogue relationships are optional.
+        .leftJoin(
             vehicleVariants,
             eq(
                 listings.vehicleVariantId,
                 vehicleVariants.id,
             ),
         )
-        .innerJoin(
+
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
                 vehicleGenerations.id,
             ),
         )
-        .innerJoin(
+
+        .leftJoin(
             vehicleModels,
             eq(
                 vehicleGenerations.modelId,
                 vehicleModels.id,
             ),
         )
-        .innerJoin(
+
+        .leftJoin(
             vehicleMakes,
             eq(
                 vehicleModels.makeId,
                 vehicleMakes.id,
             ),
         )
+
         .leftJoin(
             dealerProfiles,
             eq(
@@ -160,16 +187,19 @@ export async function getMarketplaceListingDetails(
                 users.id,
             ),
         )
+
         .where(
             and(
                 eq(
                     listings.id,
                     listingId,
                 ),
+
                 eq(
                     listings.status,
                     "APPROVED",
                 ),
+
                 or(
                     isNull(listings.expiresAt),
                     gt(
@@ -177,6 +207,7 @@ export async function getMarketplaceListingDetails(
                         now,
                     ),
                 ),
+
                 eq(
                     users.status,
                     "ACTIVE",
@@ -253,9 +284,6 @@ export async function getMarketplaceListingDetails(
 
     /*
      * Build the seller profile.
-     *
-     * avatarUrl contains the profile picture URL when available.
-     * It remains null when the seller has not uploaded one.
      */
     const seller = {
         ...result.seller,

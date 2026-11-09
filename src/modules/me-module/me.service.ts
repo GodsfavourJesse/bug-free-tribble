@@ -1,6 +1,7 @@
 import {
     and,
     eq,
+    gt,
     isNull,
 } from "drizzle-orm";
 
@@ -13,6 +14,9 @@ import {
     dealerProfiles,
     listings,
     sessions,
+    subscriptionPlans,
+    subscriptionPlanVersions,
+    subscriptions,
     userPrivacySettings,
     users,
 } from "../../database/schema/index.ts";
@@ -37,6 +41,7 @@ import type {
     UpdateMeInput,
     UpdatePrivacyInput,
 } from "./me.validation.ts";
+import { getCreditBreakdown } from "../credits/credit.service.ts";
 
 /**
  * Determines whether the authenticated user is eligible
@@ -84,7 +89,8 @@ async function getPhoneVisibilityEligibility(
 }
 
 /**
- * Retrieves the authenticated user's account and privacy settings.
+ * Retrieves the authenticated user's account, privacy settings,
+ * listing credit balance, and current subscription.
  */
 export async function getMyAccount(
     userId: string,
@@ -126,13 +132,96 @@ export async function getMyAccount(
         );
     }
 
-    const privacy = await ensurePrivacySettings(
-        userId,
-    );
+    const now = new Date();
+
+    /*
+     * Retrieve privacy settings, credit balances,
+     * and the user's currently active subscription.
+     */
+    const [
+        privacy,
+        credits,
+        subscriptionResult,
+    ] = await Promise.all([
+        ensurePrivacySettings(userId),
+
+        getCreditBreakdown(userId),
+
+        db
+            .select({
+                id: subscriptions.id,
+
+                planId: subscriptions.planId,
+                planVersionId: subscriptions.planVersionId,
+
+                planName: subscriptionPlans.name,
+                planVersion: subscriptionPlanVersions.version,
+
+                status: subscriptions.status,
+
+                originalPrice: subscriptions.originalPrice,
+                dealerDiscountPercent:
+                    subscriptions.dealerDiscountPercent,
+
+                effectivePrice: subscriptions.effectivePrice,
+                currency: subscriptions.currency,
+
+                durationDays: subscriptions.durationDays,
+                listingCredits: subscriptions.listingCredits,
+
+                startsAt: subscriptions.startsAt,
+                expiresAt: subscriptions.expiresAt,
+
+                createdAt: subscriptions.createdAt,
+            })
+            .from(subscriptions)
+            .innerJoin(
+                subscriptionPlans,
+                eq(
+                    subscriptions.planId,
+                    subscriptionPlans.id,
+                ),
+            )
+            .leftJoin(
+                subscriptionPlanVersions,
+                eq(
+                    subscriptions.planVersionId,
+                    subscriptionPlanVersions.id,
+                ),
+            )
+            .where(
+                and(
+                    eq(
+                        subscriptions.userId,
+                        userId,
+                    ),
+                    eq(
+                        subscriptions.status,
+                        "ACTIVE",
+                    ),
+                    gt(
+                        subscriptions.expiresAt,
+                        now,
+                    ),
+                ),
+            )
+            .orderBy(
+                subscriptions.expiresAt,
+            )
+            .limit(1),
+    ]);
+
+    const currentSubscription =
+        subscriptionResult[0] ?? null;
 
     return {
         user: sanitizeUser(user),
+
         privacy,
+
+        credits,
+
+        currentSubscription,
     };
 }
 

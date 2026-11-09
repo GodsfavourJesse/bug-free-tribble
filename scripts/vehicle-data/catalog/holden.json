@@ -1,0 +1,570 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Holden",
+    "slug": "holden",
+    "sources": [],
+    "models": [
+      {
+        "name": "Commodore",
+        "slug": "commodore",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "VF Series",
+            "slug": "vf-series",
+            "startYear": 2013,
+            "endYear": 2017,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.6L V6 Petrol",
+                "slug": "3-6l-v6-petrol",
+                "displacementCc": 3564,
+                "cylinders": 6,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Evoke",
+                "slug": "evoke",
+                "year": 2013,
+                "engineSlug": "3-6l-v6-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "SV6",
+                "slug": "sv6",
+                "year": 2014,
+                "engineSlug": "3-6l-v6-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Calais",
+                "slug": "calais",
+                "year": 2015,
+                "engineSlug": "3-6l-v6-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "SS",
+                "slug": "ss",
+                "year": 2016,
+                "engineSlug": "3-6l-v6-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Evoke",
+                "slug": "evoke",
+                "year": 2017,
+                "engineSlug": "3-6l-v6-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "ZB Series",
+            "slug": "zb-series",
+            "startYear": 2018,
+            "endYear": 2020,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.0L Turbo Petrol",
+                "slug": "2-0l-turbo-petrol",
+                "displacementCc": 1998,
+                "cylinders": 4,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "LT",
+                "slug": "lt",
+                "year": 2018,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "RS",
+                "slug": "rs",
+                "year": 2019,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Calais",
+                "slug": "calais",
+                "year": 2020,
+                "engineSlug": "2-0l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Captiva",
+        "slug": "captiva",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2015,
+            "endYear": 2018,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.4L Petrol",
+                "slug": "2-4l-petrol",
+                "displacementCc": 2384,
+                "cylinders": 4,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "LS",
+                "slug": "ls",
+                "year": 2015,
+                "engineSlug": "2-4l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LT",
+                "slug": "lt",
+                "year": 2016,
+                "engineSlug": "2-4l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LTZ",
+                "slug": "ltz",
+                "year": 2017,
+                "engineSlug": "2-4l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LS",
+                "slug": "ls",
+                "year": 2018,
+                "engineSlug": "2-4l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Trax",
+        "slug": "trax",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2013,
+            "endYear": 2020,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.4L Turbo Petrol",
+                "slug": "1-4l-turbo-petrol",
+                "displacementCc": 1364,
+                "cylinders": 4,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "LS",
+                "slug": "ls",
+                "year": 2013,
+                "engineSlug": "1-4l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LT",
+                "slug": "lt",
+                "year": 2014,
+                "engineSlug": "1-4l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LTZ",
+                "slug": "ltz",
+                "year": 2015,
+                "engineSlug": "1-4l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LS",
+                "slug": "ls",
+                "year": 2016,
+                "engineSlug": "1-4l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LT",
+                "slug": "lt",
+                "year": 2017,
+                "engineSlug": "1-4l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LTZ",
+                "slug": "ltz",
+                "year": 2018,
+                "engineSlug": "1-4l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LS",
+                "slug": "ls",
+                "year": 2019,
+                "engineSlug": "1-4l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "LT",
+                "slug": "lt",
+                "year": 2020,
+                "engineSlug": "1-4l-turbo-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

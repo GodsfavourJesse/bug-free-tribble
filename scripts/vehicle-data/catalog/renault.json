@@ -1,0 +1,1972 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Renault",
+    "slug": "renault",
+    "models": [
+      {
+        "name": "Duster",
+        "slug": "duster",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "HS",
+            "slug": "hs",
+            "startYear": 2010,
+            "endYear": 2017,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.6L Petrol",
+                "slug": "1-6l-petrol",
+                "displacementCc": 1598,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "1.6 Expression",
+                "slug": "1-6-expression",
+                "year": 2010,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2010,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Expression",
+                "slug": "1-6-expression",
+                "year": 2011,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2011,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Expression",
+                "slug": "1-6-expression",
+                "year": 2012,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2012,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Expression",
+                "slug": "1-6-expression",
+                "year": 2013,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2013,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Expression",
+                "slug": "1-6-expression",
+                "year": 2014,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2014,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Expression",
+                "slug": "1-6-expression",
+                "year": 2015,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2015,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Expression",
+                "slug": "1-6-expression",
+                "year": 2016,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2016,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Expression",
+                "slug": "1-6-expression",
+                "year": 2017,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2017,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "HM",
+            "slug": "hm",
+            "startYear": 2018,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.3L TCe",
+                "slug": "1-3l-tce",
+                "displacementCc": 1332,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "1.3 TCe Zen",
+                "slug": "1-3-tce-zen",
+                "year": 2018,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2018,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Zen",
+                "slug": "1-3-tce-zen",
+                "year": 2019,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2019,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Zen",
+                "slug": "1-3-tce-zen",
+                "year": 2020,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2020,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Zen",
+                "slug": "1-3-tce-zen",
+                "year": 2021,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2021,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Zen",
+                "slug": "1-3-tce-zen",
+                "year": 2022,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2022,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Zen",
+                "slug": "1-3-tce-zen",
+                "year": 2023,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2023,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Zen",
+                "slug": "1-3-tce-zen",
+                "year": 2024,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2024,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Zen",
+                "slug": "1-3-tce-zen",
+                "year": 2025,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2025,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Zen",
+                "slug": "1-3-tce-zen",
+                "year": 2026,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2026,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Koleos",
+        "slug": "koleos",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "HY",
+            "slug": "hy",
+            "startYear": 2016,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.5L Petrol",
+                "slug": "2-5l-petrol",
+                "displacementCc": 2488,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2016,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2016,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2017,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2017,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2018,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2018,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2019,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2019,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2020,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2020,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2021,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2021,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2022,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2022,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2023,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2023,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2024,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2024,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2025,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2025,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Expression",
+                "slug": "2-5-expression",
+                "year": 2026,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "2.5 Intens",
+                "slug": "2-5-intens",
+                "year": 2026,
+                "engineSlug": "2-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 5,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Megane",
+        "slug": "megane",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "III",
+            "slug": "iii",
+            "startYear": 2008,
+            "endYear": 2016,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.6L Petrol",
+                "slug": "1-6l-petrol",
+                "displacementCc": 1598,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2008,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2009,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "1.6 Authentique",
+                "slug": "1-6-authentique",
+                "year": 2008,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2008,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Authentique",
+                "slug": "1-6-authentique",
+                "year": 2009,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2009,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Authentique",
+                "slug": "1-6-authentique",
+                "year": 2010,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2010,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Authentique",
+                "slug": "1-6-authentique",
+                "year": 2011,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2011,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Authentique",
+                "slug": "1-6-authentique",
+                "year": 2012,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2012,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Authentique",
+                "slug": "1-6-authentique",
+                "year": 2013,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2013,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Authentique",
+                "slug": "1-6-authentique",
+                "year": 2014,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2014,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Authentique",
+                "slug": "1-6-authentique",
+                "year": 2015,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2015,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Authentique",
+                "slug": "1-6-authentique",
+                "year": 2016,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.6 Dynamique",
+                "slug": "1-6-dynamique",
+                "year": 2016,
+                "engineSlug": "1-6l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          },
+          {
+            "name": "IV",
+            "slug": "iv",
+            "startYear": 2016,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.3L TCe",
+                "slug": "1-3l-tce",
+                "displacementCc": 1332,
+                "cylinders": 4,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2016,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2016,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2017,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2017,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2018,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2018,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2019,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2019,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2020,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2020,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2021,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2021,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2022,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2022,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2023,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2023,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2024,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2024,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2025,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2025,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe Intens",
+                "slug": "1-3-tce-intens",
+                "year": 2026,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "1.3 TCe RS Line",
+                "slug": "1-3-tce-rs-line",
+                "year": 2026,
+                "engineSlug": "1-3l-tce",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

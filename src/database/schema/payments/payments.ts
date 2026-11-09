@@ -30,12 +30,10 @@ export const paymentStatusEnum =
     pgEnum(
         "payment_status",
         [
-            "PENDING",
-            "SUCCESS",
-            "FAILED",
+            "STARTED",
             "ABANDONED",
-            "REVERSED",
-            "PROCESSING",
+            "FAILED",
+            "SUCCESS",
         ],
     );
 
@@ -65,7 +63,7 @@ export const payments = pgTable(
                 "status",
             )
                 .notNull()
-                .default("PENDING"),
+                .default("STARTED"),
 
         reference: varchar(
             "reference",
@@ -171,6 +169,13 @@ export const payments = pgTable(
             },
         ),
 
+        checkoutExpiresAt: timestamp(
+            "checkout_expires_at",
+            {
+                withTimezone: true,
+            },
+        ),
+
         paidAt: timestamp(
             "paid_at",
             {
@@ -211,26 +216,26 @@ export const payments = pgTable(
                     `,
                 ),
 
-        pendingSubscriptionPaymentUniqueIdx:
+        startedSubscriptionPaymentUniqueIdx:
             uniqueIndex(
-                "payments_pending_subscription_unique_idx",
+                "payments_started_subscription_unique_idx",
             )
-            .on(
-                table.subscriptionId,
-            )
-            .where(
-                sql`
-                    ${table.purpose} = 'SUBSCRIPTION'
-                    AND
-                    ${table.status} = 'PENDING'
-                    AND
-                    ${table.subscriptionId} IS NOT NULL
-                `,
-            ),
-            
-        pendingBoostPaymentUniqueIdx:
+                .on(
+                    table.subscriptionId,
+                )
+                .where(
+                    sql`
+                        ${table.purpose} = 'SUBSCRIPTION'
+                        AND
+                        ${table.status} = 'STARTED'
+                        AND
+                        ${table.subscriptionId} IS NOT NULL
+                    `,
+                ),
+
+        startedBoostPaymentUniqueIdx:
             uniqueIndex(
-                "payments_pending_boost_unique_idx",
+                "payments_started_boost_unique_idx",
             )
                 .on(
                     table.listingBoostId,
@@ -239,12 +244,11 @@ export const payments = pgTable(
                     sql`
                         ${table.purpose} = 'BOOST'
                         AND
-                        ${table.status} = 'PENDING'
+                        ${table.status} = 'STARTED'
                         AND
                         ${table.listingBoostId} IS NOT NULL
                     `,
                 ),
-
         
 
         userCreatedIdx: index(
@@ -330,3 +334,7 @@ export const payments = pgTable(
         ),
     }),
 );
+
+export type Payment = typeof payments.$inferSelect;
+
+export type NewPayment = typeof payments.$inferInsert;

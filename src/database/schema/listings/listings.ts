@@ -2,6 +2,7 @@ import {
     check,
     index,
     integer,
+    jsonb,
     numeric,
     pgEnum,
     pgTable,
@@ -81,16 +82,64 @@ export const listings = pgTable(
                 },
             ),
 
+        /**
+         * Optional catalogue link. Manual listings do not need a
+         * matching vehicle variant in the catalogue.
+         */
         vehicleVariantId: uuid(
             "vehicle_variant_id",
         )
-            .notNull()
             .references(
                 () => vehicleVariants.id,
                 {
                     onDelete: "restrict",
                 },
             ),
+
+        /**
+         * Seller-facing vehicle identity snapshot. These fields are
+         * intentionally independent of the catalogue so a seller can
+         * list vehicles that are missing or incorrectly represented there.
+         * They remain nullable at the database level for compatibility
+         * with existing catalogue-linked rows during migration; creation
+         * validation enforces a complete identity for new listings.
+         */
+        makeName: varchar("make_name", { length: 100 }),
+
+        modelName: varchar("model_name", { length: 120 }),
+
+        year: integer("year"),
+
+        generationName: varchar("generation_name", { length: 120 }),
+
+        variantName: varchar("variant_name", { length: 160 }),
+
+        /** Seller-editable specification snapshot. */
+        bodyStyle: varchar("body_style", { length: 60 }),
+
+        fuelType: varchar("fuel_type", { length: 60 }),
+
+        transmission: varchar("transmission", { length: 60 }),
+
+        driveType: varchar("drive_type", { length: 60 }),
+
+        engineCapacity: varchar("engine_capacity", { length: 60 }),
+
+        horsepower: integer("horsepower"),
+
+        exteriorColor: varchar("exterior_color", { length: 80 }),
+
+        interiorColor: varchar("interior_color", { length: 80 }),
+
+        seats: integer("seats"),
+
+        doors: integer("doors"),
+
+        /** Additional seller-defined key/value specifications. */
+        specifications: jsonb("specifications")
+            .$type<Record<string, string | number | boolean | null>>()
+            .notNull()
+            .default({}),
 
         title: varchar(
             "title",
@@ -232,6 +281,20 @@ export const listings = pgTable(
             table.vehicleVariantId,
         ),
 
+        makeModelYearIdx: index(
+            "listings_make_model_year_idx",
+        ).on(
+            table.makeName,
+            table.modelName,
+            table.year,
+        ),
+
+        yearIdx: index(
+            "listings_year_idx",
+        ).on(
+            table.year,
+        ),
+
         priceIdx: index(
             "listings_price_idx",
         ).on(
@@ -255,6 +318,41 @@ export const listings = pgTable(
             sql`
                 ${table.mileage} IS NULL
                 OR ${table.mileage} >= 0
+            `,
+        ),
+
+        yearValidCheck: check(
+            "listings_year_valid",
+            sql`
+                ${table.year} IS NULL
+                OR (${table.year} >= 1886 AND ${table.year} <= 2100)
+            `,
+        ),
+
+        horsepowerNonNegativeCheck: check(
+            "listings_horsepower_non_negative",
+            sql`${table.horsepower} IS NULL OR ${table.horsepower} >= 0`,
+        ),
+
+        seatsPositiveCheck: check(
+            "listings_seats_positive",
+            sql`${table.seats} IS NULL OR ${table.seats} > 0`,
+        ),
+
+        doorsPositiveCheck: check(
+            "listings_doors_positive",
+            sql`${table.doors} IS NULL OR ${table.doors} > 0`,
+        ),
+
+        vehicleIdentityCheck: check(
+            "listings_vehicle_identity_valid",
+            sql`
+                ${table.vehicleVariantId} IS NOT NULL
+                OR (
+                    NULLIF(BTRIM(${table.makeName}), '') IS NOT NULL
+                    AND NULLIF(BTRIM(${table.modelName}), '') IS NOT NULL
+                    AND ${table.year} IS NOT NULL
+                )
             `,
         ),
     }),

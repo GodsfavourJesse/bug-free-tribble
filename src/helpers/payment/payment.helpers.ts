@@ -179,27 +179,24 @@ export function isPaystackSignatureValid(
 
 export function mapGatewayStatus(
     gatewayStatus: string,
-) {
-    if (
-        gatewayStatus ===
-        "abandoned"
-    ) {
-        return "ABANDONED" as const;
-    }
+): "SUCCESS" | "FAILED" | "ABANDONED" | null {
+    switch (gatewayStatus.trim().toLowerCase()) {
+        case "success":
+            return "SUCCESS";
 
-    if (
-        gatewayStatus ===
-        "reversed"
-    ) {
-        return "REVERSED" as const;
-    }
+        case "failed":
+            return "FAILED";
 
-    if (
-        gatewayStatus ===
-        "failed"
-    ) {
-        return "FAILED" as const;
-    }
+        case "abandoned":
+            return "ABANDONED";
 
-    return "PROCESSING" as const;
+        default:
+            /*
+             * Ongoing, pending, processing, reversed,
+             * and unknown statuses are not payment outcomes.
+             *
+             * Reversals must be handled independently.
+             */
+            return null;
+    }
 }

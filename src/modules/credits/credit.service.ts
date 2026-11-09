@@ -23,6 +23,15 @@ export const CREDIT_REASONS = {
 export type CreditReason =
     (typeof CREDIT_REASONS)[keyof typeof CREDIT_REASONS];
 
+export const CREDIT_SOURCES = {
+    FREE_TRIAL: "FREE_TRIAL",
+    SUBSCRIPTION_CREDIT: "SUBSCRIPTION_CREDIT",
+    ADMIN_ADJUSTMENT: "ADMIN_ADJUSTMENT",
+} as const;
+
+export type CreditSource =
+    (typeof CREDIT_SOURCES)[keyof typeof CREDIT_SOURCES];
+
 type DatabaseTransaction = Parameters<
     Parameters<typeof db.transaction>[0]
 >[0];
@@ -32,6 +41,19 @@ export type CreditExecutor = typeof db | DatabaseTransaction;
 export interface CreditBalance {
     userId: string;
     balance: number;
+}
+
+export interface CreditSourceBalance {
+    total: number;
+    used: number;
+    remaining: number;
+}
+
+export interface CreditBreakdown {
+    free: CreditSourceBalance;
+    subscribed: CreditSourceBalance;
+    adjustment: CreditSourceBalance;
+    totalRemaining: number;
 }
 
 export interface CreditHistoryOptions {
@@ -48,6 +70,20 @@ export interface CreditHistoryResult {
         total: number;
         totalPages: number;
     };
+}
+
+export interface CreditConsumptionResult {
+    consumed: number;
+    remaining: number;
+    inserted: boolean;
+
+    consumedSource: CreditSource | null;
+
+    subscriptionCreditsRemaining: number;
+    freeCreditsRemaining: number;
+    adjustmentCreditsRemaining: number;
+
+    subscriptionCreditsExhausted: boolean;
 }
 
 function validateUserId(userId: string): void {
@@ -68,11 +104,7 @@ function validateReason(
 ): asserts reason is CreditReason {
     const allowedReasons = Object.values(CREDIT_REASONS);
 
-    if (
-        !allowedReasons.includes(
-            reason as CreditReason,
-        )
-    ) {
+    if (!allowedReasons.includes(reason as CreditReason)) {
         throw new AppError(
             `Invalid credit reason: ${reason}`,
             400,
@@ -94,11 +126,32 @@ function validateReferenceId(referenceId: string): void {
     }
 }
 
+function getCreditSourceForReason(
+    reason: CreditReason,
+): CreditSource {
+    switch (reason) {
+        case CREDIT_REASONS.FREE_TRIAL:
+            return CREDIT_SOURCES.FREE_TRIAL;
+
+        case CREDIT_REASONS.SUBSCRIPTION_CREDIT:
+            return CREDIT_SOURCES.SUBSCRIPTION_CREDIT;
+
+        case CREDIT_REASONS.ADMIN_ADJUSTMENT:
+            return CREDIT_SOURCES.ADMIN_ADJUSTMENT;
+
+        default:
+            throw new AppError(
+                "This credit reason cannot be used to grant credits.",
+                400,
+                "INVALID_CREDIT_GRANT_REASON",
+            );
+    }
+}
+
 /**
  * Acquire a transaction-scoped advisory lock for a user's credit ledger.
  *
- * All operations that grant or consume credits must use this lock so
- * concurrent requests cannot spend the same credit simultaneously.
+ * Every grant and consumption operation must use this lock.
  */
 export async function lockUserCredits(
     executor: DatabaseTransaction,
@@ -106,13 +159,16 @@ export async function lockUserCredits(
 ): Promise<void> {
     await executor.execute(
         sql`SELECT pg_advisory_xact_lock(
-            hashtext(${`karmass:listing-credit:${userId}`})
+            hashtextextended(
+                ${`karmass:listing-credit:${userId}`},
+                0
+            )
         )`,
     );
 }
 
 /**
- * Calculate the user's current balance from immutable ledger movements.
+ * Calculate the combined credit balance.
  */
 export async function getCreditBalanceUsingExecutor(
     executor: CreditExecutor,
@@ -122,12 +178,186 @@ export async function getCreditBalanceUsingExecutor(
 
     const result = await executor
         .select({
-            balance: sql<number>`COALESCE(SUM(${listingCreditLedger.amount}), 0)::int`,
+            balance: sql<number>`
+                COALESCE(SUM(${listingCreditLedger.amount}), 0)::int
+            `,
         })
         .from(listingCreditLedger)
         .where(eq(listingCreditLedger.userId, userId));
 
     return Number(result[0]?.balance ?? 0);
+}
+
+/**
+ * Get credits grouped by their original source.
+ *
+ * total = all positive credits granted from this source.
+ * used = all credits consumed from this source.
+ * remaining = current balance from this source.
+ */
+export async function getCreditBreakdownUsingExecutor(
+    executor: CreditExecutor,
+    userId: string,
+): Promise<CreditBreakdown> {
+    validateUserId(userId);
+
+    const result = await executor
+        .select({
+            freeTotal: sql<number>`
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN ${listingCreditLedger.creditSource} = ${CREDIT_SOURCES.FREE_TRIAL}
+                            AND ${listingCreditLedger.amount} > 0
+                            THEN ${listingCreditLedger.amount}
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )::int
+            `,
+
+            freeUsed: sql<number>`
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN ${listingCreditLedger.creditSource} = ${CREDIT_SOURCES.FREE_TRIAL}
+                            AND ${listingCreditLedger.amount} < 0
+                            THEN ABS(${listingCreditLedger.amount})
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )::int
+            `,
+
+            freeRemaining: sql<number>`
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN ${listingCreditLedger.creditSource} = ${CREDIT_SOURCES.FREE_TRIAL}
+                            THEN ${listingCreditLedger.amount}
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )::int
+            `,
+
+            subscribedTotal: sql<number>`
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN ${listingCreditLedger.creditSource} = ${CREDIT_SOURCES.SUBSCRIPTION_CREDIT}
+                            AND ${listingCreditLedger.amount} > 0
+                            THEN ${listingCreditLedger.amount}
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )::int
+            `,
+
+            subscribedUsed: sql<number>`
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN ${listingCreditLedger.creditSource} = ${CREDIT_SOURCES.SUBSCRIPTION_CREDIT}
+                            AND ${listingCreditLedger.amount} < 0
+                            THEN ABS(${listingCreditLedger.amount})
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )::int
+            `,
+
+            subscribedRemaining: sql<number>`
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN ${listingCreditLedger.creditSource} = ${CREDIT_SOURCES.SUBSCRIPTION_CREDIT}
+                            THEN ${listingCreditLedger.amount}
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )::int
+            `,
+
+            adjustmentTotal: sql<number>`
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN ${listingCreditLedger.creditSource} = ${CREDIT_SOURCES.ADMIN_ADJUSTMENT}
+                            AND ${listingCreditLedger.amount} > 0
+                            THEN ${listingCreditLedger.amount}
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )::int
+            `,
+
+            adjustmentUsed: sql<number>`
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN ${listingCreditLedger.creditSource} = ${CREDIT_SOURCES.ADMIN_ADJUSTMENT}
+                            AND ${listingCreditLedger.amount} < 0
+                            THEN ABS(${listingCreditLedger.amount})
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )::int
+            `,
+
+            adjustmentRemaining: sql<number>`
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN ${listingCreditLedger.creditSource} = ${CREDIT_SOURCES.ADMIN_ADJUSTMENT}
+                            THEN ${listingCreditLedger.amount}
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )::int
+            `,
+        })
+        .from(listingCreditLedger)
+        .where(eq(listingCreditLedger.userId, userId));
+
+    const row = result[0];
+
+    const free: CreditSourceBalance = {
+        total: Number(row?.freeTotal ?? 0),
+        used: Number(row?.freeUsed ?? 0),
+        remaining: Number(row?.freeRemaining ?? 0),
+    };
+
+    const subscribed: CreditSourceBalance = {
+        total: Number(row?.subscribedTotal ?? 0),
+        used: Number(row?.subscribedUsed ?? 0),
+        remaining: Number(row?.subscribedRemaining ?? 0),
+    };
+
+    const adjustment: CreditSourceBalance = {
+        total: Number(row?.adjustmentTotal ?? 0),
+        used: Number(row?.adjustmentUsed ?? 0),
+        remaining: Number(row?.adjustmentRemaining ?? 0),
+    };
+
+    return {
+        free,
+        subscribed,
+        adjustment,
+        totalRemaining:
+            free.remaining +
+            subscribed.remaining +
+            adjustment.remaining,
+    };
 }
 
 /**
@@ -150,10 +380,22 @@ export async function getCreditBalance(
 }
 
 /**
- * Grant credits exactly once for a particular user, reason and reference.
+ * Return a user's complete credit breakdown.
+ */
+export async function getCreditBreakdown(
+    userId: string,
+): Promise<CreditBreakdown> {
+    validateUserId(userId);
+
+    return getCreditBreakdownUsingExecutor(db, userId);
+}
+
+/**
+ * Grant credits exactly once for a user, reason and reference.
  *
- * Always provide a stable reference ID, such as a user ID for a free-trial
- * grant or a subscription ID for a subscription grant.
+ * FREE_TRIAL grants are assigned to the free pool.
+ * SUBSCRIPTION_CREDIT grants are assigned to the subscription pool.
+ * ADMIN_ADJUSTMENT grants are assigned to the adjustment pool.
  */
 export async function grantCredits(
     input: {
@@ -182,12 +424,26 @@ export async function grantCredits(
         );
     }
 
+    const creditSource = getCreditSourceForReason(input.reason);
+
     if (executor) {
-        return grantCreditsUsingExecutor(executor, input);
+        return grantCreditsUsingExecutor(
+            executor,
+            {
+                ...input,
+                creditSource,
+            },
+        );
     }
 
     return db.transaction(async (tx) => {
-        return grantCreditsUsingExecutor(tx, input);
+        return grantCreditsUsingExecutor(
+            tx,
+            {
+                ...input,
+                creditSource,
+            },
+        );
     });
 }
 
@@ -196,8 +452,9 @@ async function grantCreditsUsingExecutor(
     input: {
         userId: string;
         amount: number;
-        reason: string;
+        reason: CreditReason;
         referenceId: string;
+        creditSource: CreditSource;
     },
 ): Promise<{
     balance: number;
@@ -212,6 +469,7 @@ async function grantCreditsUsingExecutor(
             amount: input.amount,
             reason: input.reason,
             referenceId: input.referenceId,
+            creditSource: input.creditSource,
         })
         .onConflictDoNothing({
             target: [
@@ -230,7 +488,9 @@ async function grantCreditsUsingExecutor(
         const existingRows = await executor
             .select({
                 amount: listingCreditLedger.amount,
+                reason: listingCreditLedger.reason,
                 referenceId: listingCreditLedger.referenceId,
+                creditSource: listingCreditLedger.creditSource,
             })
             .from(listingCreditLedger)
             .where(
@@ -256,7 +516,9 @@ async function grantCreditsUsingExecutor(
         if (
             !existing ||
             existing.amount !== input.amount ||
-            existing.referenceId !== input.referenceId
+            existing.reason !== input.reason ||
+            existing.referenceId !== input.referenceId ||
+            existing.creditSource !== input.creditSource
         ) {
             throw new AppError(
                 "The credit reference conflicts with an existing ledger entry.",
@@ -280,9 +542,15 @@ async function grantCreditsUsingExecutor(
 /**
  * Consume exactly one listing credit.
  *
+ * Spending order:
+ * 1. Subscription credits.
+ * 2. Free trial credits.
+ * 3. Admin adjustment credits.
+ *
+ * Subscription credits are not tied to subscription expiry. Their remaining
+ * balance stays available until consumed.
+ *
  * Call this inside the same transaction that creates the listing.
- * The listing ID is the reference ID, preventing duplicate consumption
- * for the same listing.
  */
 export async function consumeCreditUsingExecutor(
     executor: DatabaseTransaction,
@@ -291,20 +559,25 @@ export async function consumeCreditUsingExecutor(
         reason: CreditReason;
         referenceId: string;
     },
-): Promise<{
-    consumed: number;
-    remaining: number;
-    inserted: boolean;
-}> {
+): Promise<CreditConsumptionResult> {
     validateUserId(input.userId);
     validateReason(input.reason);
     validateReferenceId(input.referenceId);
+
+    if (input.reason !== CREDIT_REASONS.LISTING_CREATED) {
+        throw new AppError(
+            "Invalid reason for listing-credit consumption.",
+            400,
+            "INVALID_CREDIT_CONSUMPTION_REASON",
+        );
+    }
 
     await lockUserCredits(executor, input.userId);
 
     const existingRows = await executor
         .select({
             amount: listingCreditLedger.amount,
+            creditSource: listingCreditLedger.creditSource,
         })
         .from(listingCreditLedger)
         .where(
@@ -328,7 +601,12 @@ export async function consumeCreditUsingExecutor(
     const existing = existingRows[0];
 
     if (existing) {
-        if (existing.amount !== -1) {
+        if (
+            existing.amount !== -1 ||
+            !Object.values(CREDIT_SOURCES).includes(
+                existing.creditSource as CreditSource,
+            )
+        ) {
             throw new AppError(
                 "The credit reference conflicts with an existing ledger entry.",
                 409,
@@ -336,26 +614,47 @@ export async function consumeCreditUsingExecutor(
             );
         }
 
-        const balance = await getCreditBalanceUsingExecutor(
+        const breakdown = await getCreditBreakdownUsingExecutor(
             executor,
             input.userId,
         );
 
         return {
             consumed: 1,
-            remaining: balance,
+            remaining: breakdown.totalRemaining,
             inserted: false,
+            consumedSource: existing.creditSource as CreditSource,
+            subscriptionCreditsRemaining: breakdown.subscribed.remaining,
+            freeCreditsRemaining: breakdown.free.remaining,
+            adjustmentCreditsRemaining: breakdown.adjustment.remaining,
+            subscriptionCreditsExhausted: false,
         };
     }
 
-    const balance = await getCreditBalanceUsingExecutor(
+    const breakdownBefore = await getCreditBreakdownUsingExecutor(
         executor,
         input.userId,
     );
 
-    if (balance < 1) {
+    if (breakdownBefore.totalRemaining < 1) {
         throw new AppError(
-            "You do not have enough listing credits. Please subscribe to continue.",
+            "You do not have enough listing credits. Please purchase a subscription plan to continue.",
+            402,
+            "INSUFFICIENT_LISTING_CREDITS",
+        );
+    }
+
+    let consumedSource: CreditSource;
+
+    if (breakdownBefore.subscribed.remaining > 0) {
+        consumedSource = CREDIT_SOURCES.SUBSCRIPTION_CREDIT;
+    } else if (breakdownBefore.free.remaining > 0) {
+        consumedSource = CREDIT_SOURCES.FREE_TRIAL;
+    } else if (breakdownBefore.adjustment.remaining > 0) {
+        consumedSource = CREDIT_SOURCES.ADMIN_ADJUSTMENT;
+    } else {
+        throw new AppError(
+            "You do not have enough listing credits. Please purchase a subscription plan to continue.",
             402,
             "INSUFFICIENT_LISTING_CREDITS",
         );
@@ -368,12 +667,28 @@ export async function consumeCreditUsingExecutor(
             amount: -1,
             reason: input.reason,
             referenceId: input.referenceId,
+            creditSource: consumedSource,
         });
+
+    const breakdownAfter = await getCreditBreakdownUsingExecutor(
+        executor,
+        input.userId,
+    );
+
+    const subscriptionCreditsExhausted =
+        consumedSource === CREDIT_SOURCES.SUBSCRIPTION_CREDIT &&
+        breakdownBefore.subscribed.remaining > 0 &&
+        breakdownAfter.subscribed.remaining === 0;
 
     return {
         consumed: 1,
-        remaining: balance - 1,
+        remaining: breakdownAfter.totalRemaining,
         inserted: true,
+        consumedSource,
+        subscriptionCreditsRemaining: breakdownAfter.subscribed.remaining,
+        freeCreditsRemaining: breakdownAfter.free.remaining,
+        adjustmentCreditsRemaining: breakdownAfter.adjustment.remaining,
+        subscriptionCreditsExhausted,
     };
 }
 

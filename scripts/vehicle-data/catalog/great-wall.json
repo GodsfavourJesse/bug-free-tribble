@@ -1,0 +1,656 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Great Wall",
+    "slug": "great-wall",
+    "sources": [],
+    "models": [
+      {
+        "name": "Wingle 5",
+        "slug": "wingle-5",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2011,
+            "endYear": 2021,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.0L Turbo Diesel",
+                "slug": "2-0l-turbo-diesel",
+                "displacementCc": 1996,
+                "cylinders": 4,
+                "fuelType": "DIESEL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Single Cab",
+                "slug": "single-cab",
+                "year": 2011,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Double Cab",
+                "slug": "double-cab",
+                "year": 2012,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Luxury",
+                "slug": "luxury",
+                "year": 2013,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Single Cab",
+                "slug": "single-cab",
+                "year": 2014,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Double Cab",
+                "slug": "double-cab",
+                "year": 2015,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Luxury",
+                "slug": "luxury",
+                "year": 2016,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Single Cab",
+                "slug": "single-cab",
+                "year": 2017,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Double Cab",
+                "slug": "double-cab",
+                "year": 2018,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Luxury",
+                "slug": "luxury",
+                "year": 2019,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Single Cab",
+                "slug": "single-cab",
+                "year": 2020,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Double Cab",
+                "slug": "double-cab",
+                "year": 2021,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "PICKUP",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Poer",
+        "slug": "poer",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2020,
+            "endYear": 2026,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "2.0L Turbo Diesel",
+                "slug": "2-0l-turbo-diesel",
+                "displacementCc": 1996,
+                "cylinders": 4,
+                "fuelType": "DIESEL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2023,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2024,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2025,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2026,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Commercial",
+                "slug": "commercial",
+                "year": 2020,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2021,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Luxe",
+                "slug": "luxe",
+                "year": 2022,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Commercial",
+                "slug": "commercial",
+                "year": 2023,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Premium",
+                "slug": "premium",
+                "year": 2024,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Luxe",
+                "slug": "luxe",
+                "year": 2025,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Commercial",
+                "slug": "commercial",
+                "year": 2026,
+                "engineSlug": "2-0l-turbo-diesel",
+                "fuelType": "DIESEL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FOUR_WD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      },
+      {
+        "name": "Voleex C30",
+        "slug": "voleex-c30",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "First Generation",
+            "slug": "first-generation",
+            "startYear": 2010,
+            "endYear": 2016,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "1.5L Petrol",
+                "slug": "1-5l-petrol",
+                "displacementCc": 1497,
+                "cylinders": 4,
+                "fuelType": "PETROL",
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2010,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2011,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2012,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2013,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2014,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2015,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2010,
+                "engineSlug": "1-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Luxury",
+                "slug": "luxury",
+                "year": 2011,
+                "engineSlug": "1-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Elite",
+                "slug": "elite",
+                "year": 2012,
+                "engineSlug": "1-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2013,
+                "engineSlug": "1-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Luxury",
+                "slug": "luxury",
+                "year": 2014,
+                "engineSlug": "1-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Elite",
+                "slug": "elite",
+                "year": 2015,
+                "engineSlug": "1-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "Comfort",
+                "slug": "comfort",
+                "year": 2016,
+                "engineSlug": "1-5l-petrol",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "FWD",
+                "bodyStyle": "SEDAN",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}

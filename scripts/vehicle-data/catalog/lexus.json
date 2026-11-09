@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": {
+    "name": "Lexus",
+    "slug": "lexus",
+    "models": [
+      {
+        "name": "RX",
+        "slug": "rx",
+        "aliases": [],
+        "sources": [],
+        "generations": [
+          {
+            "name": "AL20",
+            "slug": "al20",
+            "startYear": 2016,
+            "endYear": 2022,
+            "markets": [
+              "NG"
+            ],
+            "engines": [
+              {
+                "name": "3.5L V6",
+                "slug": "3-5l-v6",
+                "displacementCc": 3456,
+                "cylinders": 6,
+                "sources": []
+              }
+            ],
+            "modelYears": [
+              {
+                "year": 2016,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2017,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2018,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2019,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2020,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2021,
+                "markets": [
+                  "NG"
+                ]
+              },
+              {
+                "year": 2022,
+                "markets": [
+                  "NG"
+                ]
+              }
+            ],
+            "variants": [
+              {
+                "name": "RX 350",
+                "slug": "rx-350",
+                "year": 2016,
+                "engineSlug": "3-5l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "RX 350",
+                "slug": "rx-350",
+                "year": 2017,
+                "engineSlug": "3-5l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "RX 350",
+                "slug": "rx-350",
+                "year": 2018,
+                "engineSlug": "3-5l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "RX 350",
+                "slug": "rx-350",
+                "year": 2019,
+                "engineSlug": "3-5l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "RX 350",
+                "slug": "rx-350",
+                "year": 2020,
+                "engineSlug": "3-5l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "RX 350",
+                "slug": "rx-350",
+                "year": 2021,
+                "engineSlug": "3-5l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              },
+              {
+                "name": "RX 350",
+                "slug": "rx-350",
+                "year": 2022,
+                "engineSlug": "3-5l-v6",
+                "fuelType": "PETROL",
+                "transmission": "AUTOMATIC",
+                "driveType": "AWD",
+                "bodyStyle": "SUV",
+                "seats": 5,
+                "doors": 4,
+                "markets": [
+                  "NG"
+                ],
+                "sources": []
+              }
+            ],
+            "sources": []
+          }
+        ]
+      }
+    ],
+    "sources": []
+  }
+}
