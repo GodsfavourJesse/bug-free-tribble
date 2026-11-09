@@ -263,6 +263,15 @@ const envSchema = z.object({
         .default(30),
 
     // ==========================================
+    // EXTERNAL VEHICLE DATA PROVIDERS
+    // ==========================================
+    VEHICLESDB_API_KEY: z.string().trim().min(1).optional(),
+
+    CARSXE_API_KEY: z.string().trim().min(1).optional(),
+
+    VEHICLE_PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().max(60_000).default(12_000),
+
+    // ==========================================
     // PAYMENTS
     // ==========================================
     PAYSTACK_SECRET_KEY: z

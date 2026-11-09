@@ -8,6 +8,10 @@ import {
 
 import {
     getGenerations,
+    getExternalMakes,
+    getExternalModels,
+    getExternalProviderStatus,
+    getExternalVehicleOptions,
     getMakes,
     getModels,
     getVariants,
@@ -23,6 +27,15 @@ const marketQuerySchema = z.enum([
     "true",
     "false",
 ]).optional();
+
+/**
+ * External API-backed catalogue endpoints.
+ * These proxy provider requests server-side so API keys are never exposed.
+ */
+router.get("/external/providers", getExternalProviderStatus);
+router.get("/external/makes", getExternalMakes);
+router.get("/external/models", getExternalModels);
+router.get("/external/options", getExternalVehicleOptions);
 
 /**
  * Search the vehicle catalog.
@@ -62,6 +75,10 @@ router.get(
 router.get(
     "/models/:modelId/generations",
     getGenerations,
+    getExternalMakes,
+    getExternalModels,
+    getExternalProviderStatus,
+    getExternalVehicleOptions,
 );
 
 /**

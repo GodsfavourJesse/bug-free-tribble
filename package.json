@@ -18,8 +18,6 @@
         "db:migrate": "drizzle-kit migrate",
         "db:push": "drizzle-kit push",
         "db:seed": "tsx scripts/seed.ts",
-        "db:seed-vehicles": "tsx scripts/seed-vehicles.ts",
-        "db:seed-vehicle-details": "tsx scripts/seed-vehicle-details.ts",
         "db:cleanup-storage": "tsx scripts/cleanup-storage.ts",
         "test": "vitest run",
         "test:subscription-emails": "tsx scripts/test-subscription-emails.ts",
