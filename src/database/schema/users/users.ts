@@ -49,6 +49,10 @@ export const users = pgTable("users", {
         length: 30,
     }),
 
+    whatsappPhone: varchar("whatsapp_phone", {
+        length: 30,
+    }),
+
     avatarUrl: varchar("avatar_url", {
         length: 500,
     }),

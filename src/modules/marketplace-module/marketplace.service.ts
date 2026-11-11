@@ -284,6 +284,9 @@ implements MarketplaceSearchProvider {
                 "APPROVED",
             ),
 
+            // KARMASS marketplace inventory is currently Nigeria-only.
+            ilike(listings.country, "Nigeria"),
+
             or(
                 isNull(listings.expiresAt),
                 gt(
@@ -320,11 +323,45 @@ implements MarketplaceSearchProvider {
         }
 
         /*
-         * Catalogue-specific filters.
+         * External-provider vehicle filters.
          *
-         * Manual listings do not have catalogue IDs,
-         * so these filters intentionally target
-         * catalogue-linked vehicles.
+         * Provider values are names, not local catalogue IDs. Match them
+         * against the immutable vehicle identity snapshot stored on each
+         * listing so API-backed uploads and older catalogue-linked listings
+         * are both searchable.
+         */
+        if (filters.make?.trim()) {
+            const pattern = `%${filters.make.trim()}%`;
+            conditions.push(
+                or(
+                    ilike(listings.makeName, pattern),
+                    ilike(vehicleMakes.name, pattern),
+                )!,
+            );
+        }
+
+        if (filters.model?.trim()) {
+            const pattern = `%${filters.model.trim()}%`;
+            conditions.push(
+                or(
+                    ilike(listings.modelName, pattern),
+                    ilike(vehicleModels.name, pattern),
+                )!,
+            );
+        }
+
+        if (filters.variant?.trim()) {
+            const pattern = `%${filters.variant.trim()}%`;
+            conditions.push(
+                or(
+                    ilike(listings.variantName, pattern),
+                    ilike(vehicleVariants.name, pattern),
+                )!,
+            );
+        }
+
+        /*
+         * Legacy catalogue-ID filters remain supported for old saved searches.
          */
         if (filters.makeId) {
             conditions.push(
@@ -378,12 +415,23 @@ implements MarketplaceSearchProvider {
          * Location filters.
          */
         if (filters.state?.trim()) {
-            conditions.push(
-                ilike(
-                    listings.state,
-                    `%${filters.state.trim()}%`,
-                ),
-            );
+            const selectedState = filters.state.trim();
+            if (selectedState.toLowerCase() === "fct") {
+                conditions.push(
+                    or(
+                        ilike(listings.state, "FCT"),
+                        ilike(listings.state, "Abuja"),
+                        ilike(listings.state, "Federal Capital Territory"),
+                    )!,
+                );
+            } else {
+                conditions.push(
+                    or(
+                        ilike(listings.state, selectedState),
+                        ilike(listings.state, `${selectedState} State`),
+                    )!,
+                );
+            }
         }
 
         if (filters.city?.trim()) {
@@ -958,6 +1006,91 @@ export async function searchMarketplace(
     filters: MarketplaceFilters,
 ): Promise<MarketplaceSearchResult> {
     return postgresMarketplaceSearchProvider.search(filters);
+}
+
+/**
+ * Returns distinct cities with currently available marketplace listings
+ * for a selected Nigerian state.
+ */
+export async function getMarketplaceCitiesByState(
+    state: string,
+): Promise<string[]> {
+    const selectedState = state.trim();
+
+    if (!selectedState) {
+        return [];
+    }
+
+    const now = new Date();
+
+    const stateCondition =
+        selectedState.toLowerCase() === "fct"
+            ? or(
+                  ilike(listings.state, "FCT"),
+                  ilike(listings.state, "Abuja"),
+                  ilike(
+                      listings.state,
+                      "Federal Capital Territory",
+                  ),
+              )
+            : or(
+                  ilike(listings.state, selectedState),
+                  ilike(
+                      listings.state,
+                      `${selectedState} State`,
+                  ),
+              );
+
+    const rows = await db
+        .selectDistinct({
+            city: listings.city,
+        })
+        .from(listings)
+        .innerJoin(
+            users,
+            eq(listings.sellerId, users.id),
+        )
+        .where(
+            and(
+                eq(listings.status, "APPROVED"),
+                ilike(listings.country, "Nigeria"),
+                eq(users.status, "ACTIVE"),
+
+                isNull(listings.expiresAt),
+            )
+        );
+
+    // The query above is intentionally not used for the final
+    // result because active listings may also have future expiry dates.
+    // Apply the complete conditions below.
+    const availableCities = await db
+        .selectDistinct({
+            city: listings.city,
+        })
+        .from(listings)
+        .innerJoin(
+            users,
+            eq(listings.sellerId, users.id),
+        )
+        .where(
+            and(
+                eq(listings.status, "APPROVED"),
+                ilike(listings.country, "Nigeria"),
+                eq(users.status, "ACTIVE"),
+                stateCondition!,
+                or(
+                    isNull(listings.expiresAt),
+                    gt(listings.expiresAt, now),
+                )!,
+                sql`${listings.city} IS NOT NULL`,
+                sql`TRIM(${listings.city}) <> ''`,
+            ),
+        )
+        .orderBy(asc(listings.city));
+
+    return availableCities
+        .map((row) => row.city?.trim())
+        .filter((city): city is string => Boolean(city));
 }
 
 

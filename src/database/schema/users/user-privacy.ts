@@ -20,7 +20,13 @@ export const userPrivacySettings = pgTable(
             "show_phone",
         )
             .notNull()
-            .default(false),
+            .default(true),
+
+        showWhatsapp: boolean(
+            "show_whatsapp"
+        )
+            .notNull()
+            .default(true),
 
         showEmail: boolean(
             "show_email",

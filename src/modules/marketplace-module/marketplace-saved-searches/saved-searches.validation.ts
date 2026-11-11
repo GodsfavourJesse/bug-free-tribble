@@ -99,6 +99,9 @@ function parseFilters(
 
     const stringKeys = [
         "q",
+        "make",
+        "model",
+        "variant",
         "makeId",
         "modelId",
         "variantId",
@@ -133,6 +136,12 @@ function parseFilters(
 
         if (key === "q") {
             filters.q = normalized;
+        } else if (key === "make") {
+            filters.make = normalized;
+        } else if (key === "model") {
+            filters.model = normalized;
+        } else if (key === "variant") {
+            filters.variant = normalized;
         } else if (key === "makeId") {
             filters.makeId = normalized;
         } else if (key === "modelId") {

@@ -1,12 +1,10 @@
-import {
-    z,
-} from "zod";
+import { z } from "zod";
 
 const phoneSchema = z
     .string()
     .trim()
-    .min(7)
-    .max(30)
+    .min(7, "Phone number is too short.")
+    .max(30, "Phone number is too long.")
     .regex(
         /^[+0-9()\-.\s]+$/,
         "Invalid phone number format.",
@@ -37,6 +35,10 @@ export const updateMeSchema = z
             .nullable()
             .optional(),
 
+        whatsappPhone: phoneSchema
+            .nullable()
+            .optional(),
+
         avatarUrl: z
             .string()
             .trim()
@@ -53,10 +55,17 @@ export const updateMeSchema = z
 export const updatePrivacySchema = z
     .object({
         showPhone: z.boolean().optional(),
+
+        showWhatsapp: z.boolean().optional(),
+
         showEmail: z.boolean().optional(),
+
         allowDirectMessages: z.boolean().optional(),
+
         showOnlineStatus: z.boolean().optional(),
+
         allowMarketingEmails: z.boolean().optional(),
+
         allowMarketingSms: z.boolean().optional(),
     })
     .strict();

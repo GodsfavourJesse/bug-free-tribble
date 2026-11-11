@@ -15,6 +15,7 @@ import paymentRoutes from "../../modules/payment-module/payment.routes.ts";
 import creditRoutes from "../../modules/credits/credit.routes.ts";
 import meRoutes from "../../modules/me-module/me.routes.ts";
 import subscriptionRoutes from "../../modules/subscriptions/subscription.routes.ts";
+import locationRoutes from "../../modules/locations-module/locations.routes.js";
 
 console.log("[DEBUG] PUBLIC ROUTER MODULE LOADED");
 
@@ -138,5 +139,8 @@ router.use(
     "/credits",
     creditRoutes,
 );
+
+// Locations
+router.use("/locations", locationRoutes);
 
 export default router;

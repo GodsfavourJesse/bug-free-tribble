@@ -14,12 +14,18 @@ export interface SavedSearchFilters {
     modelId?: string;
     variantId?: string;
 
+    // External vehicle catalogue filters
+    make?: string;
+    model?: string;
+    variant?: string;
+
+    // Price
     minPrice?: number;
     maxPrice?: number;
 
+    // Vehicle information
     minMileage?: number;
     maxMileage?: number;
-
     minYear?: number;
     maxYear?: number;
 
@@ -29,6 +35,7 @@ export interface SavedSearchFilters {
 
     condition?: MarketplaceCondition;
 
+    // Location
     state?: string;
     city?: string;
 
@@ -55,6 +62,9 @@ export const allowedFilterKeys = new Set([
     "makeId",
     "modelId",
     "variantId",
+    "make",
+    "model",
+    "variant",
     "minPrice",
     "maxPrice",
     "minMileage",

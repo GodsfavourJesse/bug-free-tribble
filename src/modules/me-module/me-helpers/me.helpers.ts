@@ -11,6 +11,7 @@ export function sanitizeUser(
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
+        whatsappPhone: user.whatsappPhone,
         avatarUrl: user.avatarUrl,
         profileMetadata: user.profileMetadata,
         accountType: user.accountType,

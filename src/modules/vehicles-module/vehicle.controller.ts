@@ -350,6 +350,21 @@ export async function getExternalVehicleOptions(
         return;
     }
 
+    const requestedProvider =
+        typeof request.query.provider === "string"
+            ? request.query.provider.trim().toLowerCase()
+            : undefined;
+
+    // VehiclesDB currently provides makes and models only. CarsXE is
+    // the provider used for year and variant/trim lookups.
+    if (requestedProvider && requestedProvider !== "carsxe") {
+        response.status(400).json({
+            success: false,
+            message: "Model years and variants are currently available through CarsXE.",
+        });
+        return;
+    }
+
     const make = typeof request.query.make === "string" ? request.query.make.trim() : undefined;
     const model = typeof request.query.model === "string" ? request.query.model.trim() : undefined;
     const rawYear = typeof request.query.year === "string" ? Number(request.query.year) : undefined;

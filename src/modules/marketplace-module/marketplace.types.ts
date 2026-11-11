@@ -56,6 +56,12 @@ export type MarketplaceBodyStyle =
 export interface MarketplaceFilters {
     q?: string;
 
+    /** External-provider catalogue labels; matched against listing snapshots. */
+    make?: string;
+    model?: string;
+    variant?: string;
+
+    /** Legacy catalogue IDs retained for old saved-search URLs. */
     makeId?: string;
     modelId?: string;
     generationId?: string;

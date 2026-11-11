@@ -407,6 +407,10 @@ export async function search(
         // String filters.
         const stringFilters = {
             q: optionalString(request.query.q),
+            make: optionalString(request.query.make),
+            model: optionalString(request.query.model),
+            variant: optionalString(request.query.variant),
+            // Legacy catalogue-ID filters remain supported for older saved URLs.
             makeId: optionalString(request.query.makeId),
             modelId: optionalString(request.query.modelId),
             generationId: optionalString(request.query.generationId),

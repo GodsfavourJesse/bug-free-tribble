@@ -4,6 +4,9 @@ CREATE TYPE "public"."vehicle_body_style" AS ENUM('SEDAN', 'SUV', 'COUPE', 'HATC
 CREATE TYPE "public"."vehicle_drive_type" AS ENUM('FWD', 'RWD', 'AWD', 'FOUR_WD');--> statement-breakpoint
 CREATE TYPE "public"."vehicle_fuel_type" AS ENUM('PETROL', 'DIESEL', 'HYBRID', 'PLUG_IN_HYBRID', 'ELECTRIC', 'CNG', 'LPG');--> statement-breakpoint
 CREATE TYPE "public"."vehicle_transmission" AS ENUM('MANUAL', 'AUTOMATIC', 'CVT', 'DCT', 'AMT');--> statement-breakpoint
+CREATE TYPE "public"."vehicle_catalog_entity_type" AS ENUM('MAKE', 'MODEL', 'GENERATION', 'ENGINE', 'VARIANT', 'MODEL_YEAR');--> statement-breakpoint
+CREATE TYPE "public"."vehicle_catalog_source_type" AS ENUM('MANUFACTURER', 'GOVERNMENT', 'TECHNICAL_DOCUMENT', 'AUTOMOTIVE_PUBLICATION', 'OTHER');--> statement-breakpoint
+CREATE TYPE "public"."vehicle_catalog_verification_status" AS ENUM('PENDING', 'VERIFIED', 'DISPUTED', 'REJECTED');--> statement-breakpoint
 CREATE TYPE "public"."listing_condition" AS ENUM('BRAND_NEW', 'FOREIGN_USED', 'NIGERIAN_USED');--> statement-breakpoint
 CREATE TYPE "public"."listing_status" AS ENUM('DRAFT', 'PENDING_REVIEW', 'APPROVED', 'REJECTED', 'EXPIRED', 'SOLD', 'SUSPENDED', 'DELETED');--> statement-breakpoint
 CREATE TYPE "public"."image_check_source" AS ENUM('AUTOMATED', 'ADMIN');--> statement-breakpoint
@@ -19,11 +22,11 @@ CREATE TYPE "public"."dealer_document_status" AS ENUM('PENDING', 'APPROVED', 'RE
 CREATE TYPE "public"."boost_status" AS ENUM('PENDING', 'AWAITING_APPROVAL', 'ACTIVE', 'REJECTED', 'EXPIRED', 'CANCELLED');--> statement-breakpoint
 CREATE TYPE "public"."conversation_type" AS ENUM('BUYER_SELLER', 'SUPPORT');--> statement-breakpoint
 CREATE TYPE "public"."support_ticket_status" AS ENUM('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED');--> statement-breakpoint
-CREATE TYPE "public"."notification_type" AS ENUM('GENERAL', 'LISTING_SUBMITTED', 'LISTING_APPROVED', 'LISTING_REJECTED', 'LISTING_EXPIRED', 'LISTING_SOLD', 'SUBSCRIPTION_PAYMENT_PENDING', 'SUBSCRIPTION_ACTIVATED', 'SUBSCRIPTION_EXPIRED', 'SUBSCRIPTION_EXPIRY_REMINDER', 'BOOST_PAYMENT_PENDING', 'BOOST_PAYMENT_SUCCESSFUL', 'BOOST_PAYMENT_RECEIVED', 'BOOST_ACTIVATED', 'BOOST_EXPIRY_REMINDER', 'BOOST_EXPIRED', 'MESSAGE_RECEIVED', 'DEALER_VERIFIED', 'DEALER_APPLICATION_REJECTED');--> statement-breakpoint
+CREATE TYPE "public"."notification_type" AS ENUM('GENERAL', 'LISTING_SUBMITTED', 'LISTING_APPROVED', 'LISTING_REJECTED', 'LISTING_EXPIRED', 'LISTING_SOLD', 'SUBSCRIPTION_PAYMENT_PENDING', 'SUBSCRIPTION_ACTIVATED', 'SUBSCRIPTION_EXPIRED', 'SUBSCRIPTION_EXPIRY_REMINDER', 'BOOST_PAYMENT_PENDING', 'BOOST_PAYMENT_SUCCESSFUL', 'BOOST_PAYMENT_RECEIVED', 'BOOST_ACTIVATED', 'BOOST_EXPIRY_REMINDER', 'SUBSCRIPTION_CREDITS_EXHAUSTED', 'BOOST_EXPIRED', 'MESSAGE_RECEIVED', 'DEALER_VERIFIED', 'DEALER_APPLICATION_REJECTED');--> statement-breakpoint
 CREATE TYPE "public"."notification_channel" AS ENUM('IN_APP', 'SOCKET', 'EMAIL', 'PUSH');--> statement-breakpoint
 CREATE TYPE "public"."notification_delivery_status" AS ENUM('PENDING', 'PROCESSING', 'SUCCEEDED', 'FAILED');--> statement-breakpoint
 CREATE TYPE "public"."payment_purpose" AS ENUM('SUBSCRIPTION', 'BOOST');--> statement-breakpoint
-CREATE TYPE "public"."payment_status" AS ENUM('PENDING', 'SUCCESS', 'FAILED', 'ABANDONED', 'REVERSED', 'PROCESSING');--> statement-breakpoint
+CREATE TYPE "public"."payment_status" AS ENUM('STARTED', 'ABANDONED', 'FAILED', 'SUCCESS');--> statement-breakpoint
 CREATE TYPE "public"."payment_event_processing_status" AS ENUM('RECEIVED', 'PROCESSING', 'PROCESSED', 'RETRY', 'DEAD_LETTER', 'IGNORED');--> statement-breakpoint
 CREATE TYPE "public"."payment_event_signature_status" AS ENUM('UNKNOWN', 'VALID', 'INVALID');--> statement-breakpoint
 CREATE TYPE "public"."payment_reconciliation_status" AS ENUM('PENDING', 'PROCESSING', 'RETRY', 'RESOLVED', 'DEAD_LETTER', 'IGNORED');--> statement-breakpoint
@@ -343,10 +346,136 @@ CREATE TABLE "vehicle_variant_markets" (
 	CONSTRAINT "vehicle_variant_markets_unique" UNIQUE("variant_id","market_id")
 );
 --> statement-breakpoint
+CREATE TABLE "vehicle_data_source_links" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"source_id" uuid NOT NULL,
+	"entity_type" "vehicle_catalog_entity_type" NOT NULL,
+	"entity_id" uuid NOT NULL,
+	"verification_status" "vehicle_catalog_verification_status" DEFAULT 'PENDING' NOT NULL,
+	"accessed_at" timestamp with time zone,
+	"verified_at" timestamp with time zone,
+	"verification_notes" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "vehicle_data_source_entity_unique" UNIQUE("source_id","entity_type","entity_id")
+);
+--> statement-breakpoint
+CREATE TABLE "vehicle_data_sources" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" varchar(200) NOT NULL,
+	"url" text NOT NULL,
+	"source_type" "vehicle_catalog_source_type" NOT NULL,
+	"license_name" varchar(200),
+	"license_url" text,
+	"attribution_required" boolean DEFAULT false NOT NULL,
+	"attribution_text" text,
+	"reuse_notes" text,
+	"active" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "vehicle_data_sources_name_url_unique" UNIQUE("name","url")
+);
+--> statement-breakpoint
+CREATE TABLE "vehicle_engine_specifications" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"engine_id" uuid NOT NULL,
+	"engine_code" varchar(100),
+	"configuration" varchar(100),
+	"cylinder_layout" varchar(50),
+	"valves" integer,
+	"valves_per_cylinder" integer,
+	"valve_train" varchar(100),
+	"aspiration" varchar(80),
+	"fuel_system" varchar(120),
+	"power_kw" integer,
+	"power_rpm" integer,
+	"torque_nm" integer,
+	"torque_rpm" integer,
+	"compression_ratio" real,
+	"bore_mm" real,
+	"stroke_mm" real,
+	"hybrid_system" varchar(150),
+	"motor_power_kw" integer,
+	"battery_capacity_kwh" real,
+	"electric_range_km" integer,
+	"additional_specifications" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "vehicle_engine_specifications_engine_id_unique" UNIQUE("engine_id"),
+	CONSTRAINT "vehicle_engine_specs_power_check" CHECK (
+                power_kw IS NULL OR power_kw > 0
+            ),
+	CONSTRAINT "vehicle_engine_specs_torque_check" CHECK (
+                torque_nm IS NULL OR torque_nm > 0
+            ),
+	CONSTRAINT "vehicle_engine_specs_valves_check" CHECK (
+                valves IS NULL OR valves > 0
+            )
+);
+--> statement-breakpoint
+CREATE TABLE "vehicle_variant_specifications" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"variant_id" uuid NOT NULL,
+	"top_speed_kph" integer,
+	"acceleration_0_to_100_seconds" real,
+	"fuel_consumption_city_l100km" real,
+	"fuel_consumption_highway_l100km" real,
+	"fuel_consumption_combined_l100km" real,
+	"battery_capacity_kwh" real,
+	"electric_range_km" integer,
+	"charging_power_kw" real,
+	"curb_weight_kg" integer,
+	"gross_weight_kg" integer,
+	"towing_capacity_kg" integer,
+	"length_mm" integer,
+	"width_mm" integer,
+	"height_mm" integer,
+	"wheelbase_mm" integer,
+	"ground_clearance_mm" integer,
+	"fuel_tank_capacity_litres" real,
+	"cargo_capacity_litres" integer,
+	"tyre_sizes" jsonb DEFAULT '[]'::jsonb NOT NULL,
+	"equipment" jsonb DEFAULT '[]'::jsonb NOT NULL,
+	"additional_specifications" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "vehicle_variant_specifications_variant_id_unique" UNIQUE("variant_id"),
+	CONSTRAINT "vehicle_variant_specs_dimensions_check" CHECK (
+                (length_mm IS NULL OR length_mm > 0)
+                AND (width_mm IS NULL OR width_mm > 0)
+                AND (height_mm IS NULL OR height_mm > 0)
+                AND (wheelbase_mm IS NULL OR wheelbase_mm > 0)
+            ),
+	CONSTRAINT "vehicle_variant_specs_weight_check" CHECK (
+                (curb_weight_kg IS NULL OR curb_weight_kg > 0)
+                AND (gross_weight_kg IS NULL OR gross_weight_kg > 0)
+            ),
+	CONSTRAINT "vehicle_variant_specs_range_check" CHECK (
+                electric_range_km IS NULL
+                OR electric_range_km >= 0
+            )
+);
+--> statement-breakpoint
 CREATE TABLE "listings" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"seller_id" uuid NOT NULL,
-	"vehicle_variant_id" uuid NOT NULL,
+	"vehicle_variant_id" uuid,
+	"make_name" varchar(100),
+	"model_name" varchar(120),
+	"year" integer,
+	"generation_name" varchar(120),
+	"variant_name" varchar(160),
+	"body_style" varchar(60),
+	"fuel_type" varchar(60),
+	"transmission" varchar(60),
+	"drive_type" varchar(60),
+	"engine_capacity" varchar(60),
+	"horsepower" integer,
+	"exterior_color" varchar(80),
+	"interior_color" varchar(80),
+	"seats" integer,
+	"doors" integer,
+	"specifications" jsonb DEFAULT '{}'::jsonb NOT NULL,
 	"title" varchar(200) NOT NULL,
 	"description" text NOT NULL,
 	"price" numeric(14, 2) NOT NULL,
@@ -367,6 +496,21 @@ CREATE TABLE "listings" (
 	CONSTRAINT "listings_mileage_non_negative" CHECK (
                 "listings"."mileage" IS NULL
                 OR "listings"."mileage" >= 0
+            ),
+	CONSTRAINT "listings_year_valid" CHECK (
+                "listings"."year" IS NULL
+                OR ("listings"."year" >= 1886 AND "listings"."year" <= 2100)
+            ),
+	CONSTRAINT "listings_horsepower_non_negative" CHECK ("listings"."horsepower" IS NULL OR "listings"."horsepower" >= 0),
+	CONSTRAINT "listings_seats_positive" CHECK ("listings"."seats" IS NULL OR "listings"."seats" > 0),
+	CONSTRAINT "listings_doors_positive" CHECK ("listings"."doors" IS NULL OR "listings"."doors" > 0),
+	CONSTRAINT "listings_vehicle_identity_valid" CHECK (
+                "listings"."vehicle_variant_id" IS NOT NULL
+                OR (
+                    NULLIF(BTRIM("listings"."make_name"), '') IS NOT NULL
+                    AND NULLIF(BTRIM("listings"."model_name"), '') IS NOT NULL
+                    AND "listings"."year" IS NOT NULL
+                )
             )
 );
 --> statement-breakpoint
@@ -453,6 +597,7 @@ CREATE TABLE "subscription_plan_versions" (
 	"currency" varchar(10) DEFAULT 'NGN' NOT NULL,
 	"duration_days" integer DEFAULT 30 NOT NULL,
 	"listing_credits" integer NOT NULL,
+	"normal_user_discount_percent" numeric(5, 2) DEFAULT '0.00' NOT NULL,
 	"dealer_discount_percent" numeric(5, 2) DEFAULT '30.00' NOT NULL,
 	"active" boolean DEFAULT true NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -460,7 +605,12 @@ CREATE TABLE "subscription_plan_versions" (
 	CONSTRAINT "subscription_plan_versions_price_non_negative" CHECK ("subscription_plan_versions"."price" >= 0),
 	CONSTRAINT "subscription_plan_versions_duration_positive" CHECK ("subscription_plan_versions"."duration_days" > 0),
 	CONSTRAINT "subscription_plan_versions_listing_credits_positive" CHECK ("subscription_plan_versions"."listing_credits" > 0),
-	CONSTRAINT "subscription_plan_versions_discount_valid" CHECK (
+	CONSTRAINT "subscription_plan_versions_normal_user_discount_valid" CHECK (
+                        "subscription_plan_versions"."normal_user_discount_percent" >= 0
+                        AND
+                        "subscription_plan_versions"."normal_user_discount_percent" <= 100
+                    ),
+	CONSTRAINT "subscription_plan_versions_dealer_discount_valid" CHECK (
                         "subscription_plan_versions"."dealer_discount_percent" >= 0
                         AND
                         "subscription_plan_versions"."dealer_discount_percent" <= 100
@@ -485,7 +635,9 @@ CREATE TABLE "subscriptions" (
 	"plan_version_id" uuid NOT NULL,
 	"status" "subscription_status" DEFAULT 'PENDING' NOT NULL,
 	"original_price" numeric(14, 2) NOT NULL,
+	"normal_user_discount_percent" numeric(5, 2) DEFAULT '0.00' NOT NULL,
 	"dealer_discount_percent" numeric(5, 2) DEFAULT '0.00' NOT NULL,
+	"applied_discount_percent" numeric(5, 2) DEFAULT '0.00' NOT NULL,
 	"effective_price" numeric(14, 2) NOT NULL,
 	"currency" varchar(10) DEFAULT 'NGN' NOT NULL,
 	"duration_days" integer NOT NULL,
@@ -499,10 +651,20 @@ CREATE TABLE "subscriptions" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "subscriptions_original_price_non_negative" CHECK ("subscriptions"."original_price" >= 0),
 	CONSTRAINT "subscriptions_effective_price_non_negative" CHECK ("subscriptions"."effective_price" >= 0),
-	CONSTRAINT "subscriptions_discount_valid" CHECK (
+	CONSTRAINT "subscriptions_normal_user_discount_valid" CHECK (
+                        "subscriptions"."normal_user_discount_percent" >= 0
+                        AND
+                        "subscriptions"."normal_user_discount_percent" <= 100
+                    ),
+	CONSTRAINT "subscriptions_dealer_discount_valid" CHECK (
                         "subscriptions"."dealer_discount_percent" >= 0
                         AND
                         "subscriptions"."dealer_discount_percent" <= 100
+                    ),
+	CONSTRAINT "subscriptions_applied_discount_valid" CHECK (
+                        "subscriptions"."applied_discount_percent" >= 0
+                        AND
+                        "subscriptions"."applied_discount_percent" <= 100
                     ),
 	CONSTRAINT "subscriptions_duration_positive" CHECK ("subscriptions"."duration_days" > 0),
 	CONSTRAINT "subscriptions_listing_credits_positive" CHECK ("subscriptions"."listing_credits" > 0),
@@ -718,7 +880,7 @@ CREATE TABLE "payments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
 	"purpose" "payment_purpose" NOT NULL,
-	"status" "payment_status" DEFAULT 'PENDING' NOT NULL,
+	"status" "payment_status" DEFAULT 'STARTED' NOT NULL,
 	"reference" varchar(100) NOT NULL,
 	"provider" varchar(50) DEFAULT 'PAYSTACK' NOT NULL,
 	"gateway_transaction_id" varchar(100),
@@ -732,6 +894,7 @@ CREATE TABLE "payments" (
 	"provider_data" jsonb,
 	"initialization_token" uuid,
 	"initialization_expires_at" timestamp with time zone,
+	"checkout_expires_at" timestamp with time zone,
 	"paid_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -1008,9 +1171,38 @@ CREATE TABLE "listing_credit_ledger" (
 	"user_id" uuid NOT NULL,
 	"amount" integer NOT NULL,
 	"reason" varchar(100) NOT NULL,
-	"reference_id" uuid,
+	"credit_source" varchar(40) NOT NULL,
+	"reference_id" uuid NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "listing_credit_ledger_amount_nonzero_check" CHECK ("listing_credit_ledger"."amount" <> 0)
+	CONSTRAINT "listing_credit_ledger_amount_nonzero_check" CHECK ("listing_credit_ledger"."amount" <> 0),
+	CONSTRAINT "listing_credit_ledger_source_check" CHECK ("listing_credit_ledger"."credit_source" IN (
+                'FREE_TRIAL',
+                'SUBSCRIPTION_CREDIT',
+                'ADMIN_ADJUSTMENT'
+            )),
+	CONSTRAINT "listing_credit_ledger_reason_source_check" CHECK (
+                (
+                    "listing_credit_ledger"."reason" = 'FREE_TRIAL'
+                    AND "listing_credit_ledger"."credit_source" = 'FREE_TRIAL'
+                    AND "listing_credit_ledger"."amount" > 0
+                )
+                OR
+                (
+                    "listing_credit_ledger"."reason" = 'SUBSCRIPTION_CREDIT'
+                    AND "listing_credit_ledger"."credit_source" = 'SUBSCRIPTION_CREDIT'
+                    AND "listing_credit_ledger"."amount" > 0
+                )
+                OR
+                (
+                    "listing_credit_ledger"."reason" = 'ADMIN_ADJUSTMENT'
+                    AND "listing_credit_ledger"."credit_source" = 'ADMIN_ADJUSTMENT'
+                )
+                OR
+                (
+                    "listing_credit_ledger"."reason" = 'LISTING_CREATED'
+                    AND "listing_credit_ledger"."amount" = -1
+                )
+            )
 );
 --> statement-breakpoint
 CREATE TABLE "saved_searches" (
@@ -1069,6 +1261,9 @@ ALTER TABLE "vehicle_model_year_markets" ADD CONSTRAINT "vehicle_model_year_mark
 ALTER TABLE "vehicle_model_year_markets" ADD CONSTRAINT "vehicle_model_year_markets_market_id_vehicle_markets_id_fk" FOREIGN KEY ("market_id") REFERENCES "public"."vehicle_markets"("id") ON DELETE restrict ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "vehicle_variant_markets" ADD CONSTRAINT "vehicle_variant_markets_variant_id_vehicle_variants_id_fk" FOREIGN KEY ("variant_id") REFERENCES "public"."vehicle_variants"("id") ON DELETE restrict ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "vehicle_variant_markets" ADD CONSTRAINT "vehicle_variant_markets_market_id_vehicle_markets_id_fk" FOREIGN KEY ("market_id") REFERENCES "public"."vehicle_markets"("id") ON DELETE restrict ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "vehicle_data_source_links" ADD CONSTRAINT "vehicle_data_source_links_source_id_vehicle_data_sources_id_fk" FOREIGN KEY ("source_id") REFERENCES "public"."vehicle_data_sources"("id") ON DELETE restrict ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "vehicle_engine_specifications" ADD CONSTRAINT "vehicle_engine_specifications_engine_id_vehicle_engines_id_fk" FOREIGN KEY ("engine_id") REFERENCES "public"."vehicle_engines"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "vehicle_variant_specifications" ADD CONSTRAINT "vehicle_variant_specifications_variant_id_vehicle_variants_id_fk" FOREIGN KEY ("variant_id") REFERENCES "public"."vehicle_variants"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "listings" ADD CONSTRAINT "listings_seller_id_users_id_fk" FOREIGN KEY ("seller_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "listings" ADD CONSTRAINT "listings_vehicle_variant_id_vehicle_variants_id_fk" FOREIGN KEY ("vehicle_variant_id") REFERENCES "public"."vehicle_variants"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "listing_images" ADD CONSTRAINT "listing_images_listing_id_listings_id_fk" FOREIGN KEY ("listing_id") REFERENCES "public"."listings"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -1190,10 +1385,19 @@ CREATE INDEX "vehicle_model_year_markets_model_year_idx" ON "vehicle_model_year_
 CREATE INDEX "vehicle_model_year_markets_market_idx" ON "vehicle_model_year_markets" USING btree ("market_id");--> statement-breakpoint
 CREATE INDEX "vehicle_variant_markets_variant_idx" ON "vehicle_variant_markets" USING btree ("variant_id");--> statement-breakpoint
 CREATE INDEX "vehicle_variant_markets_market_idx" ON "vehicle_variant_markets" USING btree ("market_id");--> statement-breakpoint
+CREATE INDEX "vehicle_data_source_entity_idx" ON "vehicle_data_source_links" USING btree ("entity_type","entity_id");--> statement-breakpoint
+CREATE INDEX "vehicle_data_source_status_idx" ON "vehicle_data_source_links" USING btree ("verification_status");--> statement-breakpoint
+CREATE INDEX "vehicle_data_source_source_idx" ON "vehicle_data_source_links" USING btree ("source_id");--> statement-breakpoint
+CREATE INDEX "vehicle_data_sources_type_idx" ON "vehicle_data_sources" USING btree ("source_type");--> statement-breakpoint
+CREATE INDEX "vehicle_data_sources_active_idx" ON "vehicle_data_sources" USING btree ("active");--> statement-breakpoint
+CREATE INDEX "vehicle_engine_specs_engine_idx" ON "vehicle_engine_specifications" USING btree ("engine_id");--> statement-breakpoint
+CREATE INDEX "vehicle_variant_specs_variant_idx" ON "vehicle_variant_specifications" USING btree ("variant_id");--> statement-breakpoint
 CREATE INDEX "listings_seller_status_idx" ON "listings" USING btree ("seller_id","status");--> statement-breakpoint
 CREATE INDEX "listings_seller_created_idx" ON "listings" USING btree ("seller_id","created_at");--> statement-breakpoint
 CREATE INDEX "listings_marketplace_idx" ON "listings" USING btree ("status","expires_at","created_at");--> statement-breakpoint
 CREATE INDEX "listings_vehicle_variant_idx" ON "listings" USING btree ("vehicle_variant_id");--> statement-breakpoint
+CREATE INDEX "listings_make_model_year_idx" ON "listings" USING btree ("make_name","model_name","year");--> statement-breakpoint
+CREATE INDEX "listings_year_idx" ON "listings" USING btree ("year");--> statement-breakpoint
 CREATE INDEX "listings_price_idx" ON "listings" USING btree ("price");--> statement-breakpoint
 CREATE INDEX "listings_state_city_idx" ON "listings" USING btree ("state","city");--> statement-breakpoint
 CREATE INDEX "listing_images_listing_idx" ON "listing_images" USING btree ("listing_id","sort_order");--> statement-breakpoint
@@ -1254,17 +1458,17 @@ CREATE UNIQUE INDEX "payments_gateway_transaction_id_unique_idx" ON "payments" U
                         "payments"."gateway_transaction_id"
                         IS NOT NULL
                     ;--> statement-breakpoint
-CREATE UNIQUE INDEX "payments_pending_subscription_unique_idx" ON "payments" USING btree ("subscription_id") WHERE 
-                    "payments"."purpose" = 'SUBSCRIPTION'
-                    AND
-                    "payments"."status" = 'PENDING'
-                    AND
-                    "payments"."subscription_id" IS NOT NULL
-                ;--> statement-breakpoint
-CREATE UNIQUE INDEX "payments_pending_boost_unique_idx" ON "payments" USING btree ("listing_boost_id") WHERE 
+CREATE UNIQUE INDEX "payments_started_subscription_unique_idx" ON "payments" USING btree ("subscription_id") WHERE 
+                        "payments"."purpose" = 'SUBSCRIPTION'
+                        AND
+                        "payments"."status" = 'STARTED'
+                        AND
+                        "payments"."subscription_id" IS NOT NULL
+                    ;--> statement-breakpoint
+CREATE UNIQUE INDEX "payments_started_boost_unique_idx" ON "payments" USING btree ("listing_boost_id") WHERE 
                         "payments"."purpose" = 'BOOST'
                         AND
-                        "payments"."status" = 'PENDING'
+                        "payments"."status" = 'STARTED'
                         AND
                         "payments"."listing_boost_id" IS NOT NULL
                     ;--> statement-breakpoint
@@ -1321,6 +1525,7 @@ CREATE INDEX "image_review_decisions_listing_idx" ON "image_review_decisions" US
 CREATE INDEX "image_review_decisions_reviewer_idx" ON "image_review_decisions" USING btree ("reviewer_id","created_at");--> statement-breakpoint
 CREATE INDEX "listing_credit_ledger_user_created_idx" ON "listing_credit_ledger" USING btree ("user_id","created_at");--> statement-breakpoint
 CREATE INDEX "listing_credit_ledger_reason_idx" ON "listing_credit_ledger" USING btree ("reason");--> statement-breakpoint
+CREATE INDEX "listing_credit_ledger_source_idx" ON "listing_credit_ledger" USING btree ("user_id","credit_source");--> statement-breakpoint
 CREATE UNIQUE INDEX "listing_credit_ledger_reference_unique_idx" ON "listing_credit_ledger" USING btree ("user_id","reason","reference_id");--> statement-breakpoint
 CREATE INDEX "saved_searches_user_id_idx" ON "saved_searches" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "saved_searches_user_created_at_idx" ON "saved_searches" USING btree ("user_id","created_at");--> statement-breakpoint

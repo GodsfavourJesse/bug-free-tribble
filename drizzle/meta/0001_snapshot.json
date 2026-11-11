@@ -1,6 +1,6 @@
 {
-  "id": "58faf41c-9c43-42ae-815e-642e46ec72c3",
-  "prevId": "f504a6e7-2064-46ac-8eca-3709018b8f30",
+  "id": "157a73bf-65a8-48bb-8aea-f4f463f26fd0",
+  "prevId": "84fc5f8d-f5e7-48b9-9d96-8101bce858ef",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -41,6 +41,12 @@
         },
         "phone": {
           "name": "phone",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "whatsapp_phone": {
+          "name": "whatsapp_phone",
           "type": "varchar(30)",
           "primaryKey": false,
           "notNull": false
@@ -139,7 +145,14 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": false
+          "default": true
+        },
+        "show_whatsapp": {
+          "name": "show_whatsapp",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
         },
         "show_email": {
           "name": "show_email",
@@ -3786,7 +3799,104 @@
           "name": "vehicle_variant_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "make_name": {
+          "name": "make_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "model_name": {
+          "name": "model_name",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generation_name": {
+          "name": "generation_name",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "variant_name": {
+          "name": "variant_name",
+          "type": "varchar(160)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "body_style": {
+          "name": "body_style",
+          "type": "varchar(60)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fuel_type": {
+          "name": "fuel_type",
+          "type": "varchar(60)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transmission": {
+          "name": "transmission",
+          "type": "varchar(60)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "drive_type": {
+          "name": "drive_type",
+          "type": "varchar(60)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "engine_capacity": {
+          "name": "engine_capacity",
+          "type": "varchar(60)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "horsepower": {
+          "name": "horsepower",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "exterior_color": {
+          "name": "exterior_color",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "interior_color": {
+          "name": "interior_color",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "seats": {
+          "name": "seats",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "doors": {
+          "name": "doors",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "specifications": {
+          "name": "specifications",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
         },
         "title": {
           "name": "title",
@@ -3979,6 +4089,48 @@
           "method": "btree",
           "with": {}
         },
+        "listings_make_model_year_idx": {
+          "name": "listings_make_model_year_idx",
+          "columns": [
+            {
+              "expression": "make_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "model_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "listings_year_idx": {
+          "name": "listings_year_idx",
+          "columns": [
+            {
+              "expression": "year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "listings_price_idx": {
           "name": "listings_price_idx",
           "columns": [
@@ -4055,6 +4207,26 @@
         "listings_mileage_non_negative": {
           "name": "listings_mileage_non_negative",
           "value": "\n                \"listings\".\"mileage\" IS NULL\n                OR \"listings\".\"mileage\" >= 0\n            "
+        },
+        "listings_year_valid": {
+          "name": "listings_year_valid",
+          "value": "\n                \"listings\".\"year\" IS NULL\n                OR (\"listings\".\"year\" >= 1886 AND \"listings\".\"year\" <= 2100)\n            "
+        },
+        "listings_horsepower_non_negative": {
+          "name": "listings_horsepower_non_negative",
+          "value": "\"listings\".\"horsepower\" IS NULL OR \"listings\".\"horsepower\" >= 0"
+        },
+        "listings_seats_positive": {
+          "name": "listings_seats_positive",
+          "value": "\"listings\".\"seats\" IS NULL OR \"listings\".\"seats\" > 0"
+        },
+        "listings_doors_positive": {
+          "name": "listings_doors_positive",
+          "value": "\"listings\".\"doors\" IS NULL OR \"listings\".\"doors\" > 0"
+        },
+        "listings_vehicle_identity_valid": {
+          "name": "listings_vehicle_identity_valid",
+          "value": "\n                \"listings\".\"vehicle_variant_id\" IS NOT NULL\n                OR (\n                    NULLIF(BTRIM(\"listings\".\"make_name\"), '') IS NOT NULL\n                    AND NULLIF(BTRIM(\"listings\".\"model_name\"), '') IS NOT NULL\n                    AND \"listings\".\"year\" IS NOT NULL\n                )\n            "
         }
       },
       "isRLSEnabled": false
@@ -5112,6 +5284,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "normal_user_discount_percent": {
+          "name": "normal_user_discount_percent",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0.00'"
+        },
         "dealer_discount_percent": {
           "name": "dealer_discount_percent",
           "type": "numeric(5, 2)",
@@ -5237,8 +5416,12 @@
           "name": "subscription_plan_versions_listing_credits_positive",
           "value": "\"subscription_plan_versions\".\"listing_credits\" > 0"
         },
-        "subscription_plan_versions_discount_valid": {
-          "name": "subscription_plan_versions_discount_valid",
+        "subscription_plan_versions_normal_user_discount_valid": {
+          "name": "subscription_plan_versions_normal_user_discount_valid",
+          "value": "\n                        \"subscription_plan_versions\".\"normal_user_discount_percent\" >= 0\n                        AND\n                        \"subscription_plan_versions\".\"normal_user_discount_percent\" <= 100\n                    "
+        },
+        "subscription_plan_versions_dealer_discount_valid": {
+          "name": "subscription_plan_versions_dealer_discount_valid",
           "value": "\n                        \"subscription_plan_versions\".\"dealer_discount_percent\" >= 0\n                        AND\n                        \"subscription_plan_versions\".\"dealer_discount_percent\" <= 100\n                    "
         },
         "subscription_plan_versions_version_positive": {
@@ -5368,8 +5551,22 @@
           "primaryKey": false,
           "notNull": true
         },
+        "normal_user_discount_percent": {
+          "name": "normal_user_discount_percent",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0.00'"
+        },
         "dealer_discount_percent": {
           "name": "dealer_discount_percent",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0.00'"
+        },
+        "applied_discount_percent": {
+          "name": "applied_discount_percent",
           "type": "numeric(5, 2)",
           "primaryKey": false,
           "notNull": true,
@@ -5604,9 +5801,17 @@
           "name": "subscriptions_effective_price_non_negative",
           "value": "\"subscriptions\".\"effective_price\" >= 0"
         },
-        "subscriptions_discount_valid": {
-          "name": "subscriptions_discount_valid",
+        "subscriptions_normal_user_discount_valid": {
+          "name": "subscriptions_normal_user_discount_valid",
+          "value": "\n                        \"subscriptions\".\"normal_user_discount_percent\" >= 0\n                        AND\n                        \"subscriptions\".\"normal_user_discount_percent\" <= 100\n                    "
+        },
+        "subscriptions_dealer_discount_valid": {
+          "name": "subscriptions_dealer_discount_valid",
           "value": "\n                        \"subscriptions\".\"dealer_discount_percent\" >= 0\n                        AND\n                        \"subscriptions\".\"dealer_discount_percent\" <= 100\n                    "
+        },
+        "subscriptions_applied_discount_valid": {
+          "name": "subscriptions_applied_discount_valid",
+          "value": "\n                        \"subscriptions\".\"applied_discount_percent\" >= 0\n                        AND\n                        \"subscriptions\".\"applied_discount_percent\" <= 100\n                    "
         },
         "subscriptions_duration_positive": {
           "name": "subscriptions_duration_positive",
@@ -7514,7 +7719,7 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'PENDING'"
+          "default": "'STARTED'"
         },
         "reference": {
           "name": "reference",
@@ -7598,6 +7803,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "checkout_expires_at": {
+          "name": "checkout_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "paid_at": {
           "name": "paid_at",
           "type": "timestamp with time zone",
@@ -7636,8 +7847,8 @@
           "method": "btree",
           "with": {}
         },
-        "payments_pending_subscription_unique_idx": {
-          "name": "payments_pending_subscription_unique_idx",
+        "payments_started_subscription_unique_idx": {
+          "name": "payments_started_subscription_unique_idx",
           "columns": [
             {
               "expression": "subscription_id",
@@ -7647,13 +7858,13 @@
             }
           ],
           "isUnique": true,
-          "where": "\n                    \"payments\".\"purpose\" = 'SUBSCRIPTION'\n                    AND\n                    \"payments\".\"status\" = 'PENDING'\n                    AND\n                    \"payments\".\"subscription_id\" IS NOT NULL\n                ",
+          "where": "\n                        \"payments\".\"purpose\" = 'SUBSCRIPTION'\n                        AND\n                        \"payments\".\"status\" = 'STARTED'\n                        AND\n                        \"payments\".\"subscription_id\" IS NOT NULL\n                    ",
           "concurrently": false,
           "method": "btree",
           "with": {}
         },
-        "payments_pending_boost_unique_idx": {
-          "name": "payments_pending_boost_unique_idx",
+        "payments_started_boost_unique_idx": {
+          "name": "payments_started_boost_unique_idx",
           "columns": [
             {
               "expression": "listing_boost_id",
@@ -7663,7 +7874,7 @@
             }
           ],
           "isUnique": true,
-          "where": "\n                        \"payments\".\"purpose\" = 'BOOST'\n                        AND\n                        \"payments\".\"status\" = 'PENDING'\n                        AND\n                        \"payments\".\"listing_boost_id\" IS NOT NULL\n                    ",
+          "where": "\n                        \"payments\".\"purpose\" = 'BOOST'\n                        AND\n                        \"payments\".\"status\" = 'STARTED'\n                        AND\n                        \"payments\".\"listing_boost_id\" IS NOT NULL\n                    ",
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -10316,11 +10527,17 @@
           "primaryKey": false,
           "notNull": true
         },
+        "credit_source": {
+          "name": "credit_source",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "reference_id": {
           "name": "reference_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -10357,6 +10574,27 @@
           "columns": [
             {
               "expression": "reason",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "listing_credit_ledger_source_idx": {
+          "name": "listing_credit_ledger_source_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "credit_source",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -10417,6 +10655,14 @@
         "listing_credit_ledger_amount_nonzero_check": {
           "name": "listing_credit_ledger_amount_nonzero_check",
           "value": "\"listing_credit_ledger\".\"amount\" <> 0"
+        },
+        "listing_credit_ledger_source_check": {
+          "name": "listing_credit_ledger_source_check",
+          "value": "\"listing_credit_ledger\".\"credit_source\" IN (\n                'FREE_TRIAL',\n                'SUBSCRIPTION_CREDIT',\n                'ADMIN_ADJUSTMENT'\n            )"
+        },
+        "listing_credit_ledger_reason_source_check": {
+          "name": "listing_credit_ledger_reason_source_check",
+          "value": "\n                (\n                    \"listing_credit_ledger\".\"reason\" = 'FREE_TRIAL'\n                    AND \"listing_credit_ledger\".\"credit_source\" = 'FREE_TRIAL'\n                    AND \"listing_credit_ledger\".\"amount\" > 0\n                )\n                OR\n                (\n                    \"listing_credit_ledger\".\"reason\" = 'SUBSCRIPTION_CREDIT'\n                    AND \"listing_credit_ledger\".\"credit_source\" = 'SUBSCRIPTION_CREDIT'\n                    AND \"listing_credit_ledger\".\"amount\" > 0\n                )\n                OR\n                (\n                    \"listing_credit_ledger\".\"reason\" = 'ADMIN_ADJUSTMENT'\n                    AND \"listing_credit_ledger\".\"credit_source\" = 'ADMIN_ADJUSTMENT'\n                )\n                OR\n                (\n                    \"listing_credit_ledger\".\"reason\" = 'LISTING_CREATED'\n                    AND \"listing_credit_ledger\".\"amount\" = -1\n                )\n            "
         }
       },
       "isRLSEnabled": false
@@ -10983,6 +11229,7 @@
         "BOOST_PAYMENT_RECEIVED",
         "BOOST_ACTIVATED",
         "BOOST_EXPIRY_REMINDER",
+        "SUBSCRIPTION_CREDITS_EXHAUSTED",
         "BOOST_EXPIRED",
         "MESSAGE_RECEIVED",
         "DEALER_VERIFIED",
@@ -11021,12 +11268,10 @@
       "name": "payment_status",
       "schema": "public",
       "values": [
-        "PENDING",
-        "SUCCESS",
-        "FAILED",
+        "STARTED",
         "ABANDONED",
-        "REVERSED",
-        "PROCESSING"
+        "FAILED",
+        "SUCCESS"
       ]
     },
     "public.payment_event_processing_status": {

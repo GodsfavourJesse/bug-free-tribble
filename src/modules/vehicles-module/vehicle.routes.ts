@@ -75,10 +75,6 @@ router.get(
 router.get(
     "/models/:modelId/generations",
     getGenerations,
-    getExternalMakes,
-    getExternalModels,
-    getExternalProviderStatus,
-    getExternalVehicleOptions,
 );
 
 /**

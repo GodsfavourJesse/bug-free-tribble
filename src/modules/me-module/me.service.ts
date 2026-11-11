@@ -49,44 +49,44 @@ import { getCreditBreakdown } from "../credits/credit.service.ts";
  *
  * Only verified dealer accounts are eligible.
  */
-async function getPhoneVisibilityEligibility(
-    userId: string,
-): Promise<{
-    isVerifiedDealer: boolean;
-    canShowPhone: boolean;
-}> {
-    const result = await db
-        .select({
-            accountType: users.accountType,
-            dealerVerified: dealerProfiles.verified,
-        })
-        .from(users)
-        .leftJoin(
-            dealerProfiles,
-            eq(
-                dealerProfiles.userId,
-                users.id,
-            ),
-        )
-        .where(
-            eq(
-                users.id,
-                userId,
-            ),
-        )
-        .limit(1);
+// async function getPhoneVisibilityEligibility(
+//     userId: string,
+// ): Promise<{
+//     isVerifiedDealer: boolean;
+//     canShowPhone: boolean;
+// }> {
+//     const result = await db
+//         .select({
+//             accountType: users.accountType,
+//             dealerVerified: dealerProfiles.verified,
+//         })
+//         .from(users)
+//         .leftJoin(
+//             dealerProfiles,
+//             eq(
+//                 dealerProfiles.userId,
+//                 users.id,
+//             ),
+//         )
+//         .where(
+//             eq(
+//                 users.id,
+//                 userId,
+//             ),
+//         )
+//         .limit(1);
 
-    const account = result[0];
+//     const account = result[0];
 
-    const isVerifiedDealer =
-        account?.accountType === "DEALER" &&
-        account.dealerVerified === true;
+//     const isVerifiedDealer =
+//         account?.accountType === "DEALER" &&
+//         account.dealerVerified === true;
 
-    return {
-        isVerifiedDealer,
-        canShowPhone: isVerifiedDealer,
-    };
-}
+//     return {
+//         isVerifiedDealer,
+//         canShowPhone: isVerifiedDealer,
+//     };
+// }
 
 /**
  * Retrieves the authenticated user's account, privacy settings,
@@ -283,6 +283,10 @@ export async function updateMyAccount(
         updateData.phone = input.phone;
     }
 
+    if (input.whatsappPhone !== undefined) {
+        updateData.whatsappPhone = input.whatsappPhone;
+    }
+
     if (input.avatarUrl !== undefined) {
         updateData.avatarUrl = input.avatarUrl;
     }
@@ -334,19 +338,7 @@ export async function updateMyAccount(
 export async function getPrivacySettings(
     userId: string,
 ) {
-    const settings = await ensurePrivacySettings(
-        userId,
-    );
-
-    const eligibility =
-        await getPhoneVisibilityEligibility(
-            userId,
-        );
-
-    return {
-        ...settings,
-        ...eligibility,
-    };
+    return ensurePrivacySettings(userId);
 }
 
 /**
@@ -361,33 +353,52 @@ export async function updatePrivacySettings(
 ) {
     await ensurePrivacySettings(userId);
 
-    /*
-     * Enforce dealer verification server-side.
-     *
-     * This prevents users from bypassing the frontend
-     * and enabling phone visibility through direct API calls.
-     */
-    if (input.showPhone === true) {
-        const {
-            isVerifiedDealer,
-        } = await getPhoneVisibilityEligibility(
-            userId,
-        );
+    if (
+        input.showPhone === true ||
+        input.showWhatsapp === true
+    ) {
+        const result = await db
+            .select({
+                phone: users.phone,
+                whatsappPhone: users.whatsappPhone,
+            })
+            .from(users)
+            .where(eq(users.id, userId))
+            .limit(1);
 
-        if (!isVerifiedDealer) {
+        const user = result[0];
+
+        if (!user) {
             throw new AppError(
-                "You must become a verified dealer before displaying your phone number.",
-                403,
-                "VERIFIED_DEALER_REQUIRED",
+                "Account not found.",
+                404,
+                "USER_NOT_FOUND",
+            );
+        }
+
+        if (
+            input.showPhone === true &&
+            !user.phone
+        ) {
+            throw new AppError(
+                "Add your phone number before making it public.",
+                400,
+                "PHONE_NUMBER_REQUIRED",
+            );
+        }
+
+        if (
+            input.showWhatsapp === true &&
+            !user.whatsappPhone
+        ) {
+            throw new AppError(
+                "Add your WhatsApp number before making it public.",
+                400,
+                "WHATSAPP_NUMBER_REQUIRED",
             );
         }
     }
 
-    /*
-     * Save only the submitted privacy preferences.
-     * Eligibility fields are calculated separately and
-     * must never be written to the database.
-     */
     const updated = await db
         .update(userPrivacySettings)
         .set({
@@ -417,15 +428,7 @@ export async function updatePrivacySettings(
         "USER_PRIVACY_UPDATED",
     );
 
-    const eligibility =
-        await getPhoneVisibilityEligibility(
-            userId,
-        );
-
-    return {
-        ...settings,
-        ...eligibility,
-    };
+    return settings;
 }
 
 /**
@@ -489,6 +492,7 @@ export async function deleteMyAccount(
                     firstName: "Deleted",
                     lastName: "User",
                     phone: null,
+                    whatsappPhone: null,
                     avatarUrl: null,
                     profileMetadata: {},
                     status: "DELETED",
