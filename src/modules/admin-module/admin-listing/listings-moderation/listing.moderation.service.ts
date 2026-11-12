@@ -1,4 +1,5 @@
 import {
+    and,
     asc,
     eq,
 } from "drizzle-orm";
@@ -33,6 +34,7 @@ import {
 import {
     logger,
 } from "../../../../config/logger.ts";
+import { getObjectStorage } from "../../../../infrastructure/storage/object-storage.ts";
 
 /**
  * Retrieve all listings awaiting administrator review.
@@ -239,6 +241,73 @@ export async function getModerationListing(
         ...listing,
         images,
         history,
+    };
+}
+
+/**
+ * Retrieve a listing image through the existing storage service.
+ *
+ * The image must belong to the requested listing.
+ */
+export async function getModerationImage(
+    listingId: string,
+    imageId: string,
+) {
+    const [image] = await db
+        .select({
+            id: listingImages.id,
+            listingId: listingImages.listingId,
+            objectKey: listingImages.objectKey,
+            mimeType: listingImages.mimeType,
+        })
+        .from(listingImages)
+        .where(
+            and(
+                eq(listingImages.id, imageId),
+                eq(listingImages.listingId, listingId),
+            ),
+        )
+        .limit(1);
+
+    if (!image) {
+        throw new AppError(
+            "Listing image not found.",
+            404,
+            "LISTING_IMAGE_NOT_FOUND",
+        );
+    }
+
+    const allowedMimeTypes = new Set([
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/avif",
+    ]);
+
+    const contentType = image.mimeType?.toLowerCase();
+
+    if (!contentType || !allowedMimeTypes.has(contentType)) {
+        throw new AppError(
+            "The listing image has an unsupported content type.",
+            415,
+            "UNSUPPORTED_LISTING_IMAGE_TYPE",
+        );
+    }
+
+    const storage = getObjectStorage();
+
+    const buffer = await storage.get(
+        image.objectKey,
+        {
+            resourceType: "image",
+            access: "public",
+        },
+    );
+
+    return {
+        buffer,
+        contentType,
+        size: buffer.length,
     };
 }
 

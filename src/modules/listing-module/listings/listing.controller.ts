@@ -218,6 +218,7 @@ export async function getById(
 
         const {
             listing,
+            seller,
             variant,
             generation,
             model,
@@ -229,6 +230,7 @@ export async function getById(
             success: true,
             data: {
                 listing,
+                seller,
                 images,
                 vehicleVariant: variant,
                 vehicleGeneration: generation,

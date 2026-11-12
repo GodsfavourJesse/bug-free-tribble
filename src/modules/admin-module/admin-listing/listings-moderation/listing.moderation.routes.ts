@@ -13,6 +13,7 @@ import {
 import {
     approve,
     getById,
+    getListingImage,
     pending,
     reject,
     suspend,
@@ -37,6 +38,17 @@ router.get(
     "/pending",
     requirePermission("listing:view"),
     pending,
+);
+
+/**
+ * GET /:listingId/images/:imageId
+ *
+ * Retrieve an individual listing image.
+ */
+router.get(
+    "/:listingId/images/:imageId",
+    requirePermission("listing:view"),
+    getListingImage,
 );
 
 /**

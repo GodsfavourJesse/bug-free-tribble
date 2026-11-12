@@ -350,14 +350,34 @@ export async function getAdminImageReview(
                 year: sql<number | null>`COALESCE(${listings.year}, ${vehicleVariants.year})`,
                 variantName: sql<string | null>`COALESCE(${listings.variantName}, ${vehicleVariants.name})`,
 
-                fuelType: sql<string | null>`COALESCE(${listings.fuelType}, ${vehicleVariants.fuelType})`,
+                fuelType: sql<string>`
+                    COALESCE(
+                        ${listings.fuelType},
+                        ${vehicleVariants.fuelType}::text
+                    )
+                `,
 
-                transmission: sql<string | null>`COALESCE(${listings.transmission}, ${vehicleVariants.transmission})`,
+                transmission: sql<string>`
+                    COALESCE(
+                        ${listings.transmission},
+                        ${vehicleVariants.transmission}::text
+                    )
+                `,
 
-                driveType: sql<string | null>`COALESCE(${listings.driveType}, ${vehicleVariants.driveType})`,
+                driveType: sql<string>`
+                    COALESCE(
+                        ${listings.driveType},
+                        ${vehicleVariants.driveType}::text
+                    )
+                `,
 
-                bodyStyle: sql<string | null>`COALESCE(${listings.bodyStyle}, ${vehicleVariants.bodyStyle})`,
-
+                bodyStyle: sql<string>`
+                    COALESCE(
+                        ${listings.bodyStyle},
+                        ${vehicleVariants.bodyStyle}::text
+                    )
+                `,
+                
                 seats: sql<number | null>`COALESCE(${listings.seats}, ${vehicleVariants.seats})`,
 
                 doors: sql<number | null>`COALESCE(${listings.doors}, ${vehicleVariants.doors})`,

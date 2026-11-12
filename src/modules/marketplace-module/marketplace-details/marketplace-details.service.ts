@@ -82,6 +82,8 @@ export async function getMarketplaceListingDetails(
                 id: users.id,
                 firstName: users.firstName,
                 lastName: users.lastName,
+                phone: users.phone,
+                whatsappPhone: users.whatsappPhone,
                 accountType: users.accountType,
                 avatarUrl: users.avatarUrl,
                 createdAt: users.createdAt,

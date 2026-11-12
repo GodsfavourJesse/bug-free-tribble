@@ -10,6 +10,7 @@ import {
 
 import {
     approveListing,
+    getModerationImage,
     getModerationListing,
     getPendingListings,
     rejectListing,
@@ -302,6 +303,41 @@ export async function suspend(
                 "Listing suspended successfully.",
             data: result,
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * GET /:listingId/images/:imageId
+ *
+ * Retrieve a listing image through the authenticated
+ * administrator API.
+ */
+export async function getListingImage(
+    request: Request<{
+        listingId: string;
+        imageId: string;
+    }>,
+    response: Response,
+    next: NextFunction,
+): Promise<void> {
+    try {
+        const image = await getModerationImage(
+            request.params.listingId,
+            request.params.imageId,
+        );
+
+        response
+            .status(200)
+            .set({
+                "Content-Type": image.contentType,
+                "Content-Length": String(image.size),
+                "Content-Disposition": "inline",
+                "Cache-Control": "private, no-store",
+                "X-Content-Type-Options": "nosniff",
+            })
+            .send(image.buffer);
     } catch (error) {
         next(error);
     }

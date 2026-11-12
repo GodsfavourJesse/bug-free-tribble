@@ -618,21 +618,29 @@ export async function getListingById(
     const result = await db
         .select({
             listing: listings,
-            variant:
-                vehicleVariants,
-            generation:
-                vehicleGenerations,
-            model:
-                vehicleModels,
-            make:
-                vehicleMakes,
+
+            seller: {
+                id: users.id,
+                firstName: users.firstName,
+                lastName: users.lastName,
+                phone: users.phone,
+                whatsappPhone: users.whatsappPhone,
+                accountType: users.accountType,
+                avatarUrl: users.avatarUrl,
+                createdAt: users.createdAt,
+            },
+
+            variant: vehicleVariants,
+            generation: vehicleGenerations,
+            model: vehicleModels,
+            make: vehicleMakes,
         })
         .from(listings)
         .leftJoin(
-            vehicleVariants,
+            users,
             eq(
-                listings.vehicleVariantId,
-                vehicleVariants.id,
+                listings.sellerId,
+                users.id,
             ),
         )
         .leftJoin(
