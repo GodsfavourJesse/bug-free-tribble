@@ -644,6 +644,13 @@ export async function getListingById(
             ),
         )
         .leftJoin(
+            vehicleVariants,
+            eq(
+                listings.vehicleVariantId,
+                vehicleVariants.id,
+            ),
+        )
+        .leftJoin(
             vehicleGenerations,
             eq(
                 vehicleVariants.generationId,
@@ -1994,3 +2001,4 @@ export async function retrySellerImageAnalysis(
         throw error;
     }
 }
+
