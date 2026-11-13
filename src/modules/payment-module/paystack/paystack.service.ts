@@ -230,7 +230,7 @@ export async function initializePaystackTransaction(input: {
                     currency: input.currency,
                     reference: input.reference,
                     callback_url:
-                        `${env.CLIENT_URL}/payments/callback`,
+                        `${env.CLIENT_URL}/dashboard/payments/callback`,
                     metadata: JSON.stringify(input.metadata),
                 }),
             },

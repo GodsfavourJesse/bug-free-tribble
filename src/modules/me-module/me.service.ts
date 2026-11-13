@@ -162,6 +162,8 @@ export async function getMyAccount(
                 originalPrice: subscriptions.originalPrice,
                 dealerDiscountPercent:
                     subscriptions.dealerDiscountPercent,
+                appliedDiscountPercent:
+                    subscriptions.appliedDiscountPercent,
 
                 effectivePrice: subscriptions.effectivePrice,
                 currency: subscriptions.currency,

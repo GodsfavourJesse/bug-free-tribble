@@ -6,6 +6,7 @@ import {
 } from "drizzle-orm";
 
 import { db } from "../../../database/index.ts";
+import { AppError } from "../../../errors/app-error.ts";
 
 import {
     listingFavorites,
@@ -40,18 +41,26 @@ export async function addListingFavorite(
     const listing = listingResult[0];
 
     if (!listing) {
-        throw new Error("Listing not found.");
+        throw new AppError(
+            "Listing not found.",
+            404,
+            "LISTING_NOT_FOUND",
+        );
     }
 
     if (listing.sellerId === userId) {
-        throw new Error(
+        throw new AppError(
             "You cannot favorite your own listing.",
+            403,
+            "OWN_LISTING_FAVORITE_NOT_ALLOWED",
         );
     }
 
     if (listing.status !== "APPROVED") {
-        throw new Error(
+        throw new AppError(
             "Only active marketplace listings can be favorited.",
+            409,
+            "LISTING_NOT_AVAILABLE",
         );
     }
 
@@ -59,8 +68,10 @@ export async function addListingFavorite(
         listing.expiresAt !== null &&
         listing.expiresAt <= new Date()
     ) {
-        throw new Error(
+        throw new AppError(
             "This listing has expired and cannot be favorited.",
+            410,
+            "LISTING_EXPIRED",
         );
     }
 
@@ -90,12 +101,26 @@ export async function addListingFavorite(
         };
     }
 
-    await db
+    const inserted = await db
         .insert(listingFavorites)
         .values({
             listingId,
             userId,
-        });
+        })
+        .onConflictDoNothing({
+            target: [
+                listingFavorites.userId,
+                listingFavorites.listingId,
+            ],
+        })
+        .returning({ id: listingFavorites.id });
+
+    if (inserted.length === 0) {
+        return {
+            favorited: true,
+            alreadyExists: true,
+        };
+    }
 
     return {
         favorited: true,

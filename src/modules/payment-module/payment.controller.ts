@@ -6,6 +6,7 @@ import {
     listUserPayments,
     verifyAndFulfillPayment,
 } from "./payment.service.ts";
+import { getCurrentSubscription } from "../subscriptions/subscription.service.ts";
 
 import {
     initializeBoostPaymentSchema,
@@ -152,15 +153,23 @@ export async function verifyPayment(
     }
 
     try {
-        const result = await verifyAndFulfillPayment(
+        const payment = await verifyAndFulfillPayment(
             request.user!.id,
             validation.data.reference,
         );
 
+        const subscription =
+            payment.purpose === "SUBSCRIPTION"
+                ? await getCurrentSubscription(request.user!.id)
+                : null;
+
         response.status(200).json({
             success: true,
             message: "Payment verification completed.",
-            data: result,
+            data: {
+                payment,
+                subscription,
+            },
         });
     } catch (error: unknown) {
         response.status(400).json({

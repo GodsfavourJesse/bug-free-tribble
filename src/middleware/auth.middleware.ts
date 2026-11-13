@@ -5,6 +5,7 @@ import type {
 } from "express";
 
 import { env } from "../config/env.ts";
+import { sessionCookieOptions } from "../config/cookies.ts";
 
 import {
     getUserFromSession,
@@ -51,6 +52,14 @@ export async function requireAuth(
         }
 
         request.user = user;
+
+        // Keep active sessions alive. The database expiry is renewed by
+        // getUserFromSession; refresh the browser cookie to match it.
+        response.cookie(
+            env.SESSION_COOKIE_NAME,
+            token,
+            sessionCookieOptions(),
+        );
 
         next();
     } catch (error) {

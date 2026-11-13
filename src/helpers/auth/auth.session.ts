@@ -143,6 +143,7 @@ export async function getUserFromSession(
         .update(sessions)
         .set({
             lastUsedAt: now,
+            expiresAt: createExpiryDate(),
         })
         .where(
             eq(

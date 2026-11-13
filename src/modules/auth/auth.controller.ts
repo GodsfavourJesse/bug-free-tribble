@@ -33,9 +33,10 @@ import {
     verifyEmailByToken,
 } from "./auth.service.ts";
 import { createCsrfToken } from "../../helpers/auth/csrf-helpers/auth.csrf.ts";
-
-type SessionCookieSameSite = 
-    "strict" | "lax" | "none";
+import {
+    clearSessionCookieOptions,
+    sessionCookieOptions,
+} from "../../config/cookies.ts";
 
 function setSessionCookie(
     response: Response,
@@ -44,14 +45,7 @@ function setSessionCookie(
     response.cookie(
         env.SESSION_COOKIE_NAME,
         token,
-        {
-            httpOnly: true,
-            secure: env.SESSION_COOKIE_SECURE,
-            sameSite: env.SESSION_COOKIE_SAME_SITE as SessionCookieSameSite,
-            maxAge: env.SESSION_TTL_DAYS *
-                24 * 60 * 60 * 1000,
-            path: "/",
-        },
+        sessionCookieOptions(),
     );
 }
 
@@ -60,12 +54,7 @@ function clearSessionCookie(
 ): void {
     response.clearCookie(
         env.SESSION_COOKIE_NAME,
-        {
-            httpOnly: true,
-            secure: env.SESSION_COOKIE_SECURE,
-            sameSite: env.SESSION_COOKIE_SAME_SITE as SessionCookieSameSite,
-            path: "/",
-        },
+        clearSessionCookieOptions(),
     );
 }
 
