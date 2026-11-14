@@ -5,6 +5,7 @@ export type {
 export {
     create,
     listConversations,
+    unreadCount,
 } from "./messaging-controllers/conversation.controller.ts";
 
 export {

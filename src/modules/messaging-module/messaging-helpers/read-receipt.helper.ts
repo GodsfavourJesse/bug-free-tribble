@@ -115,6 +115,14 @@ export async function markConversationAsRead(
                 userId,
                 lastReadAt: receipt.lastReadAt,
             });
+
+        getSocketIO()
+            .to(`user:${userId}`)
+            .emit("message:read", {
+                conversationId,
+                userId,
+                lastReadAt: receipt.lastReadAt,
+            });
     } catch (error) {
         console.error(
             "Read receipt realtime delivery failed.",

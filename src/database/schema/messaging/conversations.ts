@@ -8,6 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { users } from "../users/users.ts";
+import { listings } from "../listings/listings.ts";
 
 export const conversationTypeEnum = pgEnum(
     "conversation_type",
@@ -37,6 +38,11 @@ export const conversations = pgTable(
         type: conversationTypeEnum("type")
             .notNull()
             .default("BUYER_SELLER"),
+
+        listingId: uuid("listing_id")
+            .references(() => listings.id, {
+                onDelete: "set null",
+            }),
 
         // Support-ticket fields.
         // These remain null for ordinary buyer-seller conversations.
@@ -102,6 +108,9 @@ export const conversations = pgTable(
             table.status,
             table.updatedAt,
         ),
+
+        listingIdIdx: index("conversations_listing_id_idx")
+            .on(table.listingId),
 
         requesterCreatedAtIdx: index(
             "conversations_requester_created_at_idx",

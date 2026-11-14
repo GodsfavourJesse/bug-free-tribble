@@ -14,6 +14,7 @@ import {
     create,
     createTicket,
     listConversations,
+    unreadCount,
     listMyTickets,
     markRead,
     messages,
@@ -38,6 +39,8 @@ router.get(
     "/conversations",
     listConversations,
 );
+
+router.get("/unread-count", unreadCount);
 
 router.post(
     "/conversations",

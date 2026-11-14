@@ -25,6 +25,7 @@ export interface ContactSellerInput {
 async function findExistingConversation(
     buyerId: string,
     sellerId: string,
+    listingId: string,
 ): Promise<string | null> {
     const buyerConversations = await db
         .select({
@@ -49,6 +50,7 @@ async function findExistingConversation(
                     conversations.type,
                     "BUYER_SELLER",
                 ),
+                eq(conversations.listingId, listingId),
             ),
         );
 
@@ -84,12 +86,14 @@ async function findExistingConversation(
 async function createDirectConversation(
     buyerId: string,
     sellerId: string,
+    listingId: string,
 ): Promise<string> {
     return db.transaction(async (tx) => {
         const conversationResult = await tx
             .insert(conversations)
             .values({
                 type: "BUYER_SELLER",
+                listingId,
             })
             .returning({
                 id: conversations.id,
@@ -210,6 +214,7 @@ export async function contactListingSeller(
         await findExistingConversation(
             input.buyerId,
             record.listing.sellerId,
+            input.listingId,
         );
 
     if (!conversationId) {
@@ -217,6 +222,7 @@ export async function contactListingSeller(
             await createDirectConversation(
                 input.buyerId,
                 record.listing.sellerId,
+                input.listingId,
             );
     }
 

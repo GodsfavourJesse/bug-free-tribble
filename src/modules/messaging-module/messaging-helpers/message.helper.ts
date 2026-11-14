@@ -302,6 +302,15 @@ export async function sendMessage(
                 "message:new",
                 message,
             );
+
+        for (const recipient of recipients) {
+            getSocketIO()
+                .to(`user:${recipient.userId}`)
+                .emit("message:received", {
+                    conversationId,
+                    message,
+                });
+        }
     } catch (error) {
         console.error(
             "Realtime message delivery failed.",

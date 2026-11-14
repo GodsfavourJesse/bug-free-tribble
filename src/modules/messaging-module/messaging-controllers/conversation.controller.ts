@@ -6,6 +6,7 @@ import type {
 import {
     createConversation,
     getConversations,
+    getUnreadMessageCount,
 } from "../messaging.service.ts";
 
 export type AuthenticatedRequest<
@@ -115,6 +116,24 @@ export async function listConversations(
             message:
                 "Unable to retrieve conversations.",
         });
+    }
+}
+
+/** GET /api/v1/messaging/unread-count */
+export async function unreadCount(
+    request: AuthenticatedRequest,
+    response: Response,
+): Promise<void> {
+    if (!request.user) {
+        response.status(401).json({ success: false, message: "Authentication required." });
+        return;
+    }
+
+    try {
+        const total = await getUnreadMessageCount(request.user.id);
+        response.status(200).json({ success: true, data: { total } });
+    } catch {
+        response.status(500).json({ success: false, message: "Unable to retrieve unread message count." });
     }
 }
 

@@ -7,6 +7,10 @@ export {
     getConversations,
 } from "./messaging-helpers/conversation-list.helper.ts";
 
+export {
+    getUnreadMessageCount,
+} from "./messaging-helpers/conversation-list.helper.ts";
+
 export type {
     ConversationListOptions,
 } from "./messaging-helpers/conversation-list.helper.ts";

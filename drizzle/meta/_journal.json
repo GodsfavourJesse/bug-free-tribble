@@ -15,6 +15,13 @@
       "when": 1794338055421,
       "tag": "0001_safe_norman_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794617515241,
+      "tag": "0002_oval_starbolt",
+      "breakpoints": true
     }
   ]
 }
