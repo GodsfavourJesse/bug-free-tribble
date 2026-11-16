@@ -9,6 +9,7 @@ import {
 import {
     requireCsrfToken,
 } from "../../middleware/csrf.middleware.ts";
+import { authRateLimiter } from "../../middleware/rate-limit.middleware.ts";
 
 import {
     create,
@@ -21,8 +22,15 @@ import {
     readReceipts,
     send,
 } from "./messaging.controller.ts";
+import { addCustomerSupportReply, createPublicSupportRequest, getPublicSupportRequest, listMyPublicSupportRequests } from "./support-request.controller.ts";
 
 const router = Router();
+
+// Visitors and members can submit a support request. A random access token
+// returned at creation time protects follow-up access for visitors.
+router.post("/public-support", authRateLimiter, createPublicSupportRequest);
+router.get("/public-support/:requestId", getPublicSupportRequest);
+router.post("/public-support/:requestId/messages", addCustomerSupportReply);
 
 /**
  * All messaging routes require authentication.
@@ -30,6 +38,8 @@ const router = Router();
 router.use(
     requireAuth,
 );
+
+router.get("/my-public-support", listMyPublicSupportRequests);
 
 /**
  * Buyer–seller conversations.

@@ -62,6 +62,7 @@ export const corsOptions: CorsOptions = {
         "Authorization",
         "X-Request-Id",
         "X-CSRF-Token",
+        "X-Support-Access-Token",
         "Idempotency-Key",
     ],
 

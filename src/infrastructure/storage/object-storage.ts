@@ -81,9 +81,17 @@ function buildImageTransformation(
             options.height;
     }
 
-    if (options.fit !== undefined) {
-        transformation.crop =
-            options.fit;
+    // Cloudinary can stretch an image when width and height are
+    // both supplied without a crop mode. Preserve the source ratio
+    // by default; callers can still choose an explicit crop mode.
+    const fit = options.fit ?? (
+        options.width !== undefined && options.height !== undefined
+            ? "limit"
+            : undefined
+    );
+
+    if (fit !== undefined) {
+        transformation.crop = fit;
     }
 
     if (options.quality !== undefined) {

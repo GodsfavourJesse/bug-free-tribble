@@ -268,6 +268,7 @@ export async function getMarketplaceListingDetails(
             {
                 width: 600,
                 height: 600,
+                fit: "limit",
                 quality: "auto",
                 format: "webp",
             },
@@ -278,6 +279,7 @@ export async function getMarketplaceListingDetails(
             {
                 width: 1600,
                 height: 1600,
+                fit: "limit",
                 quality: "auto",
                 format: "webp",
             },

@@ -11,10 +11,14 @@ import {
     getAdminSupportTicketController,
     listAdminSupportTicketNotesController,
 } from "./admin-support-detail.controller.ts";
+import { listAdminSupportRequests, replyAdminSupportRequest } from "../../messaging-module/support-request.controller.ts";
 
 const router = Router();
 
 router.use(requireAdminAuth);
+
+router.get("/public-requests", requirePermission("support:ticket:view_all"), listAdminSupportRequests);
+router.post("/public-requests/:requestId/replies", requirePermission("support:ticket:manage"), replyAdminSupportRequest);
 
 router.get(
     "/support/tickets",

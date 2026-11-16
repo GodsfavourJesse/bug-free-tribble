@@ -35,6 +35,7 @@ export * from "./boosts.ts";
 export * from "./messaging/conversations.ts";
 export * from "./messaging/conversation-participants.ts"
 export * from "./messaging/messages.ts";
+export * from "./messaging/support-requests.ts";
 
 export * from "./email-verification.ts";
 

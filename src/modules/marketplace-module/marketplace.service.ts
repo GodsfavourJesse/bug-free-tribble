@@ -195,6 +195,7 @@ async function getMarketplaceImages(
                 {
                     width: 600,
                     height: 600,
+                    fit: "limit",
                     quality: "auto",
                     format: "webp",
                 },
@@ -205,6 +206,7 @@ async function getMarketplaceImages(
                 {
                     width: 1600,
                     height: 1600,
+                    fit: "limit",
                     quality: "auto",
                     format: "webp",
                 },
