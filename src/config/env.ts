@@ -265,11 +265,32 @@ const envSchema = z.object({
     // ==========================================
     // EXTERNAL VEHICLE DATA PROVIDERS
     // ==========================================
-    VEHICLESDB_API_KEY: z.string().trim().min(1).optional(),
 
-    CARSXE_API_KEY: z.string().trim().min(1).optional(),
+    AUTO_DEV_API_KEY: z
+        .string()
+        .trim()
+        .min(1, "AUTO_DEV_API_KEY cannot be empty.")
+        .optional(),
 
-    VEHICLE_PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().max(60_000).default(12_000),
+    VEHICLESDB_API_KEY: z
+        .string()
+        .trim()
+        .min(1)
+        .optional(),
+
+    CARSXE_API_KEY: z
+        .string()
+        .trim()
+        .min(1)
+        .optional(),
+
+    VEHICLE_PROVIDER_TIMEOUT_MS: z
+        .coerce
+        .number()
+        .int()
+        .positive()
+        .max(60_000)
+        .default(12_000),
 
     // ==========================================
     // PAYMENTS

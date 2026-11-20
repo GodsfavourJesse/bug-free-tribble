@@ -1,7 +1,9 @@
 import { env } from "../../../config/env.ts";
 
-export type VehicleProvider = "carsxe" | "vehiclesdb";
-export type CarsXeDimension = "years" | "makes" | "models" | "trims" | "variants";
+export type VehicleProvider =
+    | "auto_dev"
+    | "karmass"
+    | "manual";
 
 export interface ExternalVehicleOption {
     value: string;
@@ -9,154 +11,426 @@ export interface ExternalVehicleOption {
     source: VehicleProvider;
 }
 
-
-const CARSXE_BASE_URL = "https://api.carsxe.com/v1/ymm-options";
-const VEHICLESDB_BASE_URL = "https://vehiclesdb.com/api/v1";
-const optionCache = new Map<string, { expiresAt: number; value: ExternalVehicleOption[] }>();
-const OPTION_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
-
-async function cachedOptions(
-    key: string,
-    loader: () => Promise<ExternalVehicleOption[]>,
-): Promise<ExternalVehicleOption[]> {
-    const cached = optionCache.get(key);
-    if (cached && cached.expiresAt > Date.now()) return cached.value;
-    const value = await loader();
-    optionCache.set(key, { value, expiresAt: Date.now() + OPTION_CACHE_TTL_MS });
-    return value;
+interface VehicleCatalogue {
+    [make: string]: string[];
 }
 
-function asRecord(value: unknown): Record<string, unknown> {
-    return value && typeof value === "object" && !Array.isArray(value)
-        ? value as Record<string, unknown>
-        : {};
+interface CacheEntry<T> {
+    value: T;
+    expiresAt: number;
 }
 
-function extractStringOptions(payload: unknown, keys: string[], depth = 0): string[] {
-    if (depth > 3) return [];
-    const record = asRecord(payload);
-    for (const key of keys) {
-        const value = record[key];
-        if (Array.isArray(value)) {
-            return value
-                .map((item) => {
-                    if (typeof item === "string" || typeof item === "number") return String(item);
-                    const itemRecord = asRecord(item);
-                    const nestedMake = asRecord(itemRecord.make);
-                    const candidate = itemRecord.name ?? itemRecord.label ?? itemRecord.value ?? nestedMake.name;
-                    return typeof candidate === "string" || typeof candidate === "number" ? String(candidate) : "";
-                })
-                .map((item) => item.trim())
-                .filter(Boolean);
-        }
-        if (value && typeof value === "object") {
-            const nested = extractStringOptions(value, keys, depth + 1);
-            if (nested.length) return nested;
-        }
+class VehicleProviderError extends Error {
+    constructor(
+        message: string,
+        public readonly provider: string,
+        public readonly status?: number,
+        public readonly code?: string,
+    ) {
+        super(message);
+
+        this.name = "VehicleProviderError";
     }
-    return [];
 }
 
-async function requestJson(url: URL, headers: Record<string, string> = {}): Promise<unknown> {
+const AUTO_DEV_BASE_URL =
+    "https://auto.dev/api";
+
+const CATALOGUE_CACHE_TTL_MS =
+    12 * 60 * 60 * 1000;
+
+const MINIMUM_VEHICLE_YEAR = 1950;
+
+const catalogueCache = new Map<
+    string,
+    CacheEntry<VehicleCatalogue>
+>();
+
+const pendingRequests = new Map<
+    string,
+    Promise<VehicleCatalogue>
+>();
+
+/**
+ * Normalize a vehicle name for comparison.
+ */
+function normalizeName(value: string): string {
+    return value
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Sort and remove duplicate strings.
+ */
+function sortOptions(values: string[]): string[] {
+    return [
+        ...new Set(
+            values
+                .map((value) => value.trim())
+                .filter(Boolean),
+        ),
+    ].sort((a, b) =>
+        a.localeCompare(
+            b,
+            undefined,
+            { numeric: true },
+        ),
+    );
+}
+
+/**
+ * Validate an object.
+ */
+function asRecord(
+    value: unknown,
+): Record<string, unknown> {
+    if (
+        value !== null &&
+        typeof value === "object" &&
+        !Array.isArray(value)
+    ) {
+        return value as Record<string, unknown>;
+    }
+
+    return {};
+}
+
+/**
+ * Fetch JSON from Auto.dev.
+ */
+async function requestAutoDev<T>(
+    path: string,
+): Promise<T> {
+    if (!env.AUTO_DEV_API_KEY) {
+        throw new VehicleProviderError(
+            "Auto.dev API key is not configured.",
+            "auto_dev",
+        );
+    }
+
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), env.VEHICLE_PROVIDER_TIMEOUT_MS);
+
+    const timeout = setTimeout(
+        () => controller.abort(),
+        env.VEHICLE_PROVIDER_TIMEOUT_MS,
+    );
+
     try {
-        const response = await fetch(url, {
-            method: "GET",
-            headers: { Accept: "application/json", ...headers },
-            signal: controller.signal,
-        });
-        const payload: unknown = await response.json().catch(() => ({}));
+        const response = await fetch(
+            `${AUTO_DEV_BASE_URL}${path}`,
+            {
+                method: "GET",
+
+                headers: {
+                    Accept: "application/json",
+
+                    Authorization:
+                        `Bearer ${env.AUTO_DEV_API_KEY}`,
+                },
+
+                signal: controller.signal,
+            },
+        );
+
+        const rawBody = await response.text();
+
+        let payload: unknown;
+
+        try {
+            payload = rawBody
+                ? JSON.parse(rawBody)
+                : {};
+        } catch {
+            throw new VehicleProviderError(
+                "Auto.dev returned an invalid JSON response.",
+                "auto_dev",
+                response.status,
+            );
+        }
+
+        const record = asRecord(payload);
+
         if (!response.ok) {
-            const message = asRecord(payload).message;
-            throw new Error(typeof message === "string" ? message : `Vehicle provider returned HTTP ${response.status}.`);
+            const error = asRecord(record.error);
+
+            const message =
+                typeof error.message === "string"
+                    ? error.message
+                    : typeof record.message === "string"
+                        ? record.message
+                        : `Auto.dev returned HTTP ${response.status}.`;
+
+            const code =
+                typeof error.code === "string"
+                    ? error.code
+                    : undefined;
+
+            throw new VehicleProviderError(
+                message,
+                "auto_dev",
+                response.status,
+                code,
+            );
         }
-        return payload;
+
+        return payload as T;
+
     } catch (error) {
-        if (error instanceof Error && error.name === "AbortError") {
-            throw new Error("Vehicle data provider timed out. Please try again.");
+        if (error instanceof VehicleProviderError) {
+            throw error;
         }
-        throw error;
+
+        if (
+            error instanceof Error &&
+            error.name === "AbortError"
+        ) {
+            throw new VehicleProviderError(
+                "Auto.dev request timed out.",
+                "auto_dev",
+            );
+        }
+
+        throw new VehicleProviderError(
+            error instanceof Error
+                ? error.message
+                : "Unable to connect to Auto.dev.",
+            "auto_dev",
+        );
+
     } finally {
         clearTimeout(timeout);
     }
 }
 
-async function carsXeOptions(
-    dimension: CarsXeDimension,
-    filters: { make?: string; model?: string; year?: number },
-): Promise<string[]> {
-    if (!env.CARSXE_API_KEY) throw new Error("CarsXE is not configured. Add CARSXE_API_KEY to the backend environment.");
+/**
+ * Download and normalize the complete make/model catalogue.
+ */
+async function fetchVehicleCatalogue(): Promise<VehicleCatalogue> {
+    const payload = await requestAutoDev<unknown>(
+        "/models",
+    );
 
-    const url = new URL(CARSXE_BASE_URL);
-    url.searchParams.set("key", env.CARSXE_API_KEY);
-    url.searchParams.set("dimension", dimension);
-    if (filters.make) url.searchParams.set("make", filters.make);
-    if (filters.model) url.searchParams.set("model", filters.model);
-    if (filters.year) url.searchParams.set("year", String(filters.year));
-
-    const payload = await requestJson(url);
     const record = asRecord(payload);
-    if (record.success === false) {
-        throw new Error(typeof record.message === "string" ? record.message : "CarsXE could not return vehicle options.");
+
+    const catalogue: VehicleCatalogue = {};
+
+    for (const [make, models] of Object.entries(record)) {
+        if (
+            typeof make !== "string" ||
+            !Array.isArray(models)
+        ) {
+            continue;
+        }
+
+        const normalizedModels = sortOptions(
+            models.filter(
+                (model): model is string =>
+                    typeof model === "string",
+            ),
+        );
+
+        if (normalizedModels.length === 0) {
+            continue;
+        }
+
+        catalogue[make.trim()] = normalizedModels;
     }
-    const options = extractStringOptions(payload, [dimension, "options", "results", "data"]);
-    return [...new Set(options)].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+    if (Object.keys(catalogue).length === 0) {
+        throw new VehicleProviderError(
+            "Auto.dev returned an empty or invalid vehicle catalogue.",
+            "auto_dev",
+        );
+    }
+
+    return catalogue;
 }
 
-async function vehiclesDbMakes(): Promise<string[]> {
-    if (!env.VEHICLESDB_API_KEY) throw new Error("VehiclesDB is not configured. Add VEHICLESDB_API_KEY to the backend environment.");
-    const url = new URL(`${VEHICLESDB_BASE_URL}/makes`);
-    url.searchParams.set("kind", "car");
-    const payload = await requestJson(url, { Authorization: `Bearer ${env.VEHICLESDB_API_KEY}` });
-    const record = asRecord(payload);
-    const direct = extractStringOptions(payload, ["makes", "data", "results"]);
-    if (direct.length) return direct;
-    if (Array.isArray(record.data)) return extractStringOptions({ makes: record.data }, ["makes"]);
-    return [];
+/**
+ * Retrieve the catalogue with caching and
+ * protection against simultaneous duplicate requests.
+ */
+async function getVehicleCatalogue(): Promise<VehicleCatalogue> {
+    const cacheKey = "auto_dev:vehicle_catalogue";
+
+    const cached = catalogueCache.get(cacheKey);
+
+    if (
+        cached &&
+        cached.expiresAt > Date.now()
+    ) {
+        return cached.value;
+    }
+
+    const pending = pendingRequests.get(cacheKey);
+
+    if (pending) {
+        return pending;
+    }
+
+    const request = fetchVehicleCatalogue();
+
+    pendingRequests.set(cacheKey, request);
+
+    try {
+        const catalogue = await request;
+
+        catalogueCache.set(cacheKey, {
+            value: catalogue,
+            expiresAt:
+                Date.now() + CATALOGUE_CACHE_TTL_MS,
+        });
+
+        return catalogue;
+
+    } finally {
+        pendingRequests.delete(cacheKey);
+    }
 }
 
-async function vehiclesDbModels(make: string): Promise<string[]> {
-    if (!env.VEHICLESDB_API_KEY) throw new Error("VehiclesDB is not configured. Add VEHICLESDB_API_KEY to the backend environment.");
-    const slug = make.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    const url = new URL(`${VEHICLESDB_BASE_URL}/makes/${encodeURIComponent(slug)}/models`);
-    url.searchParams.set("kind", "car");
-    const payload = await requestJson(url, { Authorization: `Bearer ${env.VEHICLESDB_API_KEY}` });
-    return extractStringOptions(payload, ["models", "data", "results"]);
+/**
+ * Generate available vehicle years locally.
+ */
+function generateVehicleYears(): string[] {
+    const currentYear = new Date().getFullYear();
+
+    const years: string[] = [];
+
+    for (
+        let year = MINIMUM_VEHICLE_YEAR;
+        year <= currentYear + 1;
+        year++
+    ) {
+        years.push(String(year));
+    }
+
+    return years.reverse();
 }
 
+/**
+ * Get vehicle provider status.
+ */
 export function getVehicleProviderStatus() {
     return {
-        carsxe: { configured: Boolean(env.CARSXE_API_KEY), capabilities: ["years", "makes", "models", "variants", "trims"] },
-        vehiclesdb: { configured: Boolean(env.VEHICLESDB_API_KEY), capabilities: ["makes", "models", "vehicle-resolution", "vehicle-records"] },
+        auto_dev: {
+            configured: Boolean(env.AUTO_DEV_API_KEY),
+
+            capabilities: [
+                "makes",
+                "models",
+            ],
+
+            cacheDurationHours: 12,
+        },
+
+        karmass: {
+            configured: true,
+
+            capabilities: [
+                "years",
+            ],
+        },
+
+        manual: {
+            configured: true,
+
+            capabilities: [
+                "variants",
+                "trims",
+                "vehicle-specifications",
+            ],
+        },
     };
 }
 
-export async function getExternalMakes(provider: VehicleProvider = "carsxe"): Promise<ExternalVehicleOption[]> {
-    return cachedOptions(`makes:${provider}`, async () => {
-        const values = provider === "carsxe"
-            ? await carsXeOptions("makes", {})
-            : await vehiclesDbMakes();
-        return values.map((value) => ({ value, label: value, source: provider }));
-    });
+/**
+ * STEP 1:
+ * Get available vehicle years.
+ */
+export async function getExternalVehicleYears(): Promise<
+    ExternalVehicleOption[]
+> {
+    return generateVehicleYears().map((value) => ({
+        value,
+        label: value,
+        source: "karmass",
+    }));
 }
 
-export async function getExternalModels(make: string, provider: VehicleProvider = "carsxe"): Promise<ExternalVehicleOption[]> {
-    return cachedOptions(`models:${provider}:${make.toLowerCase()}`, async () => {
-        const values = provider === "carsxe"
-            ? await carsXeOptions("models", { make })
-            : await vehiclesDbModels(make);
-        return values.map((value) => ({ value, label: value, source: provider }));
-    });
-}
-
-export async function getExternalVehicleOptions(
-    dimension: Exclude<CarsXeDimension, "makes" | "models">,
-    filters: { make?: string; model?: string; year?: number },
+/**
+ * STEP 2:
+ * Get available vehicle makes.
+ */
+export async function getExternalMakes(
+    _year: number,
 ): Promise<ExternalVehicleOption[]> {
-    const key = `carsxe:${dimension}:${filters.make ?? ""}:${filters.model ?? ""}:${filters.year ?? ""}`.toLowerCase();
-    return cachedOptions(key, async () => {
-        const values = await carsXeOptions(dimension, filters);
-        return values.map((value) => ({ value, label: value, source: "carsxe" }));
-    });
+    const catalogue = await getVehicleCatalogue();
+
+    return sortOptions(
+        Object.keys(catalogue),
+    ).map((value) => ({
+        value,
+        label: value,
+        source: "auto_dev",
+    }));
+}
+
+/**
+ * STEP 3:
+ * Get available models for a selected make.
+ */
+export async function getExternalModels(
+    _year: number,
+    make: string,
+): Promise<ExternalVehicleOption[]> {
+    const normalizedMake = normalizeName(make);
+
+    if (!normalizedMake) {
+        return [];
+    }
+
+    const catalogue = await getVehicleCatalogue();
+
+    const matchingMake = Object.keys(catalogue).find(
+        (catalogueMake) =>
+            normalizeName(catalogueMake) === normalizedMake,
+    );
+
+    if (!matchingMake) {
+        return [];
+    }
+
+    const models = catalogue[matchingMake];
+
+    if (!models) {
+        return [];
+    }
+
+    return models.map((value) => ({
+        value,
+        label: value,
+        source: "auto_dev",
+    }));
+}
+
+/**
+ * STEP 4:
+ * Variants and trims are entered manually.
+ *
+ * Auto.dev's general Models endpoint does not
+ * provide a year-specific trim catalogue.
+ */
+export async function getExternalVehicleOptions(
+    _dimension: "variants" | "trims",
+    _filters: {
+        year: number;
+        make: string;
+        model: string;
+    },
+): Promise<ExternalVehicleOption[]> {
+    return [];
 }

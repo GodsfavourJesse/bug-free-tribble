@@ -4,6 +4,7 @@ import type {
 } from "express";
 
 import {
+    getExternalVehicleYears as fetchExternalYears,
     getExternalMakes as fetchExternalMakes,
     getExternalModels as fetchExternalModels,
     getExternalVehicleOptions as fetchExternalOptions,
@@ -308,82 +309,171 @@ export async function search(
         },
     });
 }
-/** External API-backed vehicle catalogue. Provider credentials never leave the backend. */
+
+
+/** External provider status. */
 export async function getExternalProviderStatus(
     _request: Request,
     response: Response,
 ): Promise<void> {
-    response.json({ success: true, data: getVehicleProviderStatus() });
+    response.json({
+        success: true,
+        data: getVehicleProviderStatus(),
+    });
 }
 
+/** STEP 1: Get available years. */
+export async function getExternalYears(
+    _request: Request,
+    response: Response,
+): Promise<void> {
+    const years = await fetchExternalYears();
+
+    response.json({
+        success: true,
+        data: {
+            years,
+            provider: "karmass",
+        },
+    });
+}
+
+/** STEP 2: Get makes for a selected year. */
 export async function getExternalMakes(
     request: Request,
     response: Response,
 ): Promise<void> {
-    const provider = request.query.provider === "vehiclesdb" ? "vehiclesdb" : "carsxe";
-    const makes = await fetchExternalMakes(provider);
-    response.json({ success: true, data: { makes, provider } });
+    const year = parseYearQuery(
+        request.query.year,
+    );
+
+    if (year === undefined) {
+        response.status(400).json({
+            success: false,
+            message: "A valid vehicle year is required.",
+        });
+
+        return;
+    }
+
+    const makes = await fetchExternalMakes(year);
+
+    response.json({
+        success: true,
+        data: {
+            makes,
+            year,
+            provider: makes[0]?.source ?? "auto_dev",
+        },
+    });
 }
 
+/** STEP 3: Get models for a selected year and make. */
 export async function getExternalModels(
     request: Request,
     response: Response,
 ): Promise<void> {
-    const make = typeof request.query.make === "string" ? request.query.make.trim() : "";
-    if (!make) {
-        response.status(400).json({ success: false, message: "A vehicle make is required." });
+    const year = parseYearQuery(
+        request.query.year,
+    );
+
+    const make =
+        typeof request.query.make === "string"
+            ? request.query.make.trim()
+            : "";
+
+    if (year === undefined || !make) {
+        response.status(400).json({
+            success: false,
+            message: "A valid year and vehicle make are required.",
+        });
+
         return;
     }
-    const provider = request.query.provider === "vehiclesdb" ? "vehiclesdb" : "carsxe";
-    const models = await fetchExternalModels(make, provider);
-    response.json({ success: true, data: { models, provider } });
+
+    const models = await fetchExternalModels(
+        year,
+        make,
+    );
+
+    response.json({
+        success: true,
+        data: {
+            models,
+            year,
+            make,
+            provider: models[0]?.source ?? "auto_dev",
+        },
+    });
 }
 
+/** STEP 4: Get variants or trims. */
 export async function getExternalVehicleOptions(
     request: Request,
     response: Response,
 ): Promise<void> {
-    const allowed = ["years", "trims", "variants"] as const;
-    const dimension = typeof request.query.dimension === "string" ? request.query.dimension : "";
-    if (!allowed.includes(dimension as typeof allowed[number])) {
-        response.status(400).json({ success: false, message: "dimension must be years, trims or variants." });
-        return;
-    }
+    const dimension =
+        typeof request.query.dimension === "string"
+            ? request.query.dimension
+            : "";
 
-    const requestedProvider =
-        typeof request.query.provider === "string"
-            ? request.query.provider.trim().toLowerCase()
-            : undefined;
-
-    // VehiclesDB currently provides makes and models only. CarsXE is
-    // the provider used for year and variant/trim lookups.
-    if (requestedProvider && requestedProvider !== "carsxe") {
+    if (
+        dimension !== "variants" &&
+        dimension !== "trims"
+    ) {
         response.status(400).json({
             success: false,
-            message: "Model years and variants are currently available through CarsXE.",
+            message: "dimension must be variants or trims.",
         });
+
         return;
     }
 
-    const make = typeof request.query.make === "string" ? request.query.make.trim() : undefined;
-    const model = typeof request.query.model === "string" ? request.query.model.trim() : undefined;
-    const rawYear = typeof request.query.year === "string" ? Number(request.query.year) : undefined;
-    const year = rawYear !== undefined && Number.isInteger(rawYear) && rawYear >= 1886 && rawYear <= 2100 ? rawYear : undefined;
+    const year = parseYearQuery(
+        request.query.year,
+    );
 
-    if ((dimension === "trims" || dimension === "variants") && (!make || !model || !year)) {
-        response.status(400).json({ success: false, message: "A make, model and valid year are required to retrieve vehicle variants." });
+    const make =
+        typeof request.query.make === "string"
+            ? request.query.make.trim()
+            : "";
+
+    const model =
+        typeof request.query.model === "string"
+            ? request.query.model.trim()
+            : "";
+
+    if (
+        year === undefined ||
+        !make ||
+        !model
+    ) {
+        response.status(400).json({
+            success: false,
+            message: "A valid year, make and model are required.",
+        });
+
         return;
     }
 
-    if (dimension === "years" && (!make || !model)) {
-        response.status(400).json({ success: false, message: "A make and model are required to retrieve model years." });
-        return;
-    }
+    const options = await fetchExternalOptions(
+        dimension,
+        {
+            year,
+            make,
+            model,
+        },
+    );
 
-    const filters: { make?: string; model?: string; year?: number } = {};
-    if (make) filters.make = make;
-    if (model) filters.model = model;
-    if (year !== undefined) filters.year = year;
-    const options = await fetchExternalOptions(dimension as typeof allowed[number], filters);
-    response.json({ success: true, data: { options, dimension, provider: "carsxe" } });
+    response.json({
+        success: true,
+        data: {
+            options,
+            dimension,
+            year,
+            make,
+            model,
+            provider: options[0]?.source ?? "manual",
+        },
+    });
 }

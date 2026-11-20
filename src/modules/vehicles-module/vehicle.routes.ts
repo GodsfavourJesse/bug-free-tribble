@@ -16,6 +16,7 @@ import {
     getModels,
     getVariants,
     search,
+    getExternalYears,
 } from "./vehicle.controller.ts";
 import { listModelYears } from "./vehicle-model-year/vehicle-model-year.service.ts";
 
@@ -33,6 +34,7 @@ const marketQuerySchema = z.enum([
  * These proxy provider requests server-side so API keys are never exposed.
  */
 router.get("/external/providers", getExternalProviderStatus);
+router.get("/external/years", getExternalYears);
 router.get("/external/makes", getExternalMakes);
 router.get("/external/models", getExternalModels);
 router.get("/external/options", getExternalVehicleOptions);
